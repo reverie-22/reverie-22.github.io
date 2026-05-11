@@ -1,0 +1,106 @@
+<pre><font color="#cc0000"># Malcolm Kesson
+# Milim Lee
+# Mar 12 2017
+# mocap.rman</font>
+<font color="#710371">rman</font> <font color="#666666">"-version 1"</font> <font color="#000000">{</font>
+  
+<font color="#00007d">Declare param</font> <font color="#000000">{</font><font color="#0000ff">string</font> <font color="#000000">mocap_datapath} {</font>
+    <font color="#00007d">label</font> <font color="#666666">"MoCap Data File"</font>
+    <font color="#00007d">description</font> <font color="#666666">"Source mocap data file."</font>
+    <font color="#00007d">subtype</font> <font color="#666666">file</font>
+    <font color="#00007d">range</font> <font color="#000000">{*.txt}
+    }</font>
+<font color="#00007d">Declare param</font> <font color="#000000">{</font><font color="#0000ff">string</font> <font color="#000000">mocap_ribpath} {</font>
+    <font color="#00007d">label</font> <font color="#666666">"MoCap RIB Path for Joker"</font>
+    <font color="#00007d">description</font> <font color="#666666">"Source mocap RIB Path."</font>
+    <font color="#00007d">subtype</font> <font color="#666666">file</font>
+    <font color="#00007d">range</font> <font color="#000000">{*.rib}
+    }</font>
+<font color="#00007d">Declare param</font> <font color="#000000">{</font><font color="#0000ff">float</font> <font color="#000000">mocap_scale} {</font>
+    <font color="#00007d">label</font> <font color="#666666">"MoCap Scaling"</font>
+    <font color="#00007d">subtype</font> <font color="#666666">slider</font>
+    <font color="#00007d">range</font> <font color="#000000">{0.001 1 .001}</font>
+    <font color="#00007d">description</font> <font color="#666666">"Reduces the dimensions of the mocap performance."</font>
+    <font color="#000000">}</font>
+<font color="#00007d">Declare param</font> <font color="#000000">{</font><font color="#0000ff">int</font> <font color="#000000">mocap_geo} {</font>
+    <font color="#00007d">label</font> <font color="#666666">"Render As"</font>
+    <font color="#00007d">subtype</font> <font color="#666666">selector</font>
+    <font color="#00007d">range</font> <font color="#000000">{</font>
+        <font color="#666666">"Points"</font>  <font color="#000000">0</font>
+        <font color="#666666">"Curves"</font>  <font color="#000000">1</font>
+        <font color="#666666">"Skeleton"</font> <font color="#000000">2</font>
+        <font color="#666666">"Joker"</font>   <font color="#000000">3</font>
+        <font color="#666666">"Joker Breakdown"</font> <font color="#000000">4</font>
+        <font color="#666666">"Blobby Surface"</font>  <font color="#000000">5</font>
+        <font color="#666666">"Blobby Volume"</font> <font color="#000000">6
+        }
+    }</font>
+<font color="#00007d">Declare param</font> <font color="#000000">{</font><font color="#0000ff">float</font> <font color="#000000">mocap_width} {</font>
+    <font color="#00007d">label</font> <font color="#666666">"Geometry Size"</font>
+    <font color="#00007d">subtype</font> <font color="#666666">slider</font>
+    <font color="#00007d">range</font> <font color="#000000">{0.001 5 .001}</font>
+    <font color="#00007d">description</font> <font color="#666666">"Points and Curves(constantwidth). Blobby scale"</font>
+    <font color="#000000">}</font>
+<font color="#00007d">Declare param</font> <font color="#000000">{</font><font color="#0000ff">int</font> <font color="#000000">mocap_trail} {</font>
+    <font color="#00007d">label</font> <font color="#666666">"Trail"</font>
+    <font color="#00007d">subtype</font> <font color="#666666">slider</font>
+    <font color="#00007d">range</font> <font color="#000000">{0 1000 1}</font>
+    <font color="#00007d">description</font> <font color="#666666">"Places geometry at preceeding data locations."</font>
+    <font color="#000000">}</font>
+<font color="#00007d">Declare param</font> <font color="#000000">{</font><font color="#0000ff">int</font> <font color="#000000">mocap_step} {</font>
+    <font color="#00007d">label</font> <font color="#666666">"Step Size"</font>
+    <font color="#00007d">subtype</font> <font color="#666666">slider</font>
+    <font color="#00007d">range</font> <font color="#000000">{1 20 1}</font>
+    <font color="#00007d">description</font> <font color="#666666">"Use consecutive or skipped data locations."</font>
+    <font color="#000000">}</font>
+<font color="#00007d">Declare param</font> <font color="#000000">{</font><font color="#0000ff">int</font> <font color="#000000">mocap_cache} {</font>
+    <font color="#00007d">label</font> <font color="#666666">"Caching Behavior"</font>
+    <font color="#00007d">subtype</font> <font color="#666666">selector</font>
+    <font color="#00007d">range</font> <font color="#000000">{</font>
+        <font color="#666666">"Compute"</font> <font color="#000000">0</font>
+        <font color="#666666">"Reuse"</font>   <font color="#000000">1</font>
+        <font color="#666666">"Disable"</font> <font color="#000000">2
+        }
+    }</font>
+<font color="#cc0000"># The Collection and NodeOptions blocks enable a Pre-Shape MEL script
+# to be assigned to "RenderMan Controls-&gt;Geometric Settings" panel.</font>
+<font color="#00007d">Collection</font> <font color="#000000">mocap_OptionalGeometricSettings {</font>
+    <font color="#00007d">param</font> <font color="#000000">mocap_datapath {</font>
+        <font color="#00007d">default</font> <font color="#666666">""</font>
+        <font color="#00007d">state</font> <font color="#000000">optional
+        }</font>
+    <font color="#00007d">param</font> <font color="#000000">mocap_ribpath {</font>
+        <font color="#00007d">default</font> <font color="#666666">""</font>
+        <font color="#00007d">state</font> <font color="#000000">optional
+        }</font>
+    <font color="#00007d">param</font> <font color="#000000">mocap_geo {</font>
+        <font color="#00007d">default</font> <font color="#000000">0</font>
+        <font color="#00007d">state</font> <font color="#000000">optional
+        }</font>
+    <font color="#00007d">param</font> <font color="#000000">mocap_scale {</font>
+        <font color="#00007d">default</font> <font color="#000000">0.001</font>
+        <font color="#00007d">state</font> <font color="#000000">optional
+        }</font>
+    <font color="#00007d">param</font> <font color="#000000">mocap_width {</font>
+        <font color="#00007d">default</font> <font color="#000000">0.001</font>
+        <font color="#00007d">state</font> <font color="#000000">optional
+        }</font>
+    <font color="#00007d">param</font> <font color="#000000">mocap_trail {</font>
+        <font color="#00007d">default</font> <font color="#000000">0</font>
+        <font color="#00007d">state</font> <font color="#000000">optional
+        }</font>
+    <font color="#00007d">param</font> <font color="#000000">mocap_step {</font>
+        <font color="#00007d">default</font> <font color="#000000">1</font>
+        <font color="#00007d">state</font> <font color="#000000">optional
+        }</font>
+    <font color="#00007d">param</font> <font color="#000000">mocap_cache {</font>
+        <font color="#00007d">default</font> <font color="#000000">0</font>
+        <font color="#00007d">state</font> <font color="#000000">optional
+        }
+    }</font>
+<font color="#00007d">NodeOptions</font> <font color="#000000">{kGeometric kParticle} {</font>
+       <font color="#00007d">reference Collection</font> <font color="#000000">optionalGeometricSettings</font>
+       <font color="#00007d">reference Collection</font> <font color="#000000">mocap_OptionalGeometricSettings
+    }
+}</font>
+</pre>

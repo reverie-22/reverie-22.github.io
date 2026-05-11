@@ -1,0 +1,185 @@
+<pre><font color="#000000"></font><font color="#cc0000">//Declare global variables</font>
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gWindow</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gTotalCountSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gAssembleStartPntSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gTotalAssembleTimeSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gMainSphereCntSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gMainSphereSizeSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gMainScatterCntSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gInsideSphereCntSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gInsideSphereSizeSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gInsideScatterCntSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gMScatterRangeSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gIScatterRangeSlider</font>;
+  
+<font color="#0000b3">global proc</font> generateGeneUI(){
+    <font color="#cc0000">//using the already declared variable outside the proc</font>
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gWindow</font>;
+    
+    <font color="#0000ff">int</font> <font color="#06055f">$exists</font> = <font color="#410341">`window -exists $gWindow`</font>;
+    <font color="#0000b3">if</font>(<font color="#06055f">$exists</font> == 0) {
+        <font color="#06055f">$gWindow</font> = <font color="#410341">`window -width 400
+                       -height 150
+                       -retain
+                       -topLeftCorner 500 1000
+                       -title  "Create Gene UI"`</font>;
+        <font color="#cc0000">//Add any sliders, buttons and other UI elements</font>
+        addWidgets();    
+    }
+    <font color="#4c78a6">showWindow</font> <font color="#06055f">$gWindow</font>;
+}
+  
+<font color="#cc0000">//PROC: Static UI Version - Generate/delete gene object with animation</font>
+<font color="#0000b3">global proc</font> addWidgets(){
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gTotalCountSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gAssembleStartPntSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gTotalAssembleTimeSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gMainSphereCntSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gMainSphereSizeSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gMainScatterCntSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gInsideSphereCntSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gInsideSphereSizeSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gInsideScatterCntSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gMScatterRangeSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gIScatterRangeSlider</font>;
+    
+    <font color="#4c78a6">columnLayout</font> -adjustableColumn <font color="#0000b3">true</font>;
+    <font color="#4c78a6">image</font> -<font color="#4c78a6">image</font> <font color="#666666">"/home/millee20/mount/stuhome/vsfx705/main.jpg"</font> -width 400 -height 250;
+  
+    <font color="#4c78a6">frameLayout</font> -label <font color="#666666">"CREAT GENE"</font> -collapsable <font color="#0000b3">true</font> -borderStyle <font color="#666666">"etchedIn"</font>;
+    <font color="#4c78a6">columnLayout</font> -columnAttach <font color="#666666">"both"</font> 5 -rowSpacing 5 -columnWidth 400;
+                        
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gTotalCountSlider</font> = <font color="#410341">`intSliderGrp -label "Number of Lines in Gene" 
+                                        -field true 
+                                        -min 1 
+                                        -max 50 
+                                        -value 30 
+                                        -step 1 
+                                        -columnWidth 1 133`</font>;
+  
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gAssembleStartPntSlider</font> = <font color="#410341">`intSliderGrp  -label "Assemble Ani Start Second"
+                                          -columnWidth 1 144
+                                          -field true
+                                          -value 5
+                                          -min 1 -max 50`</font>;
+  
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gTotalAssembleTimeSlider</font> = <font color="#410341">`floatSliderGrp  -label "Assemble Ani Total Second"
+                                          -columnWidth 1 145
+                                          -field true
+                                          -value 18.0
+                                          -min 1 -max 50`</font>;
+  
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gMainSphereCntSlider</font> = <font color="#410341">`intSliderGrp  -label "Body Sphere Count"
+                                          -columnWidth 1 105
+                                          -field true
+                                          -value 80
+                                          -min 1 -max 100`</font>;
+  
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gMainSphereSizeSlider</font> = <font color="#410341">`floatSliderGrp  -label "Body Sphere Size"
+                                          -columnWidth 1 98
+                                          -field true
+                                          -value 5
+                                          -min 1 -max 100`</font>;
+  
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gMainScatterCntSlider</font> = <font color="#410341">`intSliderGrp  -label "Body Sphere Scatter Count"
+                                          -columnWidth 1 147
+                                          -field true
+                                          -value 5
+                                          -min 1 -max 10`</font>;
+  
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gMScatterRangeSlider</font> = <font color="#410341">`floatSliderGrp  -label "Body Sphere Scatter Range"
+                                          -columnWidth 1 150
+                                          -field true
+                                          -value 5
+                                          -min 1 -max 10`</font>;
+  
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gInsideSphereCntSlider</font> = <font color="#410341">`intSliderGrp  -label "Inside Sphere Count"
+                                          -columnWidth 1 110
+                                          -field true
+                                          -value 11
+                                          -min 1 -max 20`</font>;
+  
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gInsideSphereSizeSlider</font> = <font color="#410341">`floatSliderGrp  -label "Inside Sphere Size"
+                                          -columnWidth 1 103
+                                          -field true
+                                          -value 5
+                                          -min 1 -max 100`</font>;
+  
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gInsideScatterCntSlider</font> = <font color="#410341">`intSliderGrp  -label "Inside Sphere Scatter Count"
+                                          -columnWidth 1 152
+                                          -field true
+                                          -value 5
+                                          -min 1 -max 103`</font>;
+  
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gIScatterRangeSlider</font> = <font color="#410341">`floatSliderGrp  -label "Inside Sphere Scatter Range"
+                                          -columnWidth 1 155
+                                          -field true
+                                          -value 5
+                                          -min 1 -max 10`</font>;
+            
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#4c78a6">button</font> -label <font color="#666666">"Generate Gene!"</font> -command <font color="#666666">"makeGene"</font>;
+            <font color="#4c78a6">button</font> -label <font color="#666666">"Delete Gene"</font> -command <font color="#666666">"deleteGene"</font>;
+            <font color="#4c78a6">separator</font> -style none -h 2;
+        <font color="#4c78a6">setParent</font> ..;
+    <font color="#4c78a6">setParent</font> ..;
+}
+  
+<font color="#cc0000">//PROC: Generate gene</font>
+<font color="#0000b3">global proc</font> makeGene() {
+  
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gTotalCountSlider</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$total</font> = <font color="#410341">`intSliderGrp -q -value $gTotalCountSlider`</font>;
+  
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gAssembleStartPntSlider</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$aniAssembleStartPoint</font> = <font color="#410341">`intSliderGrp -q -value $gAssembleStartPntSlider`</font>;
+  
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gTotalAssembleTimeSlider</font>;
+    <font color="#0000ff">float</font> <font color="#06055f">$aniTotalAssembleTime</font> = <font color="#410341">`floatSliderGrp -q -value $gTotalAssembleTimeSlider`</font>;
+  
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gMainSphereCntSlider</font>;    
+    <font color="#0000ff">int</font> <font color="#06055f">$mainSphereCnt</font> = <font color="#410341">`intSliderGrp -q -value $gMainSphereCntSlider`</font>;
+  
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gMainSphereSizeSlider</font>;
+    <font color="#0000ff">float</font> <font color="#06055f">$mainSphereSize</font> = <font color="#410341">`floatSliderGrp -q -value $gMainSphereSizeSlider`</font>;
+  
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gMainScatterCntSlider</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$mainScatterCnt</font> = <font color="#410341">`intSliderGrp -q -value $gMainScatterCntSlider`</font>;    
+  
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gInsideSphereCntSlider</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$insideSphereCnt</font> = <font color="#410341">`intSliderGrp -q -value $gInsideSphereCntSlider`</font>;
+  
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gInsideSphereSizeSlider</font>;
+    <font color="#0000ff">float</font> <font color="#06055f">$insideSphereSize</font> = <font color="#410341">`floatSliderGrp -q -value $gInsideSphereSizeSlider`</font>;        
+  
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gInsideScatterCntSlider</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$insideScatterCnt</font> = <font color="#410341">`intSliderGrp -q -value $gInsideScatterCntSlider`</font>;
+    
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gMScatterRangeSlider</font>;
+    <font color="#0000ff">float</font> <font color="#06055f">$MscatterRange</font> = <font color="#410341">`floatSliderGrp -q -value $gMScatterRangeSlider`</font>;    
+    
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gIScatterRangeSlider</font>;        
+    <font color="#0000ff">float</font> <font color="#06055f">$IscatterRange</font> = <font color="#410341">`floatSliderGrp -q -value $gIScatterRangeSlider`</font>;
+ 
+    createGene(<font color="#06055f">$total</font>, <font color="#06055f">$aniAssembleStartPoint</font>, <font color="#06055f">$aniTotalAssembleTime</font>, <font color="#06055f">$mainSphereCnt</font>, <font color="#06055f">$mainSphereSize</font>, <font color="#06055f">$mainScatterCnt</font>, 
+    <font color="#06055f">$insideSphereCnt</font>, <font color="#06055f">$insideScatterCnt</font>, <font color="#06055f">$insideSphereSize</font>, <font color="#06055f">$MscatterRange</font>, <font color="#06055f">$IscatterRange</font>);   
+}
+  
+<font color="#cc0000">//PROC: Delete gene</font>
+<font color="#0000b3">global proc</font> deleteGene() {
+  
+    <font color="#4c78a6">select</font> <font color="#666666">"myGene"</font>;
+    <font color="#4c78a6">delete</font>;
+}
+</pre>

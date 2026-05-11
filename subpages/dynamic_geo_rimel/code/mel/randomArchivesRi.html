@@ -1,0 +1,60 @@
+<pre><font color="#cc0000">// Script by Prof.Malcolm Kesson (all rights reserved).
+// 
+// Pre Shape Mel Script
+//</font>
+<font color="#00007d">global proc</font> randomArchivesRI() {
+<font color="#cc0000">// Get the name of the shape node</font>
+<font color="#0000ff">string</font> <font color="#06055f">$shapeNode</font> = <font color="#410341">`rman ctxGetObject`</font>;
+<font color="#0000ff">string</font> <font color="#06055f">$parents</font>[] = <font color="#410341">`listRelatives -parent $shapeNode`</font>;
+<font color="#0000ff">string</font> <font color="#06055f">$tformNode</font> = <font color="#06055f">$parents</font>[0];
+  
+<font color="#cc0000">// The node may hava a number in its name that we can use 
+// to set the random number generator</font>
+<font color="#0000ff">int</font>    <font color="#06055f">$nodeNumber</font> = <font color="#410341">`match "[0-9]+" $shapeNode`</font>;    
+<font color="#00007d">if</font>(<font color="#06055f">$nodeNumber</font> != <font color="#666666">""</font>) {
+    <font color="#4c78a6">seed</font>(<font color="#0000ff">int</font>(<font color="#06055f">$nodeNumber</font>));
+    }
+<font color="#cc0000">// Bounding box...</font>
+<font color="#0000ff">float</font> <font color="#06055f">$bb_width</font> =  <font color="#410341">`getAttr ($shapeNode + ".boundingBoxSizeX")`</font>;
+<font color="#0000ff">float</font> <font color="#06055f">$bb_height</font> = <font color="#410341">`getAttr ($shapeNode + ".boundingBoxSizeY")`</font>;
+<font color="#0000ff">float</font> <font color="#06055f">$bb_depth</font> =  <font color="#410341">`getAttr ($shapeNode + ".boundingBoxSizeZ")`</font>;
+  
+<font color="#0000ff">string</font> <font color="#06055f">$attr</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetAttrName "ra_srcDir"`</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetFullSharedGeometricAttrName $shapeNode $attr`</font>;
+<font color="#0000ff">string</font> <font color="#06055f">$ra_srcDir</font> = <font color="#410341">`getAttr $attr`</font>;
+  
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetAttrName "ra_scale"`</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetFullSharedGeometricAttrName $shapeNode $attr`</font>;
+<font color="#0000ff">float</font> <font color="#06055f">$ra_scale</font> = <font color="#410341">`getAttr $attr`</font>;
+  
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetAttrName "ra_active"`</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetFullSharedGeometricAttrName $shapeNode $attr`</font>;
+<font color="#0000ff">int</font> <font color="#06055f">$ra_active</font> = <font color="#410341">`getAttr $attr`</font>;
+  
+<font color="#00007d">if</font>(<font color="#06055f">$ra_active</font> != 1)
+    <font color="#00007d">return</font>;
+    
+<font color="#cc0000">// Get a list of the archives from the source directory.</font>
+<font color="#0000ff">string</font> <font color="#06055f">$projpath</font> = <font color="#410341">`workspace -q -rootDirectory`</font>;
+<font color="#0000ff">string</font> <font color="#06055f">$ribpath</font> = <font color="#06055f">$projpath</font> + <font color="#06055f">$ra_srcDir</font> + <font color="#666666">"/"</font>;
+<font color="#0000ff">string</font> <font color="#06055f">$ribnames</font>[] = <font color="#410341">`getFileList -folder $ribpath -filespec "*.rib"`</font>;
+  
+<font color="#cc0000">// Pick an archive</font>
+<font color="#0000ff">int</font>     <font color="#06055f">$index</font> = <font color="#4c78a6">rand</font>(0.0, <font color="#4c78a6">size</font>(<font color="#06055f">$ribnames</font>));
+<font color="#0000ff">string</font>  <font color="#06055f">$archiveName</font> = <font color="#06055f">$ribnames</font>[<font color="#06055f">$index</font>];
+<font color="#0000ff">string</font>  <font color="#06055f">$archivePath</font> =  <font color="#06055f">$projpath</font> + <font color="#06055f">$ra_srcDir</font> + <font color="#666666">"/"</font> + <font color="#06055f">$archiveName</font>;
+  
+<font color="#cc0000">// Use of Pixar's custom RenderMan Studio procedures begins here.</font>
+RiTransformBegin();
+    RiScale(<font color="#06055f">$ra_scale</font>, <font color="#06055f">$ra_scale</font>, <font color="#06055f">$ra_scale</font>);
+    RiReadArchive(<font color="#06055f">$archivePath</font>);
+RiTransformEnd();
+  
+<font color="#cc0000">// Make the original object inactive</font>
+RiAttribute <font color="#666666">"visibility" "int camera"</font> 0;
+RiAttribute <font color="#666666">"visibility" "int indirect"</font> 0;
+RiAttribute <font color="#666666">"visibility" "int transmission"</font> 0;
+}
+  
+</pre>

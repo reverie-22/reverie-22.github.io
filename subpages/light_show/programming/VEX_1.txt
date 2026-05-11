@@ -1,0 +1,354 @@
+//Frame 0 - 334: Light crossing left to right and right to left and gradually increaing count itself.
+if(@Frame > 0 && @Frame <335){
+    if(@Frame < 120){
+        if(@ptnum == (@Frame-1)/2){
+            @Cd = {1,1,1};
+        }else{
+            @Cd = {0,0,0};
+        }        
+    }else{
+        int frameIntervals[] = {2,3,4,5,6,10,12,15,20,30,60};
+        int sphereNum = 60;
+        int i=0;
+        int startFrame = 120;       
+        for(i ==0; i < len(frameIntervals); i++){            
+            int endFrame = startFrame + sphereNum/frameIntervals[i] * 2;
+            if(@Frame >= startFrame && @Frame < endFrame){
+                float multiplier = 0.5 * (frameIntervals[i]-2);
+                int startLight = 0;
+                int endLight = 0;
+                if(i % 2 == 0){
+                    startLight = 60 - ((int)@Frame % startFrame + (int)(@Frame % startFrame) * multiplier);
+                    endLight = startLight - frameIntervals[i];
+                    if((@Frame - startFrame) % 2 == 0 && @ptnum >= endLight && @ptnum < startLight){
+                        @Cd = {1,1,1};
+                    }else{
+                        @Cd = {0,0,0};
+                    }                
+                }else{
+                    startLight = (int)@Frame % startFrame + (int)(@Frame % startFrame) * multiplier;
+                    endLight = startLight + frameIntervals[i];
+                    if((@Frame - startFrame) % 2 == 0 && @ptnum >= startLight && @ptnum < endLight){
+                        @Cd = {1,1,1};
+                    }else{
+                        @Cd = {0,0,0};
+                    }
+                }
+            }
+            startFrame = endFrame;
+        }
+    }   
+}
+
+//Frame 334 - 452: All spheres lights up, and gradually change the color.
+else if(@Frame >=334 && @Frame < 453){
+    vector colorRange[] = {{1,1,1},{0,1,1}};
+    int startFrame = 334;
+    int frameRange = 453-334;
+    @Cd.r = colorRange[0][0] - (abs(colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+    @Cd.g = colorRange[0][1] - (abs(colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+    @Cd.b = colorRange[0][2] - (abs(colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange);
+}
+
+//Frame 453 - 514: All spheres light up, and gradually change the color.
+else if(@Frame >=453 && @Frame < 515){
+    vector colorRange[] = {{0,1,1},{1,1,1}};
+    int startFrame = 453;
+    int frameRange = 515-453;
+    @Cd.r = colorRange[0][0] + (abs(colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+    @Cd.g = colorRange[0][1] + (abs(colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+    @Cd.b = colorRange[0][2] + (abs(colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange);    
+}
+
+//Frame 515 - 589: Position transition(left to right) of Group of orange light, and graduate color transition for the rest of the lights. 
+else if(@Frame >= 515 && @Frame < 590){
+    int startFrame = 515;
+    int sphereNum = 60;
+    int frameRange = 590-515;
+    int startLight = ((int)(@Frame - startFrame) % sphereNum) + ((int)((@Frame - startFrame)/sphereNum)*sphereNum) - 15;
+    int endLight = startLight + 15;
+    vector bakColorRange[] = {{1,1,1},{0,0,1}};
+    if(@ptnum % sphereNum >= startLight && @ptnum % sphereNum < endLight){
+            @Cd = {1,0.05,0};
+        }else{
+            vector colorRange[] = {{1,1,1}, {0.6,0.196,0.8}};
+            @Cd.r = colorRange[0][0] - ((colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.g = colorRange[0][1] - ((colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.b = colorRange[0][2] - ((colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange);    
+        }
+}
+
+//Frame 590 - 664: Position transition(right to left) of Group of sky blue colored light, and graduate color transition for the rest of the lights. 
+else if(@Frame >= 590 && @Frame < 665){
+    int startFrame = 590;
+    int sphereNum = 60;
+    int frameRange = 665-590;
+    int endLight = 60 - (((int)(@Frame - startFrame) % sphereNum) + ((int)((@Frame - startFrame)/sphereNum)*sphereNum)) + 15;
+    int startLight = endLight - 15;
+    if(@ptnum % sphereNum >= startLight && @ptnum % sphereNum < endLight){
+            @Cd = {0,0.96,1};
+        }else{
+            vector colorRange[] = {{0.6,0.196,0.8}, {1,0,1}};
+            @Cd.r = colorRange[0][0] + ((colorRange[1][0] - colorRange[0][0]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.g = colorRange[0][1] - ((colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.b = colorRange[0][2] + ((colorRange[1][2] - colorRange[0][2]) * (@Frame-startFrame)/(float)frameRange);    
+        }
+}
+
+//Frame 665 - 739: Position transition(left to right, right to left) of Group of yellow light, and graduate color transition for the rest of the lights. 
+else if(@Frame >= 665 && @Frame < 740){
+    int startFrame = 665;
+    int sphereNum = 60;
+    int startLight = 0;
+    int endLight = 0;
+    int frameRange = 740-665;
+    if((int)@ptnum/sphereNum == 0 || (int)@ptnum/sphereNum == 3 || (int)@ptnum/sphereNum == 4){
+        endLight =  60 - (((int)(@Frame - startFrame) % sphereNum) + ((int)((@Frame - startFrame)/sphereNum)*sphereNum)) + 15;
+        startLight = endLight - 15;
+        if(@ptnum%sphereNum>= startLight && @ptnum%sphereNum < endLight){
+            @Cd = {1,1,0};
+        }else{
+            vector colorRange[] = {{1,0,1}, {1,0,0}};
+            @Cd.r = colorRange[0][0] - (abs(colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.g = colorRange[0][1] + (abs(colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.b = colorRange[0][2] - (abs(colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange); 
+        }
+    }else{
+        startLight = ((int)(@Frame - startFrame) % sphereNum) + ((int)((@Frame - startFrame)/sphereNum)*sphereNum) - 15;
+        endLight = startLight + 15;
+        if(@ptnum%sphereNum>= startLight && @ptnum%sphereNum < endLight){
+            @Cd = {1,1,0};
+        }else{
+            vector colorRange[] = {{1,0,1}, {1,0,0}};
+            @Cd.r = colorRange[0][0] - (abs(colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.g = colorRange[0][1] + (abs(colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.b = colorRange[0][2] - (abs(colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange);
+        }    
+    } 
+}
+
+//Frame 740 - 814: Position transition(left to right, right to left) of Group of green light, and graduate color transition for the rest of the lights. 
+else if(@Frame >= 740 && @Frame < 815){
+    int startFrame = 740;
+    int sphereNum = 60;
+    int startLight = 0;
+    int endLight = 0;
+    int frameRange = 815-740;
+    if((int)@ptnum/sphereNum == 1 || (int)@ptnum/sphereNum == 2){
+        endLight =  60 - (((int)(@Frame - startFrame) % sphereNum) + ((int)((@Frame - startFrame)/sphereNum)*sphereNum)) + 15;
+        startLight = endLight - 15;
+        if(@ptnum%sphereNum>= startLight && @ptnum%sphereNum < endLight){
+            @Cd = {0,1,0};
+        }else{
+            vector colorRange[] = {{1,0,0.01}, {1,0.27,0}};
+            @Cd.r = colorRange[0][0] - (abs(colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.g = colorRange[0][1] + (abs(colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.b = colorRange[0][2] - (abs(colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange);
+        }
+    }else{
+        startLight = ((int)(@Frame - startFrame) % sphereNum) + ((int)((@Frame - startFrame)/sphereNum)*sphereNum) - 15;
+        endLight = startLight + 15;
+        if(@ptnum%sphereNum>= startLight && @ptnum%sphereNum < endLight){
+            @Cd = {0,1,0};
+        }else{
+            vector colorRange[] = {{1,0,0.01}, {1,0.27,0}};
+            @Cd.r = colorRange[0][0] - (abs(colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.g = colorRange[0][1] + (abs(colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.b = colorRange[0][2] - (abs(colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange);
+        }    
+    } 
+}
+
+//Frame 815 - 920: Position transition(left to right, right to left) of Group of green light, and graduate color transition for the rest of the lights. 
+else if(@Frame >= 815 && @Frame < 920){
+    int startFrame = 815;
+    int sphereNum = 60;
+    int lineNum = (int)@ptnum/sphereNum;
+    int i = 0;
+    int startLight = 0;
+    int endLight = 0;
+    int frameRange = 920-815;
+    if(lineNum == 0){
+        startLight = ((int)(@Frame - startFrame) % sphereNum) + ((int)((@Frame - startFrame)/sphereNum)*sphereNum) - 15;
+        endLight = startLight + 15;
+        if(@ptnum % sphereNum >= startLight && @ptnum % sphereNum < endLight){
+            @Cd = {0,0,1};
+        }else{
+            vector colorRange[] = {{1,0.27,0}, {1,0.27,0}};
+            @Cd.r = colorRange[0][0] - (abs(colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.g = colorRange[0][1] + (abs(colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.b = colorRange[0][2] - (abs(colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange);
+        }
+    }     
+    else if(lineNum == 1 || lineNum == 2){
+        startLight = ((int)(@Frame - startFrame) % sphereNum) + ((int)((@Frame - startFrame)/sphereNum)*sphereNum) - 30;
+        endLight = startLight + 15;
+        if(@ptnum % sphereNum >= startLight && @ptnum % sphereNum < endLight){
+            @Cd = {0,0,1};
+        }else{
+            vector colorRange[] = {{1,0.27,0}, {1,0.27,0}};
+            @Cd.r = colorRange[0][0] - (abs(colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.g = colorRange[0][1] + (abs(colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.b = colorRange[0][2] - (abs(colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange);
+        }
+    }
+    else{
+        startLight = ((int)(@Frame - startFrame) % sphereNum) + ((int)((@Frame - startFrame)/sphereNum)*sphereNum) - 45;
+        endLight = startLight + 15;
+        if(@ptnum % sphereNum >= startLight && @ptnum % sphereNum < endLight){
+            @Cd = {0,0,1};
+        }else{
+            vector colorRange[] = {{1,0.27,0}, {1,0.27,0}};
+            @Cd.r = colorRange[0][0] - (abs(colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.g = colorRange[0][1] + (abs(colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+            @Cd.b = colorRange[0][2] - (abs(colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange);
+        }
+    }      
+}
+
+//Frame 920 - 969: All spheres light up, and gradually change the color.
+else if(@Frame >= 920 && @Frame < 970){
+    int startFrame = 920;
+    int frameRange = 970-920;
+    vector colorRange[] = {{1,0.27,0}, {1,1,0.01}};
+    @Cd.r = colorRange[0][0] - (abs(colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+    @Cd.g = colorRange[0][1] + (abs(colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+    @Cd.b = colorRange[0][2] + (abs(colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange);
+}
+
+//Frame 970 - 1026: All spheres lights up.
+else if(@Frame >= 970 && @Frame < 1027){
+        @Cd = {1,1,0};
+}
+
+//Frame 1027 - 1147: Light position transition from left to right or right to left and gradually disappear. 
+else if(@Frame >= 1027 && @Frame <= 1147){
+    int startFrame = 1027;
+    int sphereNum = 60;
+    int startLight = 0;
+    int endLight = 0;
+    if((int)@ptnum/sphereNum == 1 || (int)@ptnum/sphereNum == 2){
+        endLight =  60 - (((int)(@Frame - startFrame) % sphereNum) + ((int)((@Frame - startFrame)/sphereNum)*sphereNum)) + 60;
+        startLight = endLight - 60;
+        if(@ptnum%sphereNum>= startLight && @ptnum%sphereNum < endLight){
+            @Cd.r = 0;
+            @Cd.g = (sphereNum - (@ptnum%sphereNum))/(float)sphereNum;
+            @Cd.b = (sphereNum - (@ptnum%sphereNum))/(float)sphereNum;
+        }else{
+            @Cd = {0,0,0};
+        }
+    }else{
+        startLight = ((int)(@Frame - startFrame) % sphereNum) + ((int)((@Frame - startFrame)/sphereNum)*sphereNum) - 60;
+        endLight = startLight + 60;
+        if(@ptnum%sphereNum>= startLight && @ptnum%sphereNum < endLight){
+            @Cd.r = (@ptnum%sphereNum)/(float)sphereNum;
+            @Cd.g = 0;
+            @Cd.b = (@ptnum%sphereNum)/(float)sphereNum;
+        }else{
+            @Cd = {0,0,0};
+        }    
+    }
+}
+
+//Frame 1147 - 1167: All spheres light up.
+else if(@Frame >= 1147 && @Frame < 1167){
+    @Cd = {0,0,0};
+}
+
+//Frame 1167 - 1222: Position transition for several group of colors from up to down or down to up, and color transition.
+else if(@Frame >= 1167 && @Frame < 1223){
+    int startFrame = 1167;
+    int sphereNum = 60;
+    int frameInterval = 5;
+    int lineNumArrOne[] = {3,3,3,1,1,1,0,0,0,2,2,2,4,4,4,2,2,2,0,0,0,1,1,1};
+    int lineNumArrTwo[] = {4,4,4,2,2,2,0,0,0,1,1,1,3,3,3,1,1,1,0,0,0,2,2,2};
+    int startLightOne = (@Frame - startFrame) + (sphereNum * lineNumArrOne[((int)(@Frame - startFrame)%18)]) - ((int)(@Frame - startFrame)%3);
+    int endLightOne = startLightOne + frameInterval;
+    int startLightTwo = ((sphereNum) * lineNumArrOne[((int)(@Frame - startFrame)%18)] + sphereNum) - (@Frame - startFrame) + ((int)(@Frame - startFrame)%3);
+    int endLightTwo = startLightTwo - frameInterval;
+    int startLightThree = (@Frame - startFrame) + (sphereNum * lineNumArrTwo[((int)(@Frame - startFrame)%18)]) - ((int)(@Frame - startFrame)%3);
+    int endLightThree = startLightThree + frameInterval;
+    int startLightFour = ((sphereNum) * lineNumArrTwo[((int)(@Frame - startFrame)%18)] + sphereNum) - (@Frame - startFrame) + ((int)(@Frame - startFrame)%3);
+    int endLightFour = startLightFour - frameInterval;
+    int frameRange = 1223-1167;
+    if((@ptnum >= startLightOne && @ptnum < endLightOne) || (@ptnum < startLightTwo && @ptnum >= endLightTwo)
+    || (@ptnum >= startLightThree && @ptnum < endLightThree) || (@ptnum < startLightFour && @ptnum >= endLightFour)){
+        vector colorRange[] = {{1,1,0}, {1,0,0}};
+        @Cd.r = colorRange[0][0] + (abs(colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+        @Cd.g = colorRange[0][1] - (abs(colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+        @Cd.b = colorRange[0][2] + (abs(colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange);
+     }else{
+        @Cd = {0,0,0};    
+    }
+}
+
+//Frame 1223 - 1278: Position transition for several group of colors from up to down or down to up, and color transition.
+else if(@Frame >= 1223 && @Frame < 1279){
+    int startFrame = 1223;
+    int sphereNum = 60;
+    int frameInterval = 5;
+    int lineNumArrOne[] = {3,3,3,1,1,1,0,0,0,2,2,2,4,4,4,2,2,2,0,0,0,1,1,1};
+    int lineNumArrTwo[] = {4,4,4,2,2,2,0,0,0,1,1,1,3,3,3,1,1,1,0,0,0,2,2,2};
+    int startLightOne = (@Frame - startFrame) + (sphereNum * lineNumArrOne[((int)(@Frame - startFrame)%18)]) - ((int)(@Frame - startFrame)%3);
+    int endLightOne = startLightOne + frameInterval;
+    int startLightTwo = ((sphereNum) * lineNumArrOne[((int)(@Frame - startFrame)%18)] + sphereNum) - (@Frame - startFrame) + ((int)(@Frame - startFrame)%3);
+    int endLightTwo = startLightTwo - frameInterval;
+    int startLightThree = (@Frame - startFrame) + (sphereNum * lineNumArrTwo[((int)(@Frame - startFrame)%18)]) - ((int)(@Frame - startFrame)%3);
+    int endLightThree = startLightThree + frameInterval;
+    int startLightFour = ((sphereNum) * lineNumArrTwo[((int)(@Frame - startFrame)%18)] + sphereNum) - (@Frame - startFrame) + ((int)(@Frame - startFrame)%3);
+    int endLightFour = startLightFour - frameInterval;
+    int frameRange = 1279-1223;
+    if((@ptnum >= startLightOne && @ptnum < endLightOne) || (@ptnum < startLightTwo && @ptnum >= endLightTwo)
+    || (@ptnum >= startLightThree && @ptnum < endLightThree) || (@ptnum < startLightFour && @ptnum >= endLightFour)){
+        vector colorRange[] = {{0,1,0}, {0,0,1}};
+        @Cd.r = colorRange[0][0] + (abs(colorRange[0][0] - colorRange[1][0]) * (@Frame-startFrame)/(float)frameRange);
+        @Cd.g = colorRange[0][1] - (abs(colorRange[0][1] - colorRange[1][1]) * (@Frame-startFrame)/(float)frameRange);
+        @Cd.b = colorRange[0][2] + (abs(colorRange[0][2] - colorRange[1][2]) * (@Frame-startFrame)/(float)frameRange);
+     }else{
+        @Cd = {0,0,0};    
+    }
+}
+
+//Frame 1279 - 1356: All spheres light up.
+else if(@Frame >= 1279 && @Frame < 1357){
+    @Cd = {1,1,1};
+}
+
+//Frame 1357 - 1380: Color transision. All spheres lights up and gradually changes into different group of colors.
+else if(@Frame >= 1357 && @Frame < 1381){
+    int sphereNum = 60;
+    int startFrame = 1357;
+    vector colorBefore = {1,1,1};
+    vector colors[] = {{0,1,1}, {1,0,1}, {1,1,0}, {1,0,0}, {0,1,0}, {0,0,1}, {1,1,1}};
+    vector colorAfter = colors[int(fit01(rand(@ptnum/3 * (1381 - ((int)(1381-1381)%3))),0,len(colors)))];
+    int frameRange = 1370-1357;
+    if(colorBefore[0] - colorAfter[0] >= 0){
+        @Cd.r = colorBefore[0] - (abs(colorBefore[0] - colorAfter[0]) * (@Frame-startFrame)/(float)frameRange);
+    }else{
+        @Cd.r = colorBefore[0] + (abs(colorBefore[0] - colorAfter[0]) * (@Frame-startFrame)/(float)frameRange);
+    }
+    
+    if(colorBefore[1] - colorAfter[1] >= 0){
+        @Cd.g = colorBefore[1] - (abs(colorBefore[1] - colorAfter[1]) * (@Frame-startFrame)/(float)frameRange);
+    }else{
+        @Cd.g = colorBefore[1] + (abs(colorBefore[1] - colorAfter[1]) * (@Frame-startFrame)/(float)frameRange);
+    }
+    
+    if(colorBefore[2] - colorAfter[2] >= 0){
+        @Cd.b = colorBefore[2] - (abs(colorBefore[2] - colorAfter[2]) * (@Frame-startFrame)/(float)frameRange);
+    }else{
+        @Cd.b = colorBefore[2] + (abs(colorBefore[2] - colorAfter[2]) * (@Frame-startFrame)/(float)frameRange);
+    }
+}
+
+//Frame 1381 - 1620: All spheres light up and keep changing in different group of colors.
+else if(@Frame >= 1381 && @Frame < 1621){
+    int sphereNum = 60;
+    int startFrame = 1381;
+    vector colors[] = {{0,1,1}, {1,0,1}, {1,1,0}, {1,0,0}, {0,1,0}, {0,0,1}, {1,1,1}};
+    @Cd = colors[int(fit01(rand(@ptnum/3 * (@Frame - ((int)(@Frame-startFrame)%3))),0,len(colors)))];
+}
+
+else{
+    @Cd = {0,0,0};
+}   

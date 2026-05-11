@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2XF1NZ6P8C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-2XF1NZ6P8C');
+  </script>  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Milim Lee | Technical Portfolio</title>
+  <style>
+    :root {
+      --bg: #f7f9fb;
+      --surface: #ffffff;
+      --text: #111827;
+      --muted: #5b6472;
+      --line: #dbe3ea;
+      --accent: #569abd;
+      --accent-soft: #eaf4fa;
+      --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 96px;
+    }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img, video, iframe { display: block; max-width: 100%; }
+    .wrap { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(12px);
+      background: rgba(247,249,251,0.92);
+      border-bottom: 1px solid rgba(219, 227, 234, 0.8);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 74px;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      font-size: 1.05rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .button, .chip {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 0.94rem;
+      transition: 0.2s ease;
+      cursor: pointer;
+    }
+
+    .button.primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .button:hover, .chip:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 54px 0 28px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .hero-copy, .hero-media {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 42px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      width: fit-content;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-copy p {
+      margin: 0;
+      font-size: 1.04rem;
+      color: var(--muted);
+      max-width: 58ch;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      background: #fbfdff;
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.25rem;
+      margin-bottom: 4px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .hero-media {
+      overflow: hidden;
+      min-height: 520px;
+      position: relative;
+      display: grid;
+      grid-template-rows: 1fr auto;
+    }
+
+    .video-frame {
+      position: relative;
+      min-height: 520px;
+      background: linear-gradient(135deg, #d9eef8 0%, #edf4f8 48%, #dfe7ee 100%);
+      overflow: hidden;
+      padding: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-placeholder,
+    .image-placeholder {
+      width: 100%;
+      height: 100%;
+      min-height: 440px;
+      border-radius: 24px;
+      border: 2px dashed rgba(86,154,189,0.45);
+      background: linear-gradient(135deg, rgba(255,255,255,0.82), rgba(255,255,255,0.42));
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: #274053;
+      padding: 0;
+      font-weight: 700;
+      overflow: hidden;
+    }
+
+    .hero-video {
+      width: 100%;
+      height: 100%;
+      min-height: 440px;
+      border: 0;
+      border-radius: 22px;
+      overflow: hidden;
+      background: #f5faff;
+    }
+
+    .media-note {
+      padding: 16px 22px 22px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff, #fbfdff);
+    }
+
+    section {
+      padding: 18px 0 44px;
+      scroll-margin-top: 96px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-head h2 {
+      margin: 0 0 6px;
+      font-size: clamp(1.45rem, 3vw, 2.1rem);
+      letter-spacing: -0.02em;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 70ch;
+    }
+
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 26px;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: 0.2s ease;
+    }
+
+    .card:hover { transform: translateY(-3px); }
+
+    .card-media {
+      aspect-ratio: 16 / 7;
+      background: linear-gradient(135deg, #d7eaf5, #eef6fb 48%, #dde3ef);
+      position: relative;
+      padding: 0px; /*24px;*/
+      border-top-left-radius: 30px;
+      border-top-right-radius: 30px;
+    }
+
+    .card-media .label, .project-thumb .category {
+      position: absolute;
+      top: 7px;
+      left: 10px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      z-index: 2;
+    }
+
+    .visual-box {
+      width: 100%;
+      height: 100%;
+      border-radius: 30px;
+      border: 2px dashed rgba(86,154,189,0.30);
+      background: rgba(255,255,255,0.32);
+      display: grid;
+      place-items: center;
+      color: #274053;
+      font-weight: 700;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .project-thumb .visual-box {
+      border: 0;
+      border-radius: 0;
+      min-height: 100%;
+    }
+
+    .card-body{
+      padding: 15px 26px 15px;
+    }
+
+    .project-info {
+      padding: 15px 10px 10px;
+    }
+
+    .card-body h3 {
+      margin: 0 0 12px;
+      font-size: 1.12rem;
+    }
+
+    .project-info h3 {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+    }    
+
+    .technical-project-grid .project-info p {
+      display: none;
+    }
+
+    .card-body p, .project-info p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .feature-tag {
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      background: #f1f6fa;
+      color: #345165;
+      border: 1px solid #d7e5ef;
+    }
+
+    .technical-tag {
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.8rem;
+      background: #f1f6fa;
+      color: #345165;
+      border: 1px solid #d7e5ef;
+    }
+
+    .card-actions, .project-links {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+      font-size: 0.92rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: 0.2s ease;
+    }
+
+    .project-card:hover { transform: translateY(-3px); }
+
+    .project-thumb {
+      /*width: 100%;
+      #height: 170px;*/
+      aspect-ratio: 16 / 10.2;   
+      position: relative;
+      overflow: hidden;
+      padding: 0;
+      background: linear-gradient(135deg, #dfe9f2, #eaf1f7 50%, #dfe7f0);
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+    }
+
+    .project-thumb img,
+    .project-thumb .image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: bottom center;
+      display: block;
+    }
+
+    .project-image-link {
+      display: block;
+      color: inherit;
+    }
+
+    .project-image-link:hover img,
+    .project-image-link:hover .visual-box {
+      transform: scale(1.025);
+    }
+
+    .project-thumb img,
+    .project-thumb .visual-box {
+      transition: transform 0.22s ease;
+    }
+
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 24px;
+    }
+
+    .chip.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .project-card.hidden {
+      display: none;
+    }
+
+    .skill-list {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+
+    .contact-shell {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 24px 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .contact-text h2 {
+      margin: 0 0 8px;
+      font-size: 1.6rem;
+    }
+
+    .contact-text p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    #upBtn {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 99;
+      border: none;
+      outline: none;
+      background-color: var(--accent);
+      color: white;
+      cursor: pointer;
+      padding: 14px 16px;
+      border-radius: 14px;
+      box-shadow: 0 12px 24px rgba(86,154,189,0.28);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    #upBtn:hover { background-color: #447f9d; }
+
+    footer {
+      padding: 24px 0 42px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid,
+      .featured-grid,
+      .project-grid,
+      .contact-shell {
+        grid-template-columns: 1fr;
+      }
+      .hero-media { min-height: 420px; }
+      .video-frame { min-height: 420px; }
+      .video-placeholder,
+      .image-placeholder,
+      .hero-video { min-height: 340px; }
+      .contact-links { justify-content: flex-start; }
+    }
+
+    @media (max-width: 720px) {
+      html { scroll-padding-top: 118px; }
+      section { scroll-margin-top: 118px; }
+
+      .nav {
+        min-height: 58px;
+        padding: 8px 0;
+        align-items: center;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .brand {
+        font-size: 0.9rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .nav-links {
+        display: flex;
+        width: auto;
+        gap: 14px;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+        align-items: center;
+        font-size: 0.68rem;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+      }
+
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav-links a {
+        border: none;
+        background: transparent;
+        border-radius: 0;
+        padding: 0;
+        white-space: nowrap;
+        line-height: 1;
+      }
+
+      .nav-links .button {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        border-radius: 999px;
+        padding: 5px 9px;
+        font-size: 0.68rem;
+        line-height: 1;
+        flex-shrink: 0;
+      }
+
+      .hero-copy { padding: 26px; }
+      .hero-stats { grid-template-columns: 1fr; }
+      .wrap { width: min(var(--max), calc(100% - 20px)); }
+      .card-body, .project-info { padding: 20px 22px 24px; }
+      .card-media { padding: 20px; }
+      .project-thumb { padding: 0; }
+    }
+
+    @media (max-width: 430px) {
+      .nav-links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .nav-links a {
+        text-align: center;
+      }
+    }
+
+    .gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .gallery-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+    .gallery-img{aspect-ratio:1/1;background:linear-gradient(135deg,#b9d0dc,#6c98ad);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;padding:16px;text-align:center}
+    .gallery-body{padding:14px}
+    .gallery-body h4{margin:0 0 4px 0;font-size:16px}
+    .gallery-body p{margin:0;color:var(--muted);font-size:13px}
+    
+    @media (max-width: 720px) {
+      html { scroll-padding-top: 72px; }
+      section { scroll-margin-top: 72px; }
+
+      header {
+        height: auto;
+      }
+
+      .nav {
+        min-height: 56px !important;
+        padding: 6px 0 !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 14px !important;
+      }
+
+      .brand {
+        font-size: 0.88rem !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+      }
+
+      .nav-links {
+        display: flex !important;
+        width: auto !important;
+        flex: 1 !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 12px !important;
+        font-size: 0.66rem !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        scrollbar-width: none !important;
+      }
+
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav-links a {
+        border: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+      }
+
+      .nav-links .button {
+        border: 1px solid var(--line) !important;
+        background: var(--surface) !important;
+        border-radius: 999px !important;
+        padding: 5px 9px !important;
+        font-size: 0.66rem !important;
+        line-height: 1 !important;
+        flex-shrink: 0 !important;
+      }
+
+      .hero {
+        padding-top: 24px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button onclick="topFunction()" id="upBtn" title="Go to top">△ Top</button>
+
+  <header>
+    <div class="wrap nav">
+      <a href="index.html"><div class="brand">MILIM LEE</div></a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#featured">Featured</a>
+        <a href="#projects">Technical Foundations</a>
+        <a href="#contact">Contact</a>
+        <a class="button" href="index/resume_milimlee.pdf">Resume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">Technical Artist · 3D Data · ML Pipelines</div>
+          <h1>Building scalable 3D data pipelines for ML & AI</h1>
+          <p>
+            Specializing in preprocessing, decomposition, and dataset quality for large-scale 3D assets. Background in VFX, real-time graphics, and production tooling.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#featured">View featured work</a>
+            <a class="button" href="#projects">Browse selected projects</a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat">
+              <strong>1M+</strong>
+              <span>Assets processed at scale</span>
+            </div>
+            <div class="stat">
+              <strong>ML-ready</strong>
+              <span>Normalization, quality control, decomposition</span>
+            </div>
+            <div class="stat">
+              <strong>12+ yrs</strong>
+              <span>VFX, real-time graphics, and backend systems</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-media">
+          <div class="video-frame">
+            <div class="video-placeholder">
+              <iframe
+                class="hero-video"
+                src="https://player.vimeo.com/video/1190258390?background=1&autoplay=1&muted=1&loop=1&playsinline=1"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowfullscreen
+                title="Objaverse Data Intelligence">
+              </iframe>
+            </div>
+          </div>
+          <div class="media-note">
+            <b>Objaverse Data Intelligence:</b> <br> Large-scale scene-level geometry, structure, and material analysis of ~680K Objaverse assets, designed for ML-ready filtering, structural decomposition, and dataset curation. Available at <a href="https://huggingface.co/datasets/milimlee-synth3d/objaverse.data.intelligence" target="_blank" rel="noopener noreferrer"><b><i><u>Hugging Face</u></i></b></a>.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="featured">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2>Featured work</h2>
+            <p>Lead with the few projects you want people to notice first.</p>
+          </div>
+        </div>
+
+        <div class="featured-grid">
+          <article class="card">
+            <div class="card-media">
+              <div class="label">DATA ANALYSIS & METADATA</div>
+              <a href="https://huggingface.co/datasets/milimlee-synth3d/objaverse.data.intelligence" target="_blank" rel="noopener noreferrer">
+                <img src="./index/thumbnail.png" alt="Avatar" class="image" style="width:100%">
+              </a>
+            </div>
+            <div class="card-body">
+              <h3>Objaverse Data Intelligence</h3>
+              <p>Large-scale scene-level analysis & decomposition metadata</p>
+              <div class="meta">
+                <span class="feature-tag">Data Analysis & Curation</span>
+                <span class="feature-tag">ML Prep</span>
+              </div>
+              <div class="card-actions">
+                <a href="https://huggingface.co/datasets/milimlee-synth3d/objaverse.data.intelligence" target="_blank" rel="noopener noreferrer">
+                  Check HuggingFace page
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-media">
+              <div class="label">ARCHITECTURE & SYSTEMS</div>
+              <a href="subpages/distributed_pipeline.html">
+                <img src="./index/distributed_pipeline3.png" alt="Avatar" class="image" style="width:100%">
+              </a>
+            </div>
+            <div class="card-body">
+              <h3>Distributed 3D Data Processing Pipeline</h3>
+              <p>Designed to process ~680K+ 3D assets with scalable, fault-tolerant infrastructure.</p>
+              <div class="meta">
+                <span class="feature-tag">Pipeline Architecture</span>
+                <span class="feature-tag">Cloud</span>
+                <span class="feature-tag">Scaling</span>
+              </div>
+              <div class="card-actions">
+                <a href="subpages/distributed_pipeline.html">View project page</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-media">
+              <div class="label">VFX PRODUCTION</div>
+              <a href="subpages/vfx.html">
+                <img src="./index/vfx_reel.png" alt="Avatar" class="image" style="width:100%">
+              </a>
+            </div>
+            <div class="card-body">
+              <h3>Visual Effects Reel</h3>
+              <p>Early VFX work bridging artistic direction and technical execution across real-time and traditional production.</p>
+              <div class="meta">
+                <span class="feature-tag">Houdini</span>
+                <span class="feature-tag">Unreal</span>
+                <span class="feature-tag">Maya</span>
+              </div>
+              <div class="card-actions">
+                <a href="subpages/vfx.html">View reel</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2>Technical Foundations</h2>
+            <p>Browse technical foundation projects by toolset and production skill area.</p>
+          </div>
+        </div>
+
+        <div class="filter-bar" aria-label="Project filters">
+          <button class="chip active" data-filter="all">Show all</button>
+          <button class="chip" data-filter="blender">Blender</button>
+          <button class="chip" data-filter="houdini">Houdini</button>
+          <button class="chip" data-filter="maya">Maya</button>
+          <button class="chip" data-filter="unreal">Unreal</button>
+          <button class="chip" data-filter="ml">ML</button>
+          <button class="chip" data-filter="cloud">Cloud</button>
+          <button class="chip" data-filter="python">Python</button>
+          <button class="chip" data-filter="pyqt">PyQt</button>
+          <button class="chip" data-filter="cpp">C++</button>
+          <button class="chip" data-filter="vex">VEX</button>
+          <button class="chip" data-filter="hscript">HScript</button>
+          <button class="chip" data-filter="mel">MEL</button>
+          <button class="chip" data-filter="rib">RIB</button>
+        </div>
+
+        <div class="project-grid technical-project-grid">
+          <article class="project-card" data-category="blender python ml">
+            <a class="project-thumb project-image-link" href="https://huggingface.co/datasets/milimlee-synth3d/objaverse.data.intelligence" target="_blank" rel="noopener noreferrer" aria-label="Open Stereo 3D project page">
+              <div class="category">Data Analysis & Metadata</div>
+              <img src="./index/thumbnail.png" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Objaverse Data Intelligence</h3>
+              <div class="meta skill-list">
+                <span class="technical-tag">Blender</span>
+                <span class="technical-tag">Python</span>
+                <span class="technical-tag">ML</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="cloud blender python">
+            <a class="project-thumb project-image-link" href="subpages/distributed_pipeline.html" aria-label="Open Stereo 3D project page">
+              <div class="category">Architecture & Systems</div>
+              <img src="./index/distributed_pipeline2.jpg" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Distributed 3D Data Processing Pipeline</h3>
+              <div class="meta skill-list">
+                <span class="technical-tag">Cloud</span>
+                <span class="technical-tag">Blender</span>
+                <span class="technical-tag">Python</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="unreal houdini maya python vex mel">
+            <a class="project-thumb project-image-link" href="subpages/vfx.html" aria-label="Open Stereo 3D project page">
+              <div class="category">VFX Production</div>
+              <img src="./index/vfx_reel.png" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Visual Effects Reel</h3>
+              <div class="meta skill-list">
+                <span class="technical-tag">Unreal</span>
+                <span class="technical-tag">Houdini</span>
+                <span class="technical-tag">Maya</span>
+                <span class="technical-tag">Python</span>
+                <span class="technical-tag">VEX</span>
+                <span class="technical-tag">MEL</span>
+              </div>
+            </div>
+          </article>
+          
+          <article class="project-card" data-category="maya nuke">
+            <a class="project-thumb project-image-link" href="subpages/stereo3d.html" aria-label="Open Stereo 3D project page">
+              <div class="category">Film Production</div>
+              <img src="./index/stereo3D.png" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Stereo 3D <br>- Ferdinand 2017</h3>
+              <p>Visual production foundation work connecting Maya scene setup with stereo compositing considerations.</p>
+              <div class="meta skill-list">
+                <span class="technical-tag">Maya</span>
+                <span class="technical-tag">Nuke</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="rib">
+            <a class="project-thumb project-image-link" href="subpages/rib_wrangling.html" aria-label="Open Mel Matrix project page">
+              <div class="category">Shading</div>
+              <img src="./index/rib_wrangling.jpg" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Rib Wrangling</h3>
+              <p>Technical exercise using matrix logic and scripting foundations inside Maya production workflows.</p>
+              <div class="meta skill-list">
+                <span class="technical-tag">RIB</span>
+              </div>
+            </div>
+          </article> 
+
+          <article class="project-card" data-category="maya rib mel">
+            <a class="project-thumb project-image-link" href="subpages/spatial_discontinuity.html" aria-label="Open Mel Matrix project page">
+              <div class="category">Procedural</div>
+              <img src="./index/spatial_discontinuity.jpg" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Spatial Discontinuity</h3>
+              <p>Technical exercise using matrix logic and scripting foundations inside Maya production workflows.</p>
+              <div class="meta skill-list">
+                <span class="technical-tag">Maya</span>
+                <span class="technical-tag">RIB</span>
+                <span class="technical-tag">MEL</span>
+              </div>
+            </div>
+          </article>   
+
+          <article class="project-card" data-category="unreal">
+            <a class="project-thumb project-image-link" href="subpages/unreal_sequencer.html" aria-label="Open Repurposing Mocap Data project page">
+              <div class="category">Real-Time Cinematic</div>
+              <img src="./index/unreal.png" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Unreal Sequencer</h3>
+              <p>Pipeline-oriented animation data work focused on reusing motion capture assets across production contexts.</p>
+              <div class="meta skill-list">
+                <span class="technical-tag">Unreal</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="houdini hscript">
+            <a class="project-thumb project-image-link" href="subpages/procedural_model_complex.html" aria-label="Open Complex Scene project page">
+              <div class="category">Procedural</div>
+              <img src="./index/procedural_model_complex.png" alt="Mesh Optimization Tool preview" class="project-img">
+            </a>
+            <div class="project-info">
+              <h3>Complex Scene</h3>
+              <p>Procedural scene construction work focused on scalable layout, variation, and scene organization.</p>
+              <div class="meta skill-list">
+                <span class="technical-tag">Houdini</span>
+                <span class="technical-tag">HScript</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="maya mel">
+            <a class="project-thumb project-image-link" href="subpages/mel_matrix.html" aria-label="Open Mel Matrix project page">
+              <div class="category">Maya Tooling</div>
+              <img src="./index/mel_matrix.jpg" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Mel Matrix</h3>
+              <p>Technical exercise using matrix logic and scripting foundations inside Maya production workflows.</p>
+              <div class="meta skill-list">
+                <span class="technical-tag">Maya</span>
+                <span class="technical-tag">MEL</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="maya mel rib">
+            <a class="project-thumb project-image-link" href="subpages/dynamic_geo_rimel.html" aria-label="Open Dynamic Geo RiMel project page">
+              <div class="category">Maya Tooling</div>
+              <img src="./index/dynamic_geo_rimel.jpg" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Dynamic Geo RiMel</h3>
+              <p>Maya-based technical exploration connecting procedural geometry workflows with rendering pipeline concepts.</p>
+              <div class="meta skill-list">
+                <span class="technical-tag">Maya</span>
+                <span class="technical-tag">MEL</span>
+                <span class="technical-tag">RIB</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="maya python mel rib">
+            <a class="project-thumb project-image-link" href="subpages/mocap.html" aria-label="Open Repurposing Mocap Data project page">
+              <div class="category">Animation Data</div>
+              <img src="./index/mocap.jpg" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Repurposing Mocap Data</h3>
+              <p>Pipeline-oriented animation data work focused on reusing motion capture assets across production contexts.</p>
+              <div class="meta skill-list">
+                <span class="technical-tag">Maya</span>
+                <span class="technical-tag">Python</span>
+                <span class="technical-tag">MEL</span>
+                <span class="technical-tag">RIB</span>
+              </div>
+            </div>
+          </article>
+          
+          <article class="project-card" data-category="houdini hscript">
+            <a class="project-thumb project-image-link" href="subpages/procedural_model_building.html" aria-label="Open Procedural Building project page">
+              <div class="category">Procedural</div>
+              <img src="./index/procedural_model_building.jpeg" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Procedural Building</h3>
+              <p>Rule-based environment generation demonstrating procedural modeling logic and reusable systems.</p>
+              <div class="meta skill-list">
+                <span class="technical-tag">Houdini</span>
+                <span class="technical-tag">HScript</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="houdini vex hscript">
+            <a class="project-thumb project-image-link" href="subpages/light_show.html" aria-label="Open Procedural Motion project page">
+              <div class="category">Procedural Motion</div>
+              <img src="./index/LightShow.jpg" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Procedural Motion</h3>
+              <p>Motion and behavior experiments built with procedural controls and parameter-driven workflows.</p>
+              <div class="meta skill-list">
+                <span class="technical-tag">Houdini</span>
+                <span class="technical-tag">VEX</span>
+                <span class="technical-tag">HScript</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="unreal houdini python pyqt cpp">
+            <a class="project-thumb project-image-link" href="subpages/unreal_mesh_optimization.html" aria-label="Open Mesh Optimization Tool project page">
+              <div class="category">Pipeline Tool</div>
+              <img src="./index/mesh_optimization_tool.jpg" alt="Mesh Optimization Tool preview" class="project-img">
+            </a>
+            <div class="project-info">
+              <h3>Mesh Optimization Tool</h3>
+              <p>Production-focused optimization workflow for preparing and validating real-time assets.</p>
+              <div class="meta skill-list">
+                <span class="technical-tag">Unreal</span>
+                <span class="technical-tag">Houdini</span>
+                <span class="technical-tag">Python</span>
+                <span class="technical-tag">PyQt</span>
+                <span class="technical-tag">C++</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card" data-category="houdini vex hscript">
+            <a class="project-thumb project-image-link" href="subpages/phyllotactic_pattern.html" aria-label="Open Dynamic Geo RiMel project page">
+              <div class="category">Procedural</div>
+              <img src="./index/phyllotactic_pattern.png" alt="Avatar" class="image" style="width:100%">
+            </a>
+            <div class="project-info">
+              <h3>Phyllotactic Pattern</h3>
+              <div class="meta skill-list">
+                <span class="technical-tag">Houdini</span>
+                <span class="technical-tag">VEX</span>
+                <span class="technical-tag">HScript</span>
+              </div>
+            </div>
+          </article>          
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="wrap">
+        <div class="contact-shell">
+          <div class="contact-text">
+            <h2>Contact</h2>
+            <p>
+              <a href="mailto:milimlee.3d@gmail.com">milimlee.3d@gmail.com</a> · 
+              <a href="https://linkedin.com/in/milimlee" target="_blank">linkedin.com/in/milimlee</a> · 
+              <a href="index/resume_milimlee.pdf">Resume</a>
+            </p>
+          </div>
+          <div class="contact-links">
+            <a class="button primary" href="mailto:milimlee.3d@gmail.com">Email</a>
+            <a class="button" href="https://linkedin.com/in/milimlee">LinkedIn</a>
+            <a class="button" href="index/resume_milimlee.pdf">Resume</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Milim Lee. All rights reserved.
+  </footer>
+
+  <script>
+    const filterButtons = document.querySelectorAll('.chip');
+    const projectCards = document.querySelectorAll('.project-card');
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const filter = button.getAttribute('data-filter');
+
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        projectCards.forEach(card => {
+          const categories = card.getAttribute('data-category') || '';
+          const shouldShow = filter === 'all' || categories.includes(filter);
+          card.classList.toggle('hidden', !shouldShow);
+        });
+      });
+    });
+
+    window.onscroll = function() { scrollFunction(); };
+
+    function scrollFunction() {
+      const upBtn = document.getElementById("upBtn");
+      if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        upBtn.style.display = "block";
+      } else {
+        upBtn.style.display = "none";
+      }
+    }
+
+    function topFunction() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
+  </script>
+</body>
+</html>

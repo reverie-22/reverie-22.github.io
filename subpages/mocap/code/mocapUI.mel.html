@@ -1,0 +1,53 @@
+<pre><font color="#cc0000">// Malcolm Kesson
+// Milim Lee
+// Mar 12 2017</font>
+<font color="#0000b3">global proc</font> <font color="#000000">mocapUI() 
+{</font>
+<font color="#0000ff">string</font> <font color="#06055f">$selected</font><font color="#000000">[] =</font> <font color="#410341">`ls -sl`</font><font color="#000000">;</font>
+<font color="#0000ff">int</font> <font color="#06055f">$i</font><font color="#000000">;</font>
+  
+<font color="#0000b3">for</font><font color="#000000">(</font><font color="#06055f">$i</font> <font color="#000000">= 0;</font> <font color="#06055f">$i</font> <font color="#000000">&lt;</font> <font color="#4c78a6">size</font><font color="#000000">(</font><font color="#06055f">$selected</font><font color="#000000">);</font> <font color="#06055f">$i</font><font color="#000000">++ ) {</font>
+    <font color="#0000ff">string</font> <font color="#06055f">$shp</font><font color="#000000">[] =</font> <font color="#410341">`listRelatives -shapes $selected[$i]`</font><font color="#000000">;</font>
+  
+    <font color="#cc0000">// To add the UI implemented by this proc to the "Geometric
+    // Settings" panel use the following mel commands,
+    //        select rmanSettings;
+    //        mocapUI;
+    // where "rmanSettings" might be rmanSettings1, rmanSettings2 etc.</font>
+    <font color="#0000b3">if</font><font color="#000000">(</font><font color="#410341">`nodeType $selected[$i]`</font> <font color="#000000">==</font> <font color="#666666">"RenderMan"</font><font color="#000000">)</font>
+        <font color="#06055f">$shp</font><font color="#000000">[0] =</font> <font color="#06055f">$selected</font><font color="#000000">[</font><font color="#06055f">$i</font><font color="#000000">];</font>
+  
+    <font color="#0000ff">string</font> <font color="#06055f">$shapeName</font> <font color="#000000">=</font> <font color="#06055f">$shp</font><font color="#000000">[0];</font>
+    <font color="#0000ff">string</font> <font color="#06055f">$attr</font> <font color="#000000">=</font> <font color="#410341">`rmanGetAttrName "preShapeScript"`</font><font color="#000000">;</font>
+  
+    <font color="#cc0000">// "Connect" to the mel script that calls 
+    // Pixar's custom Ri mel procedures.</font>
+    <font color="#000000">rmanAddAttr</font> <font color="#06055f">$shapeName $attr</font> <font color="#666666">"mocapRI"</font><font color="#000000">;</font>
+        
+    <font color="#06055f">$attr</font> <font color="#000000">=</font> <font color="#410341">`rmanGetAttrName "mocap_datapath"`</font><font color="#000000">;
+    rmanAddAttr</font> <font color="#06055f">$shapeName $attr</font> <font color="#666666">""</font><font color="#000000">;</font>
+  
+    <font color="#06055f">$attr</font> <font color="#000000">=</font> <font color="#410341">`rmanGetAttrName "mocap_ribpath"`</font><font color="#000000">;
+    rmanAddAttr</font> <font color="#06055f">$shapeName $attr</font> <font color="#666666">""</font><font color="#000000">;</font>
+  
+    <font color="#06055f">$attr</font> <font color="#000000">=</font> <font color="#410341">`rmanGetAttrName "mocap_geo"`</font><font color="#000000">;
+    rmanAddAttr</font> <font color="#06055f">$shapeName $attr</font> <font color="#666666">"0"</font><font color="#000000">;</font>
+  
+    <font color="#06055f">$attr</font> <font color="#000000">=</font> <font color="#410341">`rmanGetAttrName "mocap_scale"`</font><font color="#000000">;
+    rmanAddAttr</font> <font color="#06055f">$shapeName $attr</font> <font color="#666666">"0.01"</font><font color="#000000">;</font>
+  
+    <font color="#06055f">$attr</font> <font color="#000000">=</font> <font color="#410341">`rmanGetAttrName "mocap_width"`</font><font color="#000000">;
+    rmanAddAttr</font> <font color="#06055f">$shapeName $attr</font> <font color="#666666">"0.3"</font><font color="#000000">;</font>
+  
+    <font color="#06055f">$attr</font> <font color="#000000">=</font> <font color="#410341">`rmanGetAttrName "mocap_trail"`</font><font color="#000000">;
+    rmanAddAttr</font> <font color="#06055f">$shapeName $attr</font> <font color="#666666">"1"</font><font color="#000000">;</font>
+  
+    <font color="#06055f">$attr</font> <font color="#000000">=</font> <font color="#410341">`rmanGetAttrName "mocap_step"`</font><font color="#000000">;
+    rmanAddAttr</font> <font color="#06055f">$shapeName $attr</font> <font color="#666666">"1"</font><font color="#000000">;</font>
+  
+    <font color="#06055f">$attr</font> <font color="#000000">=</font> <font color="#410341">`rmanGetAttrName "mocap_cache"`</font><font color="#000000">;
+    rmanAddAttr</font> <font color="#06055f">$shapeName $attr</font> <font color="#666666">"0"</font><font color="#000000">;
+  
+    }
+}</font>
+</pre>

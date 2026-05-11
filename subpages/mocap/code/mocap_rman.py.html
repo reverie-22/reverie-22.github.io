@@ -1,0 +1,470 @@
+<pre><font color="#cc0000"># mocap_rman.py
+# The output rib is saved in the project/RIB_Archive directory. 
+#
+# Malcolm Kesson
+# Milim Lee
+# March 12 2017</font>
+  
+<font color="#0000b3">from</font> mocap_db <font color="#0000b3">import</font> <font color="#68086f">MoCapDB</font>
+<font color="#0000b3">import</font> <font color="#68086f">os</font>
+<font color="#0000b3">from</font> maya_proj_utils <font color="#0000b3">import</font> <font color="#68086f">MayaProjUtils</font>
+<font color="#0000b3">import</font> <font color="#68086f">math</font>
+ 
+<font color="#0000b3">class</font> MoCapRMan(<font color="#68086f">MoCapDB</font>):
+    <font color="#0000b3">def</font> __init__(<font color="#0000b3">self</font>, name, datapath, scaling):
+        <font color="#0000b3">self</font>.name = name
+        <font color="#0000b3">self</font>.begin = 1
+        <font color="#0000b3">self</font>.end = 1
+        <font color="#0000b3">self</font>.utils = <font color="#0000b3">None
+        try</font>:
+            <font color="#0000b3">self</font>.utils = <font color="#68086f">MayaProjUtils</font>()
+            <font color="#0000b3">self</font>.archivepath = <font color="#0000b3">self</font>.utils.getRIB_ArchivePath()
+            <font color="#0000b3">if</font> <font color="#68086f">os</font>.<font color="#68086f">path</font>.exists(<font color="#0000b3">self</font>.archivepath) == <font color="#0000b3">False</font>:
+                <font color="#68086f">os</font>.mkdir(<font color="#0000b3">self</font>.archivepath)
+            <font color="#0000b3">self</font>.begin = <font color="#0000b3">self</font>.utils.getAnimationStart()
+            <font color="#0000b3">self</font>.end = <font color="#0000b3">self</font>.utils.getAnimationEnd()
+            <font color="#0000b3">self</font>.scenename = <font color="#0000b3">self</font>.utils.getSceneName()
+        <font color="#0000b3">except</font>:
+            <font color="#0000b3">self</font>.archivepath = <font color="#68086f">os</font>.<font color="#68086f">path</font>.dirname(datapath)
+            <font color="#0000b3">self</font>.scenename = <font color="#666666">'untitled'</font>
+        <font color="#68086f">MoCapDB</font>.__init__(<font color="#0000b3">self</font>, datapath, scaling)
+        dataname = <font color="#68086f">os</font>.<font color="#68086f">path</font>.basename(datapath)
+        <font color="#0000b3">self</font>.dataname = dataname[:-4] <font color="#cc0000"># remove .txt
+    # __________________________________________________</font>
+    <font color="#0000b3">def</font> writePoints(<font color="#0000b3">self</font>, trail, step, width, cache):
+        <font color="#0000b3">if self</font>.dataIsValid() == <font color="#0000b3">False</font>:
+            <font color="#0000b3">print</font>(<font color="#666666">'writePoints is valid'</font>)
+            <font color="#0000b3">return</font> <font color="#666666">''</font>
+        current_frame = <font color="#0000b3">self</font>.utils.getCurrentTime()
+        begin,end = <font color="#0000b3">self</font>.getDataRange(trail)
+        ribpath = <font color="#0000b3">self</font>.getRibPath(<font color="#666666">'pnt'</font>,trail,step,width)
+        <font color="#cc0000"># Reuse a previously computed rib archive...</font>
+        <font color="#0000b3">if self</font>.canReuse(ribpath,cache):
+            <font color="#0000b3">return</font> ribpath
+        f = <font color="#0000b3">open</font>(ribpath, <font color="#666666">'w'</font>)
+        f.write(<font color="#0000b3">self</font>.getRibHeader(begin,end))
+        f.write(<font color="#666666">'Points "P" ['</font>)
+        <font color="#0000b3">for</font> n <font color="#0000b3">in range</font>(<font color="#0000b3">len</font>(<font color="#0000b3">self</font>.markers)):
+            data = <font color="#0000b3">self</font>.getMarkerData(n,begin,end,step)
+            <font color="#0000b3">if len</font>(data) == 0: <font color="#cc0000"># marker has no data for this frame</font>
+                <font color="#0000b3">continue</font>
+            count = 0
+            <font color="#0000b3">for</font> coord <font color="#0000b3">in</font> data:
+                <font color="#0000b3">if</font> count == 0 <font color="#0000b3">or</font> count % 15 == 0:
+                    f.write(<font color="#666666">'\n\t'</font>)
+                f.write(<font color="#666666">'%1.4f '</font> % coord )
+                count += 1
+        f.write(<font color="#666666">'\n\t] "constantwidth" [%1.4f]\n'</font> % width)
+        f.close()
+        <font color="#0000b3">return</font> ribpath        
+    <font color="#cc0000"># __________________________________________________
+    # The curve type is catmull-rom because it guarantees the curve will pass
+    # through the coordinates of the control vertices. However, the first and
+    # last xyz coordinates must be repeated.</font>
+  
+    <font color="#0000b3">def</font> writeCurves(<font color="#0000b3">self</font>, trail, step, width, cache):
+        <font color="#0000b3">if self</font>.dataIsValid() == <font color="#0000b3">False</font>:
+            <font color="#0000b3">return</font> <font color="#666666">''</font>
+        begin,end = <font color="#0000b3">self</font>.getDataRange(trail)
+        <font color="#cc0000"># We need at least 4 cvs for a valid curve</font>
+        data_range = end - begin
+        <font color="#0000b3">if</font> data_range &lt; 4:
+            end = begin + 4
+        ribpath = <font color="#0000b3">self</font>.getRibPath(<font color="#666666">'cvs'</font>,trail,step,width)
+        <font color="#cc0000"># Reuse a previously computed rib archive...</font>
+        <font color="#0000b3">if</font> cache == <font color="#666666">'Reuse'</font> <font color="#0000b3">and</font> <font color="#68086f">os</font>.<font color="#68086f">path</font>.exists(ribpath) == <font color="#0000b3">True</font>:
+            <font color="#0000b3">return</font> ribpath
+            
+        f = <font color="#0000b3">open</font>(ribpath, <font color="#666666">'w'</font>)
+        f.write(<font color="#0000b3">self</font>.getRibHeader(begin,end))
+        f.write(<font color="#666666">'AttributeBegin\n'</font>)
+        f.write(<font color="#666666">'\tBasis "catmull-rom" 1 "catmull-rom" 1\n'</font>)
+        <font color="#0000b3">for</font> n <font color="#0000b3">in range</font>(<font color="#0000b3">len</font>(<font color="#0000b3">self</font>.markers)):
+            <font color="#cc0000"># data is a simple list of coordinates [x,y,z,x,y,z etc...]</font>
+            data = <font color="#0000b3">self</font>.getMarkerData(n,begin,end,step)
+            <font color="#cc0000"># The marker has no data for this frame, go to the next marker.</font>
+            <font color="#0000b3">if len</font>(data) == 0: 
+                <font color="#0000b3">continue</font>            
+            <font color="#cc0000"># A "catmull-rom" generally has the first and last cvs repeated,
+            # hence, we add 2 to the number of cvs.</font>
+            numcvs = (<font color="#0000b3">len</font>(data)/3) + 2
+            f.write(<font color="#666666">'\tCurves "cubic" [%d] "nonperiodic" "P" ['</font> % numcvs)
+            <font color="#cc0000"># Repeat the first CV</font>
+            f.write(<font color="#666666">'%1.4f %1.4f %1.4f '</font> % (data[0],data[1],data[2]) )
+            count = 2
+            <font color="#0000b3">for</font> coord <font color="#0000b3">in</font> data:
+                <font color="#0000b3">if</font> count % 15 == 0:
+                    f.write(<font color="#666666">'\n\t\t'</font>)
+                f.write(<font color="#666666">'%1.4f '</font> % coord )
+                count += 1
+            <font color="#cc0000"># Repeat the last CV</font>
+            x,y,z = data[-3:]
+            f.write(<font color="#666666">'%1.4f %1.4f %1.4f '</font> % (x,y,z) )
+            f.write(<font color="#666666">'\n\t\t] "constantwidth" [%1.4f]\n'</font> % width)
+        f.write(<font color="#666666">'AttributeEnd\n'</font>)
+        f.close()
+        <font color="#0000b3">return</font> ribpath
+  
+    <font color="#cc0000">#making body shape skeleton</font>
+    <font color="#0000b3">def</font> createSkeleton(<font color="#0000b3">self</font>, trail, step, width, cache, isMixed=<font color="#0000b3">False</font>):
+        <font color="#0000b3">if self</font>.dataIsValid() == <font color="#0000b3">False</font>:
+            <font color="#0000b3">return</font> <font color="#666666">''</font>
+        begin,end = <font color="#0000b3">self</font>.getDataRange(trail)
+        data_range = end - begin
+        end = begin + 4
+        <font color="#0000b3">if</font> isMixed:
+            ribpath = <font color="#0000b3">self</font>.getRibPath(<font color="#666666">'breakdown'</font>,trail,step,width)
+        <font color="#0000b3">else</font>:
+            ribpath = <font color="#0000b3">self</font>.getRibPath(<font color="#666666">'cvs'</font>,trail,step,width)
+        <font color="#0000b3">if</font> cache == <font color="#666666">'Reuse'</font> <font color="#0000b3">and</font> <font color="#68086f">os</font>.<font color="#68086f">path</font>.exists(ribpath) == <font color="#0000b3">True</font>:
+            <font color="#0000b3">return</font> ribpath
+        orders = [[<font color="#666666">'RFHD'</font>, <font color="#666666">'LFHD'</font>, <font color="#666666">'LBHD'</font>, <font color="#666666">'RBHD'</font>, <font color="#666666">'RFHD'</font>], <font color="#cc0000">#head to little spine</font>
+                [<font color="#666666">'RBHD'</font>, <font color="#666666">'C7'</font>, <font color="#666666">'RBAC'</font>, <font color="#666666">'T10'</font>, <font color="#666666">'RBWT'</font>, <font color="#666666">'RFWT'</font>, <font color="#666666">'RTHI'</font>, <font color="#666666">'RKNE'</font>, <font color="#666666">'RSHN'</font>, <font color="#666666">'RANK'</font>, <font color="#666666">'RHEE'</font>, <font color="#666666">'RMT5'</font>, <font color="#666666">'RTOE'</font>, <font color="#666666">'RHEE'</font>], <font color="#cc0000">#right spine to right foot</font>
+                [<font color="#666666">'LBHD'</font>, <font color="#666666">'C7'</font>, <font color="#666666">'T10'</font>, <font color="#666666">'LBWT'</font>, <font color="#666666">'LFWT'</font>, <font color="#666666">'LTHI'</font>, <font color="#666666">'LKNE'</font>, <font color="#666666">'LSHN'</font>, <font color="#666666">'LANK'</font>, <font color="#666666">'LHEE'</font>, <font color="#666666">'LMT5'</font>, <font color="#666666">'LTOE'</font>, <font color="#666666">'LHEE'</font>], <font color="#cc0000">#left spine to left foot</font>
+                [<font color="#666666">'C7'</font>, <font color="#666666">'CLAV'</font>, <font color="#666666">'STRN'</font>, <font color="#666666">'LFWT'</font>], <font color="#cc0000"># belly</font>
+                [<font color="#666666">'LBWT'</font>, <font color="#666666">'LSHO'</font>, <font color="#666666">'LFWT'</font>],
+                [<font color="#666666">'RBWT'</font>, <font color="#666666">'RSHO'</font>, <font color="#666666">'RFWT'</font>],
+                [<font color="#666666">'STRN'</font>, <font color="#666666">'RFWT'</font>], <font color="#cc0000"># belly</font>
+                [<font color="#666666">'C7'</font>, <font color="#666666">'LSHO'</font>, <font color="#666666">'LUPA'</font>, <font color="#666666">'LELB'</font>, <font color="#666666">'LFRM'</font>, <font color="#666666">'LWRB'</font>, <font color="#666666">'LFIN'</font>, <font color="#666666">'LWRA'</font>, <font color="#666666">'LWRB'</font>], <font color="#cc0000">#left arm</font>
+                [<font color="#666666">'C7'</font>, <font color="#666666">'RSHO'</font>, <font color="#666666">'RUPA'</font>, <font color="#666666">'RELB'</font>, <font color="#666666">'RFRM'</font>, <font color="#666666">'RWRB'</font>, <font color="#666666">'RWRA'</font>, <font color="#666666">'RFIN'</font>, <font color="#666666">'RWRB'</font>]] <font color="#cc0000">#right arm</font>
+        f = <font color="#0000b3">open</font>(ribpath, <font color="#666666">'w'</font>)
+        f.write(<font color="#0000b3">self</font>.getRibHeader(begin,end))
+        f.write(<font color="#666666">'AttributeBegin\n'</font>)
+        <font color="#0000b3">for</font> frame <font color="#0000b3">in range</font>(begin, end, step):
+            coordsList = <font color="#0000b3">self</font>.getFrameData(frame)
+            coordsDic = <font color="#0000b3">self</font>.getMarkerFrameData(frame) <font color="#cc0000">#dictionary markername</font>
+  
+            f.write(<font color="#666666">'\tPoints "P" ['</font>)
+            <font color="#0000b3">for</font> n <font color="#0000b3">in range</font>(<font color="#0000b3">len</font>(coordsList)):
+                f.write(<font color="#666666">'%1.4f %1.4f %1.4f '</font> % (coordsList[n][0],coordsList[n][1],coordsList[n][2]))
+            f.write(<font color="#666666">'\n\t\t] "constantwidth" [%1.4f]\n'</font> % (width*2))            
+                        
+            <font color="#0000b3">for</font> n <font color="#0000b3">in range</font>(<font color="#0000b3">len</font>(orders)):
+                count = 0
+                <font color="#0000b3">for</font> m <font color="#0000b3">in range</font>(<font color="#0000b3">len</font>(orders[n])):
+                    <font color="#0000b3">if</font> (orders[n][m] <font color="#0000b3">in</font> coordsDic) <font color="#0000b3">and</font> (<font color="#0000b3">len</font>(coordsDic[orders[n][m]]) != 0):
+                        count += 1
+                f.write(<font color="#666666">'\tCurves "linear" [%d] "nonperiodic" "P" ['</font> % count)
+                
+                <font color="#0000b3">for</font> m <font color="#0000b3">in range</font>(<font color="#0000b3">len</font>(orders[n])):
+                    <font color="#0000b3">if</font> (orders[n][m] <font color="#0000b3">in</font> coordsDic) <font color="#0000b3">and</font> (<font color="#0000b3">len</font>(coordsDic[orders[n][m]]) != 0):
+                        f.write(<font color="#666666">'%1.4f %1.4f %1.4f '</font> % (coordsDic[orders[n][m]][0],coordsDic[orders[n][m]][1],coordsDic[orders[n][m]][2]))
+                f.write(<font color="#666666">'\n\t\t] "constantwidth" [%1.4f]\n'</font> % width)
+        
+        f.write(<font color="#666666">'AttributeEnd\n'</font>)
+        f.close()
+        <font color="#0000b3">return</font> ribpath
+  
+    <font color="#cc0000">#write body shape with joker's face</font>
+    <font color="#0000b3">def</font> createJoker(<font color="#0000b3">self</font>, trail, step, width, cache, scale, myRibModelPath, isMixed=<font color="#0000b3">False</font>):
+        <font color="#0000b3">if self</font>.dataIsValid() == <font color="#0000b3">False</font>:
+            <font color="#0000b3">return</font> <font color="#666666">''</font>
+        tail = 1
+        begin,end = <font color="#0000b3">self</font>.getDataRange(trail)
+        current_frame = <font color="#0000b3">self</font>.utils.getCurrentTime()        
+        data_range = end - begin
+        <font color="#0000b3">if</font> isMixed:
+            ribpath = <font color="#0000b3">self</font>.getRibPath(<font color="#666666">'breakdown'</font>,trail,step,width)
+        <font color="#0000b3">else</font>:
+            ribpath = <font color="#0000b3">self</font>.getRibPath(<font color="#666666">'cvs'</font>,trail,step,width)
+        <font color="#0000b3">if</font> cache == <font color="#666666">'Reuse'</font> <font color="#0000b3">and</font> <font color="#68086f">os</font>.<font color="#68086f">path</font>.exists(ribpath) == <font color="#0000b3">True</font>:
+            <font color="#0000b3">return</font> ribpath
+        orders = [[<font color="#666666">'RFWT'</font>,<font color="#666666">'RTHI'</font>, <font color="#666666">'RKNE'</font>, <font color="#666666">'RSHN'</font>, <font color="#666666">'RANK'</font>, <font color="#666666">'RHEE'</font>], [<font color="#666666">'LFWT'</font>,<font color="#666666">'LTHI'</font>, <font color="#666666">'LKNE'</font>, <font color="#666666">'LSHN'</font>, <font color="#666666">'LANK'</font>, <font color="#666666">'LHEE'</font>], [<font color="#666666">'LUPA'</font>, <font color="#666666">'LELB'</font>, <font color="#666666">'LFRM'</font>, <font color="#666666">'LWRB'</font>], [<font color="#666666">'RUPA'</font>, <font color="#666666">'RELB'</font>, <font color="#666666">'RFRM'</font>, <font color="#666666">'RWRB'</font>]]
+                
+        f = <font color="#0000b3">open</font>(ribpath, <font color="#666666">'w'</font>)
+        f.write(<font color="#0000b3">self</font>.getRibHeader(begin,end))
+        f.write(<font color="#666666">'AttributeBegin\n'</font>)
+        <font color="#0000b3">for</font> frame <font color="#0000b3">in range</font>(begin, end, step):
+            coordsList = <font color="#0000b3">self</font>.getFrameData(frame)
+            coordsDic = <font color="#0000b3">self</font>.getMarkerFrameData(frame) <font color="#cc0000">#dictionary markername</font>
+  
+            <font color="#0000b3">if</font> (isMixed <font color="#0000b3">and</font> (frame &gt;= 214)) <font color="#0000b3">or</font> (<font color="#0000b3">not</font> isMixed):    
+                f.write(<font color="#666666">'\tBasis "catmull-rom" 1 "catmull-rom" 1\n'</font>)            
+                <font color="#0000b3">for</font> n <font color="#0000b3">in range</font>(<font color="#0000b3">len</font>(orders)):
+                    count = 0
+                    orderlength = <font color="#0000b3">len</font>(orders[n])
+                    <font color="#0000b3">for</font> m <font color="#0000b3">in range</font>(orderlength):
+                        <font color="#0000b3">if</font> (orders[n][m] <font color="#0000b3">in</font> coordsDic) <font color="#0000b3">and</font> (<font color="#0000b3">len</font>(coordsDic[orders[n][m]]) != 0):
+                            count += 1
+                    f.write(<font color="#666666">'\tCurves "cubic" [%d] "nonperiodic" "P" ['</font> % (count+2))
+                    
+                    f.write(<font color="#666666">'%1.4f %1.4f %1.4f '</font> % (coordsDic[orders[n][0]][0],coordsDic[orders[n][0]][1],coordsDic[orders[n][0]][2]))
+                    <font color="#0000b3">for</font> m <font color="#0000b3">in range</font>(orderlength):
+                        <font color="#0000b3">if</font> (orders[n][m] <font color="#0000b3">in</font> coordsDic) <font color="#0000b3">and</font> (<font color="#0000b3">len</font>(coordsDic[orders[n][m]]) != 0):
+                            f.write(<font color="#666666">'%1.4f %1.4f %1.4f '</font> % (coordsDic[orders[n][m]][0],coordsDic[orders[n][m]][1],coordsDic[orders[n][m]][2]))
+                    f.write(<font color="#666666">'%1.4f %1.4f %1.4f '</font> % (coordsDic[orders[n][orderlength-1]][0],coordsDic[orders[n][orderlength-1]][1],coordsDic[orders[n][orderlength-1]][2]))
+                    f.write(<font color="#666666">'\n\t\t] "constantwidth" [%1.4f]\n'</font> % width)
+            
+            <font color="#0000b3">if</font> frame == (end-1):
+                <font color="#cc0000">#putting face!</font>
+                vecInputs = []
+                vecInputs.extend([coordsDic[<font color="#666666">"RFHD"</font>], coordsDic[<font color="#666666">"LFHD"</font>], coordsDic[<font color="#666666">"RBHD"</font>], coordsDic[<font color="#666666">"LBHD"</font>]])
+                facePos = <font color="#0000b3">self</font>._getPointAvg(vecInputs)
+                faceRotResult = <font color="#0000b3">self</font>._rotateY(coordsDic[<font color="#666666">"RBHD"</font>], coordsDic[<font color="#666666">"RFHD"</font>])
+                ribPath = myRibModelPath + <font color="#666666">"/clownFace.rib"</font>
+                faceScale = scale * 27
+                <font color="#0000b3">self</font>._writeTransform(f, facePos[0], facePos[1], facePos[2], 0.0 , faceRotResult[0], 0.0, faceScale, faceScale, faceScale, ribPath)
+  
+                <font color="#cc0000">#putting body!</font>
+                <font color="#0000b3">if</font> (isMixed <font color="#0000b3">and</font> (frame &gt;= 107))  <font color="#0000b3">or</font> (<font color="#0000b3">not</font> isMixed):
+                    vecInputs = []
+                    vecInputs.extend([coordsDic[<font color="#666666">"LSHO"</font>], coordsDic[<font color="#666666">"RSHO"</font>], coordsDic[<font color="#666666">"LFWT"</font>], coordsDic[<font color="#666666">"RFWT"</font>]])
+                    cardPos = <font color="#0000b3">self</font>._getPointAvg(vecInputs)
+                    vecInputs = []
+                    vecInputs.extend([coordsDic[<font color="#666666">"LSHO"</font>], coordsDic[<font color="#666666">"RSHO"</font>]])                
+                    newBodyRefpoint = <font color="#0000b3">self</font>._getPointAvg(vecInputs)
+                    cardRotResult = <font color="#0000b3">self</font>._rotateY(coordsDic[<font color="#666666">"T10"</font>], newBodyRefpoint)
+                    ribPath = myRibModelPath + <font color="#666666">"/card.rib"</font>
+                    bodyScale = scale * 37
+                    <font color="#0000b3">self</font>._writeTransform(f, cardPos[0], cardPos[1], cardPos[2], 0.0 , cardRotResult[0], 0.0, bodyScale, bodyScale, bodyScale, ribPath)                                
+  
+                <font color="#cc0000">#putting left hand!</font>
+                <font color="#0000b3">if</font> (isMixed <font color="#0000b3">and</font> (frame &gt;= 143)) <font color="#0000b3">or</font> (<font color="#0000b3">not</font> isMixed):                
+                    vecInputs = []
+                    vecInputs.extend([coordsDic[<font color="#666666">"LFIN"</font>], coordsDic[<font color="#666666">"LWRA"</font>]])                
+                    newLeftHandRefpoint = <font color="#0000b3">self</font>._getPointAvg(vecInputs)
+                    leftHandRotResult = <font color="#0000b3">self</font>._aimY(coordsDic[<font color="#666666">"LWRB"</font>], newLeftHandRefpoint)
+                    ribPath = myRibModelPath + <font color="#666666">"/rightHand.rib"</font>
+                    lHandScale = scale * 30
+                    <font color="#0000b3">self</font>._writeTransform(f, coordsDic[<font color="#666666">"LWRB"</font>][0], coordsDic[<font color="#666666">"LWRB"</font>][1], coordsDic[<font color="#666666">"LWRB"</font>][2], leftHandRotResult[0] , 0.0, leftHandRotResult[1], lHandScale, lHandScale, lHandScale, ribPath)                                                
+                <font color="#cc0000">#putting right hand!</font>
+                    vecInputs = []
+                    vecInputs.extend([coordsDic[<font color="#666666">"RWRA"</font>], coordsDic[<font color="#666666">"RFIN"</font>]])                
+                    newRightHandRefpoint = <font color="#0000b3">self</font>._getPointAvg(vecInputs)
+                    rightHandRotResult = <font color="#0000b3">self</font>._aimY(coordsDic[<font color="#666666">"RFRM"</font>], coordsDic[<font color="#666666">"RFIN"</font>])
+                    ribPath = myRibModelPath + <font color="#666666">"/leftHand.rib"</font>
+                    rHandScale = scale * 30
+                    <font color="#0000b3">self</font>._writeTransform(f, coordsDic[<font color="#666666">"RFRM"</font>][0], coordsDic[<font color="#666666">"RFRM"</font>][1], coordsDic[<font color="#666666">"RFRM"</font>][2], rightHandRotResult[0] , 0.0, rightHandRotResult[1], rHandScale, rHandScale, rHandScale, ribPath)                        
+    
+                <font color="#cc0000">#putting left shoe!</font>
+                <font color="#0000b3">if</font> (isMixed <font color="#0000b3">and</font> (frame &gt;= 179)) <font color="#0000b3">or</font> (<font color="#0000b3">not</font> isMixed):
+                    vecInputs = []
+                    vecInputs.extend([coordsDic[<font color="#666666">"RMT5"</font>], coordsDic[<font color="#666666">"RTOE"</font>]])                
+                    newLeftShoeRefpoint = <font color="#0000b3">self</font>._getPointAvg(vecInputs)
+                    leftShoeRotResult = <font color="#0000b3">self</font>._aimY(coordsDic[<font color="#666666">"RHEE"</font>], newLeftShoeRefpoint)
+                    ribPath = myRibModelPath + <font color="#666666">"/leftShoe.rib"</font>
+                    lShoeScale = scale * 20
+                    <font color="#0000b3">self</font>._writeTransform(f, coordsDic[<font color="#666666">"RHEE"</font>][0], coordsDic[<font color="#666666">"RHEE"</font>][1], coordsDic[<font color="#666666">"RHEE"</font>][2], leftShoeRotResult[0] , 0.0, leftShoeRotResult[1], lShoeScale, lShoeScale, lShoeScale, ribPath)                        
+                <font color="#cc0000">#putting right shoe!</font>
+                    vecInputs = []
+                    vecInputs.extend([coordsDic[<font color="#666666">"LMT5"</font>], coordsDic[<font color="#666666">"LTOE"</font>]])                
+                    newRightShoeRefpoint = <font color="#0000b3">self</font>._getPointAvg(vecInputs)    
+                    rightShoeRotResult = <font color="#0000b3">self</font>._aimY(coordsDic[<font color="#666666">"LHEE"</font>], newRightShoeRefpoint)
+                    ribPath = myRibModelPath + <font color="#666666">"/rightShoe.rib"</font>
+                    rShoeScale = scale * 20
+                    <font color="#0000b3">self</font>._writeTransform(f, coordsDic[<font color="#666666">"LHEE"</font>][0], coordsDic[<font color="#666666">"LHEE"</font>][1], coordsDic[<font color="#666666">"LHEE"</font>][2], rightShoeRotResult[0] , 0.0, rightShoeRotResult[1], rShoeScale, rShoeScale, rShoeScale, ribPath)        
+  
+        f.write(<font color="#666666">'AttributeEnd\n'</font>)
+        f.close()
+        <font color="#0000b3">return</font> ribpath
+  
+    <font color="#cc0000"># __________________________________________________</font>
+    <font color="#0000b3">def</font> writeBlobby(<font color="#0000b3">self</font>, trail, step, width, cache, volume=<font color="#0000b3">False</font>, isMixed=<font color="#0000b3">False</font>):
+        <font color="#0000b3">if self</font>.dataIsValid() == <font color="#0000b3">False</font>:
+            <font color="#0000b3">return</font> <font color="#666666">''</font>
+        begin,end = <font color="#0000b3">self</font>.getDataRange(trail)
+        geoname = <font color="#666666">'blobS'</font>
+        <font color="#0000b3">if</font> isMixed:
+            geoname = <font color="#666666">'breakdown'</font>
+        <font color="#0000b3">elif</font> volume:
+            geoname = <font color="#666666">'blobV'</font>
+        ribpath = <font color="#0000b3">self</font>.getRibPath(geoname,trail,step,width)
+        <font color="#cc0000"># Reuse a previously computed rib archive...</font>
+        <font color="#0000b3">if</font> cache == <font color="#666666">'Reuse'</font> <font color="#0000b3">and</font> <font color="#68086f">os</font>.<font color="#68086f">path</font>.exists(ribpath) == <font color="#0000b3">True</font>:
+            <font color="#0000b3">return</font> ribpath
+        
+        f = <font color="#0000b3">open</font>(ribpath, <font color="#666666">'w'</font>)
+        f.write(<font color="#0000b3">self</font>.getRibHeader(begin,end))
+        alldata = []
+        <font color="#0000b3">for</font> n <font color="#0000b3">in range</font>(<font color="#0000b3">len</font>(<font color="#0000b3">self</font>.markers)):
+            data = <font color="#0000b3">self</font>.getMarkerData(n,begin,end,step)
+            <font color="#0000b3">if len</font>(data) == 0:
+                <font color="#0000b3">continue</font>
+            alldata.extend(data)
+        numblobs = <font color="#0000b3">len</font>(alldata)/3
+        <font color="#0000b3">if</font> volume:
+            f.write(<font color="#666666">'Blobby %d [8 \n'</font> % numblobs)
+        <font color="#0000b3">else</font>:
+            f.write(<font color="#666666">'Blobby %d [\n'</font> % numblobs)
+        <font color="#cc0000"># Make each blob an ellipsoid and provide its array index.
+        # The indices monotonously increment by 16.</font>
+        <font color="#0000b3">for</font> n <font color="#0000b3">in range</font>(numblobs):
+            f.write(<font color="#666666">'\t1001 %d\n'</font> % (n * 16))
+        <font color="#cc0000"># Add the blending code "0" and the number of blobs to blend.</font>
+        f.write(<font color="#666666">'\t0 %d '</font> % + numblobs)
+        <font color="#cc0000"># Specify the indices of all the blobs.</font>
+        <font color="#0000b3">for</font> n <font color="#0000b3">in range</font>(numblobs):
+            f.write(<font color="#666666">' %d'</font> % n)
+        f.write(<font color="#666666">']\n\t[\n'</font>)
+        <font color="#0000b3">for</font> n <font color="#0000b3">in range</font>(0, <font color="#0000b3">len</font>(alldata), 3):
+            x = alldata[n]
+            y = alldata[n+1]
+            z = alldata[n+2]
+            f.write(<font color="#666666">'\t'</font>)
+            f.write(<font color="#666666">'%1.4f 0 0 0  '</font> % (width *2))
+            f.write(<font color="#666666">'0 %1.4f 0 0  '</font> % (width*2))
+            f.write(<font color="#666666">'0 0 %1.4f 0  '</font> % (width*2))
+            f.write(<font color="#666666">'%1.4f %1.4f %1.4f 1\n'</font> % (x,y,z))
+        f.write(<font color="#666666">'\t] [""]\n'</font>)
+        f.close()
+        <font color="#0000b3">return</font> ribpath
+  
+        
+    <font color="#cc0000"># __________________________________________________
+    # Given getPadding(27), returns '0027'</font>
+    <font color="#0000b3">def</font> getPadding(<font color="#0000b3">self</font>, frame):
+        <font color="#0000b3">return</font> <font color="#666666">'%0*d'</font> % (4, frame)
+  
+  
+    <font color="#cc0000"># __________________________________________________</font>
+    <font color="#0000b3">def</font> getRibPath(<font color="#0000b3">self</font>,geoname,trail,step,geosize):
+        frame = <font color="#0000b3">self</font>.utils.getCurrentTime()
+        pad = <font color="#0000b3">self</font>.getPadding(frame) 
+        size = <font color="#666666">'%1.3f'</font> % geosize <font color="#cc0000"># Avoid excessive trailing digits</font>
+        size = size.replace(<font color="#666666">'.'</font>, <font color="#666666">''</font>)
+        ribname = <font color="#666666">'%s_%s_%s_%s_%s.%s.rib'</font> % (<font color="#0000b3">self</font>.dataname, geoname,
+                                          <font color="#0000b3">str</font>(trail), <font color="#0000b3">str</font>(step),
+                                          size, pad)
+        path = <font color="#68086f">os</font>.<font color="#68086f">path</font>.join(<font color="#0000b3">self</font>.archivepath, <font color="#0000b3">self</font>.scenename)
+        <font color="#0000b3">if</font> <font color="#68086f">os</font>.<font color="#68086f">path</font>.exists(path) == <font color="#0000b3">False</font>:
+            <font color="#68086f">os</font>.mkdir(path)
+        path = <font color="#68086f">os</font>.<font color="#68086f">path</font>.join(path, <font color="#0000b3">self</font>.name)
+        <font color="#0000b3">if</font> <font color="#68086f">os</font>.<font color="#68086f">path</font>.exists(path) == <font color="#0000b3">False</font>:
+            <font color="#68086f">os</font>.mkdir(path)
+        fullpath = <font color="#68086f">os</font>.<font color="#68086f">path</font>.join(path, ribname)
+        <font color="#0000b3">return</font> fullpath
+  
+  
+    <font color="#cc0000">#___________________________________________________________
+    # Rotate x and z angles</font>
+    <font color="#0000b3">def</font> _aimY(<font color="#0000b3">self</font>, vec1, vec2): <font color="#cc0000">#arrow goes from vec1 to vec2</font>
+        xyLength = <font color="#68086f">math</font>.sqrt((vec2[0] - vec1[0]) * (vec2[0] - vec1[0]) + (vec2[1] - vec1[1]) * (vec2[1] - vec1[1]))
+        vecLength = <font color="#68086f">math</font>.sqrt((vec2[0] - vec1[0]) * (vec2[0] - vec1[0]) + (vec2[1] - vec1[1]) * (vec2[1] - vec1[1]) + (vec2[2] - vec1[2]) * (vec2[2] - vec1[2]))
+    
+        <font color="#cc0000">#xyLength will be zero when vec is pointing along the +z or -z axis</font>
+        out = []
+        <font color="#0000b3">if</font> xyLength == 0:
+            <font color="#0000b3">if</font> (vec2[0] - vec1[0]) &gt; 0:
+                zAngle = <font color="#68086f">math</font>.radians(90)
+            <font color="#0000b3">else</font>:
+                zAngle = <font color="#68086f">math</font>.randians(-90)
+        <font color="#0000b3">else</font>:
+            zAngle = <font color="#68086f">math</font>.acos((vec2[1] - vec1[1])/xyLength)
+    
+        xAngle = <font color="#68086f">math</font>.acos(xyLength/vecLength)
+    
+        <font color="#0000b3">if</font> (vec2[2] - vec1[2]) &gt; 0:
+            xAngle = xAngle
+        <font color="#0000b3">else</font>:
+            xAngle = -xAngle
+      
+        <font color="#0000b3">if</font> (vec2[0] - vec1[0]) &gt; 0:
+            zAngle = -zAngle
+        <font color="#0000b3">else</font>:
+            zAngle = zAngle
+            
+        out.extend([<font color="#68086f">math</font>.degrees(xAngle), <font color="#68086f">math</font>.degrees(zAngle)])
+        <font color="#0000b3">return</font> out
+  
+  
+    <font color="#cc0000">#______________________________________________________
+    # Rotate y angle</font>
+    <font color="#0000b3">def</font> _rotateY(<font color="#0000b3">self</font>, vec1, vec2): <font color="#cc0000">#arrow goes from vec1 to vec2</font>
+        xLength = vec2[0] - vec1[0]
+        xzLength = <font color="#68086f">math</font>.sqrt((vec2[0] - vec1[0]) * (vec2[0] - vec1[0]) + (vec2[2] - vec1[2]) * (vec2[2] - vec1[2]))
+    
+        out = []
+        <font color="#0000b3">if</font> xLength == 0:
+            <font color="#0000b3">if</font> (vec2[2] - vec1[2]) &gt; 0:
+                yAngle = <font color="#68086f">math</font>.radians(90)
+            <font color="#0000b3">else</font>:
+                yAngle = <font color="#68086f">math</font>.randians(-90)
+        <font color="#0000b3">else</font>:
+            yAngle = <font color="#68086f">math</font>.acos((vec2[0] - vec1[0])/xzLength)
+    
+        <font color="#0000b3">if</font> (vec2[2] - vec1[2]) &gt; 0:
+            yAngle = -yAngle
+        <font color="#0000b3">else</font>:
+            yAngle = yAngle
+        out.append(<font color="#68086f">math</font>.degrees(yAngle))
+        <font color="#0000b3">return</font> out
+  
+  
+    <font color="#cc0000">#______________________________________________________
+    # Calculate average vector of points</font>    
+    <font color="#0000b3">def</font> _getPointAvg(<font color="#0000b3">self</font>, points): 
+    
+        length = 0
+        sumX = 0
+        sumY = 0
+        sumZ = 0
+        
+        <font color="#0000b3">for</font> pnt <font color="#0000b3">in</font> points:
+            <font color="#0000b3">if</font>(<font color="#0000b3">len</font>(pnt) &gt; 0):
+                sumX += pnt[0] 
+                sumY += pnt[1]
+                sumZ += pnt[2]
+                length += 1
+        
+        out = []    
+        resultX = sumX / length
+        resultY = sumY / length
+        resultZ = sumZ / length
+        out.extend([resultX, resultY, resultZ])
+        <font color="#0000b3">return</font> out
+  
+        
+    <font color="#cc0000">#______________________________________________________
+    # Write transform commend in order.</font>
+    <font color="#0000b3">def</font> _writeTransform(<font color="#0000b3">self</font>, f, transX, transY, transZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, ribPath):
+        f.write(<font color="#666666">'\tTransformBegin\n'</font>)
+        f.write(<font color="#666666">'\t\tTranslate %1.4f %1.4f %1.4f\n'</font> %(transX, transY, transZ))
+        f.write(<font color="#666666">'\t\tRotate %1.4f %d %d %d\n'</font> %(rotX, 1, 0, 0))
+        f.write(<font color="#666666">'\t\tRotate %1.4f %d %d %d\n'</font> %(rotY, 0, 1, 0))
+        f.write(<font color="#666666">'\t\tRotate %1.4f %d %d %d\n'</font> %(rotZ, 0, 0, 1))
+        f.write(<font color="#666666">'\t\tScale %1.4f %1.4f %1.4f\n'</font> %(scaleX, scaleY, scaleZ))
+        f.write(<font color="#666666">'\t\tReadArchive "%s"\n'</font> %(ribPath))
+        f.write(<font color="#666666">'\tTransformEnd\n'</font>)
+  
+  
+    <font color="#cc0000"># __________________________________________________
+    # Puts some useful information at the beginning of the rib archive file.</font>    
+    <font color="#0000b3">def</font> getRibHeader(<font color="#0000b3">self</font>,begin,end):
+        x,y,z,X,Y,Z = <font color="#0000b3">self</font>.getFrameBbox(end) <font color="#cc0000">#self.getBbox()</font>
+        rib =  <font color="#666666">'#bbox: %1.4f %1.4f %1.4f %1.4f %1.4f %1.4f \n'</font> % (x,y,z,X,Y,Z)
+        rib += <font color="#666666">'# Data begin/end: %d to %d\n'</font> % (begin,end)
+        rib += <font color="#666666">'# Total number of mocap markers %d\n'</font> % <font color="#0000b3">len</font>(<font color="#0000b3">self</font>.markers)
+        rib += <font color="#666666">'# Total number of mocap frames %d\n'</font> % <font color="#0000b3">self</font>.frames
+        <font color="#0000b3">return</font> rib
+  
+    <font color="#cc0000"># __________________________________________________</font>    
+    <font color="#0000b3">def</font> getDataRange(<font color="#0000b3">self</font>,trail):
+        <font color="#cc0000"># Set a couple of reasonable default values for the data_begin/end.
+        # self.begin and self.end are "read" from the "Frame Range" settings 
+        # of Maya's Render Setting window - see the constructor.</font>
+        data_begin = <font color="#0000b3">self</font>.begin - trail
+        data_end = <font color="#0000b3">self</font>.end
+        <font color="#0000b3">if</font> data_begin &lt; 0:
+            data_begin = 0;
+        <font color="#cc0000"># Use Maya's values...</font>
+        <font color="#0000b3">if self</font>.utils != <font color="#0000b3">None</font>:
+            current = <font color="#0000b3">self</font>.utils.getCurrentTime()
+            data_end = current
+            <font color="#0000b3">if</font> (current - trail) &lt; 1:
+                data_begin = 1
+            <font color="#0000b3">else</font>:
+                data_begin = current - trail    
+        <font color="#0000b3">return</font> [data_begin,data_end]
+  
+    <font color="#cc0000"># __________________________________________________</font>    
+    <font color="#0000b3">def</font> dataIsValid(<font color="#0000b3">self</font>):
+        <font color="#0000b3">if len</font>(<font color="#0000b3">self</font>.getBbox()) == 0:
+            <font color="#0000b3">return False
+        return True</font>
+  
+    <font color="#cc0000"># __________________________________________________</font>    
+    <font color="#0000b3">def</font> canReuse(<font color="#0000b3">self</font>,ribpath,cache):
+        <font color="#0000b3">if</font> cache == <font color="#666666">'Reuse'</font> <font color="#0000b3">or</font> cache == <font color="#666666">'reuse'</font> <font color="#0000b3">and</font> <font color="#68086f">os</font>.<font color="#68086f">path</font>.exists(ribpath) == <font color="#0000b3">True</font>:
+            <font color="#0000b3">return True
+        return False</font>
+</pre>

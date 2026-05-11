@@ -1,0 +1,138 @@
+<pre><font color="#000000">/</font><font color="#cc0000">/STEP 5-4: 
+//Create subsphere</font>
+<font color="#0000ff">string</font> <font color="#06055f">$sub_figure</font> <font color="#000000">=</font> <font color="#06055f">$obj</font> <font color="#000000">+</font> <font color="#666666">"_sub_figure"</font><font color="#000000">;</font>
+<font color="#0000ff">int</font> <font color="#06055f">$isSphere</font> <font color="#000000">=</font> <font color="#0000b3">false</font><font color="#000000">;
+createSubFigure(</font><font color="#06055f">$obj</font><font color="#000000">,</font> <font color="#06055f">$sub_figure</font><font color="#000000">,</font> <font color="#06055f">$isSphere</font><font color="#000000">);</font>
+  
+<font color="#cc0000">//PROC: Main method to create sub object.</font>
+<font color="#0000b3">global proc</font> <font color="#000000">createSubFigure(</font><font color="#0000ff">string</font> <font color="#06055f">$mainObj</font><font color="#000000">,</font> <font color="#0000ff">string</font> <font color="#06055f">$sub_figure</font><font color="#000000">,</font> <font color="#0000ff">int</font> <font color="#06055f">$isSphere</font><font color="#000000">){</font>
+    <font color="#0000ff">string</font> <font color="#06055f">$object</font> <font color="#000000">=</font> <font color="#06055f">$mainObj</font> <font color="#000000">+</font> <font color="#666666">"_sub_obj"</font><font color="#000000">;</font>
+    <font color="#0000ff">string</font> <font color="#06055f">$sub_obj1</font> <font color="#000000">=</font> <font color="#06055f">$mainObj</font> <font color="#000000">+</font> <font color="#666666">"_sub_obj1"</font><font color="#000000">;</font>
+    <font color="#0000ff">string</font> <font color="#06055f">$sub_obj2</font> <font color="#000000">=</font> <font color="#06055f">$mainObj</font> <font color="#000000">+</font> <font color="#666666">"_sub_obj2"</font><font color="#000000">;</font>
+    <font color="#0000ff">string</font> <font color="#06055f">$sub_obj3</font> <font color="#000000">=</font> <font color="#06055f">$mainObj</font> <font color="#000000">+</font> <font color="#666666">"_sub_obj3"</font><font color="#000000">;</font>    
+    <font color="#0000ff">string</font> <font color="#06055f">$cmdFirst</font> <font color="#000000">=</font> <font color="#06055f">$object</font> <font color="#000000">+</font> <font color="#666666">".f[112:223]"</font><font color="#000000">;</font>
+    <font color="#0000ff">string</font> <font color="#06055f">$cmdSecond</font> <font color="#000000">=</font> <font color="#06055f">$object</font> <font color="#000000">+</font> <font color="#666666">".f[240:255]"</font><font color="#000000">;</font>
+    
+    <font color="#0000ff">vector</font> <font color="#06055f">$temp</font> <font color="#000000">= getFaceCenter(</font><font color="#06055f">$mainObj</font><font color="#000000">, 0);</font>
+    <font color="#0000ff">float</font> <font color="#06055f">$radius</font> <font color="#000000">= getRadius(</font><font color="#06055f">$mainObj</font><font color="#000000">, 0,</font> <font color="#06055f">$temp</font><font color="#000000">) - 0.5;</font>
+    <font color="#4c78a6">polySphere</font> <font color="#000000">-r</font> <font color="#06055f">$radius</font> <font color="#000000">-sx 16 -sy 16 -ax 0 1 0 -tx 1 -ch 1 -n</font> <font color="#06055f">$object</font><font color="#000000">;</font>
+    <font color="#4c78a6">select</font> <font color="#000000">-r</font> <font color="#06055f">$cmdFirst $cmdSecond</font><font color="#000000">;</font>
+    <font color="#4c78a6">delete</font><font color="#000000">;
+  
+    ssph_coverVertex(</font><font color="#06055f">$object</font><font color="#000000">,</font> <font color="#06055f">$sub_obj1</font><font color="#000000">);
+    ssph_coverEdge(</font><font color="#06055f">$object</font><font color="#000000">,</font> <font color="#06055f">$sub_obj2</font><font color="#000000">);</font>
+  
+    <font color="#0000ff">string</font> <font color="#06055f">$cmdThird</font> <font color="#000000">=</font> <font color="#06055f">$object</font> <font color="#000000">+</font> <font color="#666666">".f[48:111]"</font><font color="#000000">;</font>
+    <font color="#4c78a6">select</font> <font color="#000000">-r</font> <font color="#06055f">$cmdThird</font><font color="#000000">;</font>
+    <font color="#4c78a6">delete</font><font color="#000000">;
+    
+    ssph_coverRestFaces(</font><font color="#06055f">$object</font><font color="#000000">,</font> <font color="#06055f">$sub_obj3</font><font color="#000000">,</font> <font color="#06055f">$isSphere</font><font color="#000000">);</font>
+    
+    <font color="#4c78a6">delete</font> <font color="#06055f">$object</font><font color="#000000">;</font>
+    <font color="#4c78a6">select</font> <font color="#000000">-r</font> <font color="#06055f">$sub_obj1</font><font color="#000000">;</font>
+    <font color="#4c78a6">select</font> <font color="#000000">-tgl</font> <font color="#06055f">$sub_obj2</font><font color="#000000">;</font>
+    <font color="#4c78a6">select</font> <font color="#000000">-tgl</font> <font color="#06055f">$sub_obj3</font><font color="#000000">;</font> 
+    <font color="#4c78a6">group</font> <font color="#000000">-n</font> <font color="#06055f">$sub_figure</font><font color="#000000">;    
+}</font>
+  
+<font color="#cc0000">//PROC: Cover rest faces with either half-spheres or pyramids.</font>
+<font color="#0000b3">global proc</font> <font color="#000000">ssph_coverRestFaces(</font><font color="#0000ff">string</font> <font color="#06055f">$obj</font><font color="#000000">,</font> <font color="#0000ff">string</font> <font color="#06055f">$sub_obj3</font><font color="#000000">,</font> <font color="#0000ff">int</font> <font color="#06055f">$isSphere</font><font color="#000000">){</font>
+    <font color="#0000ff">string</font> <font color="#06055f">$mash3</font><font color="#000000">[];</font>
+    <font color="#06055f">$arrayFace</font> <font color="#000000">=</font> <font color="#410341">`polyEvaluate -f $obj`</font><font color="#000000">;</font>
+    <font color="#cc0000">//Calling getFaceCenter method for each face</font>
+    <font color="#0000ff">int</font> <font color="#06055f">$fId</font><font color="#000000">;</font>
+    <font color="#0000b3">for</font><font color="#000000">(</font><font color="#06055f">$fId</font><font color="#000000">=0;</font> <font color="#06055f">$fId</font><font color="#000000">&lt;$arrayFace[0];</font> <font color="#06055f">$fId</font><font color="#000000">++){</font>
+        <font color="#0000ff">vector</font> <font color="#06055f">$temp</font> <font color="#000000">= getFaceCenter(</font><font color="#06055f">$obj</font><font color="#000000">,</font> <font color="#06055f">$fId</font><font color="#000000">);</font>
+        <font color="#0000ff">float</font> <font color="#06055f">$radius</font> <font color="#000000">= getRadius(</font><font color="#06055f">$obj</font><font color="#000000">,</font> <font color="#06055f">$fId</font><font color="#000000">,</font> <font color="#06055f">$temp</font><font color="#000000">);</font>
+        
+        <font color="#0000ff">string</font> <font color="#06055f">$miniSphNm</font> <font color="#000000">=</font> <font color="#06055f">$obj</font> <font color="#000000">+</font> <font color="#666666">"_mini_"</font> <font color="#000000">+</font> <font color="#06055f">$fId</font><font color="#000000">;</font>
+        <font color="#0000ff">string</font> <font color="#06055f">$name3</font><font color="#000000">[];</font>
+        <font color="#0000b3">if</font><font color="#000000">(</font><font color="#06055f">$isSphere</font><font color="#000000">){</font> 
+            <font color="#06055f">$name3</font> <font color="#000000">=</font> <font color="#410341">`polySphere -r $radius -sx 16 -sy 16 -ax 0 1 0 -tx 1 -ch 1 -n $miniSphNm`</font><font color="#000000">;</font>
+            <font color="#0000ff">string</font> <font color="#06055f">$cmd1</font> <font color="#000000">=</font> <font color="#06055f">$miniSphNm</font> <font color="#000000">+</font> <font color="#666666">".f[0:111]"</font><font color="#000000">;</font>
+            <font color="#0000ff">string</font> <font color="#06055f">$cmd2</font> <font color="#000000">=</font> <font color="#06055f">$miniSphNm</font> <font color="#000000">+</font> <font color="#666666">".f[224:239]"</font><font color="#000000">;</font>
+            <font color="#4c78a6">select</font> <font color="#000000">-r</font> <font color="#06055f">$cmd1 $cmd2</font><font color="#000000">;</font>
+            <font color="#4c78a6">delete</font><font color="#000000">;
+        }</font><font color="#0000b3">else</font><font color="#000000">{</font>
+            <font color="#06055f">$name3</font> <font color="#000000">=</font> <font color="#410341">`polyPyramid -w ($radius*2) -ns 4 -sh 1 -sc 13 -ax 0 1 0 -cuv 3 -ch 1 -n $miniSphNm`</font><font color="#000000">;
+        }</font>
+        
+        <font color="#06055f">$mash3</font><font color="#000000">[</font><font color="#06055f">$fId</font><font color="#000000">] =</font> <font color="#06055f">$name3</font><font color="#000000">[0];</font>
+        
+        <font color="#4c78a6">select</font> <font color="#06055f">$miniSphNm</font><font color="#000000">;</font>
+        <font color="#0000ff">float</font> <font color="#06055f">$a</font><font color="#000000">[] = aimY(</font><font color="#06055f">$temp</font><font color="#000000">);</font>
+        <font color="#4c78a6">move</font> <font color="#000000">(</font><font color="#06055f">$temp</font><font color="#000000">.x) (</font><font color="#06055f">$temp</font><font color="#000000">.y) (</font><font color="#06055f">$temp</font><font color="#000000">.z);</font>
+        <font color="#4c78a6">rotate</font> <font color="#000000">-r</font> <font color="#06055f">$a</font><font color="#000000">[0] 0 0;</font>
+        <font color="#4c78a6">rotate</font> <font color="#000000">-r 0     0</font> <font color="#06055f">$a</font><font color="#000000">[1];</font>
+        
+        <font color="#0000b3">if</font><font color="#000000">(</font><font color="#06055f">$fId</font> <font color="#000000">== (</font><font color="#06055f">$arrayFace</font><font color="#000000">[0]-1)){</font>
+            <font color="#0000ff">string</font> <font color="#06055f">$cmd0</font> <font color="#000000">=</font> <font color="#06055f">$obj</font> <font color="#000000">+</font> <font color="#666666">".vtx[80]"</font><font color="#000000">;</font>
+            <font color="#0000ff">vector</font> <font color="#06055f">$vec</font> <font color="#000000">=</font> <font color="#410341">`pointPosition -w $cmd0`</font><font color="#000000">;</font>
+            <font color="#0000ff">string</font> <font color="#06055f">$lastOne</font> <font color="#000000">=</font> <font color="#06055f">$obj</font> <font color="#000000">+</font> <font color="#666666">"_mini_"</font> <font color="#000000">+</font> <font color="#06055f">$fId</font> <font color="#000000">+</font> <font color="#666666">"_0"</font><font color="#000000">;</font>
+            <font color="#0000ff">string</font> <font color="#06055f">$name4</font><font color="#000000">[];</font>
+            <font color="#0000b3">if</font><font color="#000000">(</font><font color="#06055f">$isSphere</font><font color="#000000">){</font> 
+                <font color="#06055f">$name4</font> <font color="#000000">=</font> <font color="#410341">`polySphere -r $radius -sx 16 -sy 16 -ax 0 1 0 -tx 1 -ch 1 -n $lastOne`</font><font color="#000000">;</font>
+                <font color="#0000ff">string</font> <font color="#06055f">$cmd1</font> <font color="#000000">=</font> <font color="#06055f">$lastOne</font> <font color="#000000">+</font> <font color="#666666">".f[0:111]"</font><font color="#000000">;</font>
+                <font color="#0000ff">string</font> <font color="#06055f">$cmd2</font> <font color="#000000">=</font> <font color="#06055f">$lastOne</font> <font color="#000000">+</font> <font color="#666666">".f[224:239]"</font><font color="#000000">;</font>
+                <font color="#4c78a6">select</font> <font color="#000000">-r</font> <font color="#06055f">$cmd1 $cmd2</font><font color="#000000">;</font>
+                <font color="#4c78a6">delete</font><font color="#000000">;
+            }</font><font color="#0000b3">else</font><font color="#000000">{</font>
+                <font color="#06055f">$name4</font> <font color="#000000">=</font> <font color="#410341">`polyPyramid -w ($radius*2) -ns 4 -sh 1 -sc 13 -ax 0 1 0 -cuv 3 -ch 1 -n $lastOne`</font><font color="#000000">;
+            }</font>
+            <font color="#06055f">$mash3</font><font color="#000000">[</font><font color="#06055f">$fId</font><font color="#000000">+1] =</font> <font color="#06055f">$name4</font><font color="#000000">[0];</font>
+            
+            <font color="#4c78a6">select</font> <font color="#06055f">$lastOne</font><font color="#000000">;</font>
+            <font color="#4c78a6">rotate</font> <font color="#000000">180 0 0;</font> 
+            <font color="#4c78a6">move</font> <font color="#000000">(</font><font color="#06055f">$vec</font><font color="#000000">.x) (</font><font color="#06055f">$vec</font><font color="#000000">.y) (</font><font color="#06055f">$vec</font><font color="#000000">.z);
+        }
+    }</font>
+    
+    <font color="#4c78a6">select</font> <font color="#000000">-r</font> <font color="#06055f">$mash3</font><font color="#000000">[0];</font>
+    <font color="#0000b3">for</font><font color="#000000">(</font><font color="#06055f">$fId</font><font color="#000000">=1;</font> <font color="#06055f">$fId</font><font color="#000000">&lt;=$arrayFace[0];</font> <font color="#06055f">$fId</font><font color="#000000">++){</font>
+        <font color="#4c78a6">select</font> <font color="#000000">-tgl</font> <font color="#06055f">$mash3</font><font color="#000000">[</font><font color="#06055f">$fId</font><font color="#000000">];    
+    }</font>
+    <font color="#4c78a6">group</font> <font color="#000000">-n</font> <font color="#06055f">$sub_obj3</font><font color="#000000">;</font>
+  
+    <font color="#4c78a6">select</font> <font color="#06055f">$sub_obj3</font><font color="#000000">;</font>
+    <font color="#0000ff">string</font> <font color="#06055f">$vec</font> <font color="#000000">=</font> <font color="#06055f">$obj</font> <font color="#000000">+</font> <font color="#666666">".vtx[50]"</font><font color="#000000">;</font>
+    <font color="#0000ff">vector</font> <font color="#06055f">$vector</font> <font color="#000000">=</font> <font color="#410341">`pointPosition -w $vec`</font><font color="#000000">;</font>
+    <font color="#4c78a6">xform</font> <font color="#000000">-pivots 0  (</font><font color="#06055f">$vector</font><font color="#000000">.y)  0</font>  <font color="#06055f">$sub_obj3</font><font color="#000000">;</font>
+    <font color="#4c78a6">rotate</font> <font color="#000000">180 0 0;    
+}</font>
+  
+<font color="#cc0000">//PROC: Return vector information of middle of each face</font>
+<font color="#0000b3">global proc</font> <font color="#0000ff">vector</font> <font color="#000000">getFaceCenter(</font><font color="#0000ff">string</font> <font color="#06055f">$obj</font><font color="#000000">,</font> <font color="#0000ff">int</font> <font color="#06055f">$faceId</font><font color="#000000">){</font>
+    <font color="#4c78a6">select</font> <font color="#06055f">$obj</font><font color="#000000">;</font>
+    <font color="#0000ff">string</font> <font color="#06055f">$objName</font> <font color="#000000">=</font> <font color="#06055f">$obj</font> <font color="#000000">+</font> <font color="#666666">".f["</font> <font color="#000000">+</font> <font color="#06055f">$faceId</font> <font color="#000000">+</font><font color="#666666">"]"</font><font color="#000000">;</font>
+    <font color="#cc0000">//Query vector information for one particular face</font>
+    <font color="#0000ff">float</font> <font color="#06055f">$results</font><font color="#000000">[] =</font> <font color="#410341">`xform -q -ws -t $objName`</font><font color="#000000">;</font>
+    <font color="#0000ff">int</font> <font color="#06055f">$vertexCount</font> <font color="#000000">=</font> <font color="#4c78a6">size</font><font color="#000000">(</font><font color="#06055f">$results</font><font color="#000000">)/3;</font>
+    
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font><font color="#000000">,</font> <font color="#06055f">$j</font><font color="#000000">,</font> <font color="#06055f">$h</font><font color="#000000">;</font>
+    <font color="#0000ff">vector</font> <font color="#06055f">$vec</font><font color="#000000">[];</font>
+    <font color="#0000ff">float</font> <font color="#06055f">$newVec</font><font color="#000000">[];</font>
+    <font color="#cc0000">//Average all vector information to get center value.</font>
+    <font color="#0000b3">for</font><font color="#000000">(</font><font color="#06055f">$i</font><font color="#000000">=0;</font> <font color="#06055f">$i</font><font color="#000000">&lt;3;</font> <font color="#06055f">$i</font><font color="#000000">++){</font>
+        <font color="#0000ff">float</font> <font color="#06055f">$tempNum</font><font color="#000000">;</font>
+        <font color="#0000b3">for</font><font color="#000000">(</font><font color="#06055f">$h</font><font color="#000000">=0;</font> <font color="#06055f">$h</font><font color="#000000">&lt;$vertexCount;</font> <font color="#06055f">$h</font><font color="#000000">++){</font>
+            <font color="#06055f">$tempNum</font> <font color="#000000">+=</font> <font color="#06055f">$results</font><font color="#000000">[</font><font color="#06055f">$h</font><font color="#000000">*3+</font><font color="#06055f">$i</font><font color="#000000">];
+        }</font>
+        <font color="#0000ff">float</font> <font color="#06055f">$val</font> <font color="#000000">=</font> <font color="#06055f">$tempNum</font><font color="#000000">/</font><font color="#06055f">$vertexCount</font><font color="#000000">;</font>
+        <font color="#06055f">$newVec</font><font color="#000000">[</font><font color="#06055f">$i</font><font color="#000000">] =</font> <font color="#06055f">$val</font><font color="#000000">;
+    }</font>
+    <font color="#cc0000">//Return center of the face</font>
+    <font color="#0000ff">vector</font> <font color="#06055f">$faceCenterPnt</font> <font color="#000000">= &lt;&lt;$newVec[0],</font> <font color="#06055f">$newVec</font><font color="#000000">[1],</font> <font color="#06055f">$newVec</font><font color="#000000">[2]&gt;&gt;;</font>
+    <font color="#0000b3">return</font> <font color="#06055f">$faceCenterPnt</font><font color="#000000">;
+}</font>
+  
+<font color="#cc0000">//PROC: Return radius value by calulating the distance between center face end vertex on the edge</font>
+<font color="#0000b3">global proc</font> <font color="#0000ff">float</font> <font color="#000000">getRadius(</font><font color="#0000ff">string</font> <font color="#06055f">$obj</font><font color="#000000">,</font> <font color="#0000ff">int</font> <font color="#06055f">$faceId</font><font color="#000000">,</font> <font color="#0000ff">vector</font> <font color="#06055f">$center</font><font color="#000000">){</font>
+    <font color="#4c78a6">select</font> <font color="#06055f">$obj</font><font color="#000000">;</font>
+    <font color="#0000ff">string</font> <font color="#06055f">$objName</font> <font color="#000000">=</font> <font color="#06055f">$obj</font> <font color="#000000">+</font> <font color="#666666">".f["</font> <font color="#000000">+</font> <font color="#06055f">$faceId</font> <font color="#000000">+</font><font color="#666666">"]"</font><font color="#000000">;</font>
+    <font color="#cc0000">//Query vector information for one particular face</font>
+    <font color="#0000ff">float</font> <font color="#06055f">$results</font><font color="#000000">[] =</font> <font color="#410341">`xform -q -ws -t $objName`</font><font color="#000000">;</font>
+    <font color="#0000ff">vector</font> <font color="#06055f">$temp</font> <font color="#000000">= &lt;&lt;$results[0],</font> <font color="#06055f">$results</font><font color="#000000">[1],</font> <font color="#06055f">$results</font><font color="#000000">[2]&gt;&gt;;</font>
+    <font color="#0000ff">vector</font> <font color="#06055f">$result</font> <font color="#000000">=</font> <font color="#06055f">$center</font> <font color="#000000">-</font> <font color="#06055f">$temp</font><font color="#000000">;</font>
+    <font color="#0000b3">return</font> <font color="#4c78a6">mag</font><font color="#000000">(</font><font color="#06055f">$result</font><font color="#000000">);
+}</font>
+</pre>

@@ -1,0 +1,92 @@
+<pre><font color="#000000">/</font><font color="#cc0000">/STEP 4: 
+//Create and place random-sized twisted corns in certain vertex location</font>
+<font color="#0000ff">string</font> <font color="#06055f">$twistedCorns</font> <font color="#000000">=</font> <font color="#06055f">$obj</font> <font color="#000000">+</font> <font color="#666666">"_twistedCorns"</font><font color="#000000">;
+attachTwistedCornsToVtx(</font><font color="#06055f">$obj</font><font color="#000000">,</font> <font color="#06055f">$orgVertexCount</font><font color="#000000">,</font> <font color="#06055f">$twistedCorns</font><font color="#000000">);</font>
+  
+<font color="#cc0000">//Remove circles and curves</font>
+<font color="#000000">removeCirclesAndCurves(</font><font color="#06055f">$orgVertexCount</font><font color="#000000">);</font>
+  
+<font color="#cc0000">//PROC: Create and place random-sized twisted corns in certain vertex location</font>
+<font color="#0000b3">global proc</font> <font color="#000000">attachTwistedCornsToVtx(</font><font color="#0000ff">string</font> <font color="#06055f">$objName</font><font color="#000000">,</font> <font color="#0000ff">int</font> <font color="#06055f">$orgVertexCount</font><font color="#000000">,</font> <font color="#0000ff">string</font> <font color="#06055f">$twistedCorns</font><font color="#000000">){</font>
+    
+    <font color="#0000ff">string</font> <font color="#06055f">$mash2</font><font color="#000000">[];</font>
+    <font color="#4c78a6">select</font> <font color="#06055f">$objName</font><font color="#000000">;</font>
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font><font color="#000000">;</font>
+    <font color="#0000b3">for</font><font color="#000000">(</font><font color="#06055f">$i</font><font color="#000000">=0;</font> <font color="#06055f">$i</font><font color="#000000">&lt;$orgVertexCount;</font> <font color="#06055f">$i</font><font color="#000000">++){</font>
+        <font color="#cc0000">//Create random-sized twisted corn object</font>
+        <font color="#0000ff">float</font> <font color="#06055f">$randNum</font> <font color="#000000">=</font> <font color="#410341">`rand 0.25 0.35`</font><font color="#000000">;</font>
+        <font color="#0000ff">float</font> <font color="#06055f">$distY</font> <font color="#000000">= 1.0;</font>
+        <font color="#0000ff">string</font> <font color="#06055f">$path</font> <font color="#000000">=</font> <font color="#410341">`curve -d 3  -p 0 0 0 
+                        -p (sin(deg_to_rad(60))) ($distY) 0 
+                        -p (sin(deg_to_rad(60*2))) ($distY*2) 0 
+                        -p (sin(deg_to_rad(60*3))) ($distY*3) 0 
+                        -p (sin(deg_to_rad(60*4))) ($distY*4) 0 
+                        -p (sin(deg_to_rad(60*5))) ($distY*5) 0
+                        -p (sin(deg_to_rad(60*6))) ($distY*6) 0`</font><font color="#000000">;</font>
+        <font color="#0000ff">string</font> <font color="#06055f">$c</font><font color="#000000">[] =</font> <font color="#410341">`circle -nr 0 1 0 -r $randNum`</font><font color="#000000">;</font>
+        <font color="#0000ff">string</font> <font color="#06055f">$newName</font> <font color="#000000">=</font> <font color="#06055f">$objName</font> <font color="#000000">+</font> <font color="#666666">"_twistedCorn_"</font> <font color="#000000">+</font> <font color="#06055f">$i</font><font color="#000000">;</font>
+        <font color="#0000ff">string</font> <font color="#06055f">$ext</font><font color="#000000">[] =</font> <font color="#410341">`extrude -name $newName -polygon 0 $c[0] $path`</font><font color="#000000">;</font>
+        <font color="#0000ff">string</font> <font color="#06055f">$attributeName</font> <font color="#000000">=</font> <font color="#666666">"extrude"</font> <font color="#000000">+ (</font><font color="#06055f">$i</font><font color="#000000">+1);</font>
+        <font color="#4c78a6">setAttr</font> <font color="#000000">(</font><font color="#06055f">$attributeName</font> <font color="#000000">+</font><font color="#666666">".scale"</font><font color="#000000">) 0;</font>
+        <font color="#4c78a6">scale</font> <font color="#000000">-r 0.5 0.5 0.5;</font>
+        
+        <font color="#cc0000">//Get the vertex and angle information to attach corn</font>
+        <font color="#4c78a6">select</font> <font color="#06055f">$newName</font><font color="#000000">;</font>
+        <font color="#0000ff">string</font> <font color="#06055f">$cmd</font> <font color="#000000">=</font> <font color="#06055f">$objName</font> <font color="#000000">+</font> <font color="#666666">".vtx["</font> <font color="#000000">+</font> <font color="#06055f">$i</font> <font color="#000000">+</font> <font color="#666666">"]"</font><font color="#000000">;</font>
+        <font color="#0000ff">vector</font> <font color="#06055f">$vec</font> <font color="#000000">=</font> <font color="#410341">`pointPosition -w $cmd`</font><font color="#000000">;</font>
+        <font color="#0000ff">float</font> <font color="#06055f">$a</font><font color="#000000">[] = aimY(</font><font color="#06055f">$vec</font><font color="#000000">);</font>
+        
+        <font color="#cc0000">//Attach corn to the vertex</font>
+        <font color="#4c78a6">move</font> <font color="#000000">(</font><font color="#06055f">$vec</font><font color="#000000">.x) (</font><font color="#06055f">$vec</font><font color="#000000">.y) (</font><font color="#06055f">$vec</font><font color="#000000">.z);</font>
+        <font color="#4c78a6">rotate</font> <font color="#000000">-r</font> <font color="#06055f">$a</font><font color="#000000">[0] 0  0;</font>
+        <font color="#4c78a6">rotate</font> <font color="#000000">-r 0     0</font>  <font color="#06055f">$a</font><font color="#000000">[1];</font>
+        
+        <font color="#06055f">$mash2</font><font color="#000000">[</font><font color="#06055f">$i</font><font color="#000000">] =</font> <font color="#06055f">$ext</font><font color="#000000">[0];
+    }</font>
+    
+    <font color="#4c78a6">select</font> <font color="#000000">-r</font> <font color="#06055f">$mash2</font><font color="#000000">[0];</font>
+    <font color="#0000b3">for</font><font color="#000000">(</font><font color="#06055f">$i</font><font color="#000000">=1;</font> <font color="#06055f">$i</font><font color="#000000">&lt;$orgVertexCount;</font> <font color="#06055f">$i</font><font color="#000000">++){</font>
+        <font color="#4c78a6">select</font> <font color="#000000">-tgl</font> <font color="#06055f">$mash2</font><font color="#000000">[</font><font color="#06055f">$i</font><font color="#000000">];    
+    }</font>
+    <font color="#4c78a6">group</font> <font color="#000000">-n</font> <font color="#06055f">$twistedCorns</font><font color="#000000">;    
+}</font>
+  
+<font color="#cc0000">//PROC: Get the avg normal</font> 
+<font color="#0000b3">proc</font> <font color="#0000ff">float</font><font color="#000000">[] aimY(</font><font color="#0000ff">vector</font> <font color="#06055f">$vec</font><font color="#000000">) {</font>
+    <font color="#0000ff">float</font> <font color="#06055f">$out</font><font color="#000000">[2];</font>
+    <font color="#0000ff">float</font> <font color="#06055f">$xAngle</font><font color="#000000">,</font> <font color="#06055f">$zAngle</font><font color="#000000">,</font> <font color="#06055f">$xyLength</font><font color="#000000">,</font> <font color="#06055f">$vecLength</font><font color="#000000">;</font>
+      
+    <font color="#06055f">$xyLength</font> <font color="#000000">=</font> <font color="#4c78a6">sqrt</font><font color="#000000">((</font><font color="#06055f">$vec</font><font color="#000000">.x) * (</font><font color="#06055f">$vec</font><font color="#000000">.x) +
+                      (</font><font color="#06055f">$vec</font><font color="#000000">.y) * (</font><font color="#06055f">$vec</font><font color="#000000">.y));</font>
+    <font color="#06055f">$vecLength</font> <font color="#000000">=</font> <font color="#4c78a6">sqrt</font><font color="#000000">((</font><font color="#06055f">$vec</font><font color="#000000">.x) * (</font><font color="#06055f">$vec</font><font color="#000000">.x) +
+                       (</font><font color="#06055f">$vec</font><font color="#000000">.y) * (</font><font color="#06055f">$vec</font><font color="#000000">.y) + 
+                       (</font><font color="#06055f">$vec</font><font color="#000000">.z) * (</font><font color="#06055f">$vec</font><font color="#000000">.z));</font>
+      
+    <font color="#cc0000">// $xyLength will be zero when $vec is pointing
+    // along the +z or -z axis</font>
+    <font color="#0000b3">if</font><font color="#000000">(</font><font color="#06055f">$xyLength</font> <font color="#000000">== 0)</font>
+        <font color="#06055f">$zAngle</font> <font color="#000000">= (</font><font color="#06055f">$vec</font><font color="#000000">.x) &gt; 0 ?</font> <font color="#4c78a6">deg_to_rad</font><font color="#000000">(90) :</font> <font color="#4c78a6">deg_to_rad</font><font color="#000000">(-90);</font>
+    <font color="#0000b3">else</font>
+        <font color="#06055f">$zAngle</font> <font color="#000000">= acos((</font><font color="#06055f">$vec</font><font color="#000000">.y)/</font><font color="#06055f">$xyLength</font><font color="#000000">);</font>
+      
+    <font color="#06055f">$xAngle</font> <font color="#000000">= acos(</font><font color="#06055f">$xyLength</font><font color="#000000">/</font><font color="#06055f">$vecLength</font><font color="#000000">);</font>
+      
+    <font color="#06055f">$xAngle</font> <font color="#000000">= (</font><font color="#06055f">$vec</font><font color="#000000">.z) &gt; 0 ?</font> <font color="#06055f">$xAngle</font> <font color="#000000">: -</font><font color="#06055f">$xAngle</font><font color="#000000">;</font>
+    <font color="#06055f">$out</font><font color="#000000">[0] =</font> <font color="#4c78a6">rad_to_deg</font><font color="#000000">(</font><font color="#06055f">$xAngle</font><font color="#000000">);</font>
+      
+    <font color="#06055f">$zAngle</font> <font color="#000000">= (</font><font color="#06055f">$vec</font><font color="#000000">.x) &gt; 0 ? -</font><font color="#06055f">$zAngle</font> <font color="#000000">:</font> <font color="#06055f">$zAngle</font><font color="#000000">;</font>
+    <font color="#06055f">$out</font><font color="#000000">[1] =</font> <font color="#4c78a6">rad_to_deg</font><font color="#000000">(</font><font color="#06055f">$zAngle</font><font color="#000000">);</font>
+    <font color="#0000b3">return</font> <font color="#06055f">$out</font><font color="#000000">;
+}</font>
+  
+<font color="#cc0000">//PROC: Remove used circle and curves</font>
+<font color="#0000b3">global proc</font> <font color="#000000">removeCirclesAndCurves(</font><font color="#0000ff">int</font> <font color="#06055f">$orgVertexCount</font><font color="#000000">){</font>
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font><font color="#000000">;</font>
+    <font color="#0000b3">for</font><font color="#000000">(</font><font color="#06055f">$i</font><font color="#000000">=1;</font> <font color="#06055f">$i</font><font color="#000000">&lt;$orgVertexCount+1;</font> <font color="#06055f">$i</font><font color="#000000">++){</font>
+        <font color="#0000ff">string</font> <font color="#06055f">$curvName</font> <font color="#000000">=</font> <font color="#666666">"curve"</font> <font color="#000000">+</font> <font color="#06055f">$i</font><font color="#000000">;</font>
+        <font color="#0000ff">string</font> <font color="#06055f">$circleName</font> <font color="#000000">=</font> <font color="#666666">"nurbsCircle"</font> <font color="#000000">+</font> <font color="#06055f">$i</font><font color="#000000">;</font>
+        <font color="#4c78a6">delete</font> <font color="#06055f">$curvName</font><font color="#000000">;</font>
+        <font color="#4c78a6">delete</font> <font color="#06055f">$circleName</font><font color="#000000">;
+    }
+}</font>
+</pre>

@@ -1,0 +1,134 @@
+<pre><font color="#cc0000">// Malcolm Kesson
+// Milim Lee
+// Mar 12 2017
+// Pre Shape Mel Script
+//</font>
+<font color="#0000b3">global proc</font> mocapRI() {
+<font color="#cc0000">// Get the name of the shape node</font>
+<font color="#0000ff">string</font> <font color="#06055f">$shapeName</font> = <font color="#410341">`rman ctxGetObject`</font>;
+<font color="#0000ff">string</font> <font color="#06055f">$parents</font>[] = <font color="#410341">`listRelatives -parent $shapeName`</font>;
+<font color="#0000ff">string</font> <font color="#06055f">$tformNode</font> = <font color="#06055f">$parents</font>[0];
+  
+<font color="#cc0000">// The node may hava a number in its name that we can use 
+// to set the random number generator</font>
+<font color="#0000ff">int</font>    <font color="#06055f">$nodeNumber</font> = <font color="#410341">`match "[0-9]+" $shapeName`</font>;    
+<font color="#0000b3">if</font>(<font color="#06055f">$nodeNumber</font> != <font color="#666666">""</font>) {
+    <font color="#4c78a6">seed</font>(<font color="#0000ff">int</font>(<font color="#06055f">$nodeNumber</font>));
+    }
+<font color="#cc0000">// Read the values from our interface</font>
+<font color="#0000ff">string</font> <font color="#06055f">$attr</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetAttrName "mocap_datapath"`</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetFullSharedGeometricAttrName $shapeName $attr`</font>;
+<font color="#0000ff">string</font> <font color="#06055f">$datapath</font> = <font color="#410341">`getAttr $attr`</font>;
+  
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetAttrName "mocap_ribpath"`</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetFullSharedGeometricAttrName $shapeName $attr`</font>;
+<font color="#0000ff">string</font> <font color="#06055f">$myRibModelPath</font> = <font color="#410341">`getAttr $attr`</font>;
+  
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetAttrName "mocap_geo"`</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetFullSharedGeometricAttrName $shapeName $attr`</font>;
+<font color="#0000ff">int</font> <font color="#06055f">$geo</font> = <font color="#410341">`getAttr $attr`</font>;
+  
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetAttrName "mocap_scale"`</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetFullSharedGeometricAttrName $shapeName $attr`</font>;
+<font color="#0000ff">float</font> <font color="#06055f">$scale</font> = <font color="#410341">`getAttr $attr`</font>;
+  
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetAttrName "mocap_width"`</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetFullSharedGeometricAttrName $shapeName $attr`</font>;
+<font color="#0000ff">float</font> <font color="#06055f">$width</font> = <font color="#410341">`getAttr $attr`</font>;
+  
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetAttrName "mocap_trail"`</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetFullSharedGeometricAttrName $shapeName $attr`</font>;
+<font color="#0000ff">int</font> <font color="#06055f">$trail</font> = <font color="#410341">`getAttr $attr`</font>;
+  
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetAttrName "mocap_step"`</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetFullSharedGeometricAttrName $shapeName $attr`</font>;
+<font color="#0000ff">int</font> <font color="#06055f">$step</font> = <font color="#410341">`getAttr $attr`</font>;
+  
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetAttrName "mocap_cache"`</font>;
+<font color="#06055f">$attr</font> = <font color="#410341">`rmanGetFullSharedGeometricAttrName $shapeName $attr`</font>;
+<font color="#0000ff">int</font> <font color="#06055f">$cache</font> = <font color="#410341">`getAttr $attr`</font>;
+  
+<font color="#0000ff">int</font> <font color="#06055f">$startFrame</font> = <font color="#410341">`getAttr defaultRenderGlobals.startFrame`</font>;
+<font color="#0000ff">int</font> <font color="#06055f">$endFrame</font> = <font color="#410341">`getAttr defaultRenderGlobals.endFrame`</font>;
+<font color="#0000ff">int</font> <font color="#06055f">$frameRange</font> = <font color="#0000ff">int</font>((<font color="#06055f">$endFrame</font> - <font color="#06055f">$startFrame</font>) / 7);
+  
+<font color="#4c78a6">python</font>(<font color="#666666">"from mocap_rman import MoCapRMan"</font>);
+<font color="#cc0000">// Use the shape node name for the name of the python variable that
+// "receives" the instance - avoids name collision of multiple instances.
+// The name is also used as an Id string for the instance. MocapRMan uses
+// the name to uniquify the ribs it generates.</font>
+<font color="#0000ff">string</font> <font color="#06055f">$idStr</font> = <font color="#666666">"\""</font> + <font color="#06055f">$shapeName</font> + <font color="#666666">"\""</font>;
+<font color="#06055f">$datapath</font> = <font color="#666666">"\""</font> + <font color="#06055f">$datapath</font> + <font color="#666666">"\""</font>;
+<font color="#0000ff">string</font> <font color="#06055f">$moStr</font> = <font color="#06055f">$shapeName</font> + <font color="#666666">" = MoCapRMan("</font> + <font color="#06055f">$idStr</font> + <font color="#666666">","</font>
+                    + <font color="#06055f">$datapath</font> + <font color="#666666">","</font> + <font color="#06055f">$scale</font> + <font color="#666666">")"</font>;
+  
+<font color="#cc0000">// Frame 1 always creates a new instance of MoCapRMan</font>
+<font color="#0000ff">int</font> <font color="#06055f">$currentTime</font> = <font color="#410341">`currentTime -q`</font>;
+<font color="#0000b3">if</font>(<font color="#06055f">$currentTime</font> == 1) {
+    <font color="#4c78a6">python</font>(<font color="#06055f">$moStr</font>);
+    <font color="#4c78a6">print</font>(<font color="#666666">"Created a new instance of the database on frame 1\n"</font>);
+    }
+<font color="#cc0000">// Ensure we only instance MoCapRMan once rather than for
+// each frame of animation.</font>
+<font color="#0000ff">string</font> <font color="#06055f">$tryStr</font>;
+<font color="#06055f">$tryStr</font>  = <font color="#666666">"try:\n"</font>;
+<font color="#06055f">$tryStr</font> += <font color="#666666">"    if mo == None:\n"</font>;
+<font color="#06055f">$tryStr</font> += <font color="#666666">"        "</font> + <font color="#06055f">$moStr</font> + <font color="#666666">"\n"</font>;
+<font color="#06055f">$tryStr</font> += <font color="#666666">"except:\n"</font>;
+<font color="#06055f">$tryStr</font> += <font color="#666666">"    "</font> + <font color="#06055f">$moStr</font> + <font color="#666666">"\n"</font>;
+<font color="#4c78a6">python</font>(<font color="#06055f">$tryStr</font>);
+  
+<font color="#cc0000">// Create the geometry</font>
+<font color="#0000b3">if</font>(<font color="#06055f">$cache</font> != 2) {
+    <font color="#0000ff">string</font> <font color="#06055f">$action</font> = <font color="#666666">"Compute"</font>;
+    <font color="#0000b3">if</font>(<font color="#06055f">$cache</font> == 1)
+        <font color="#06055f">$action</font> = <font color="#666666">"Reuse"</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$ribpath</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$args</font> = <font color="#06055f">$trail</font> + <font color="#666666">","</font> + <font color="#06055f">$step</font> + <font color="#666666">","</font> + <font color="#06055f">$width</font> + <font color="#666666">",\""</font> + <font color="#06055f">$action</font> + <font color="#666666">"\""</font>;
+    <font color="#0000b3">if</font>(<font color="#06055f">$geo</font> == 0)
+        <font color="#06055f">$ribpath</font> = <font color="#4c78a6">python</font>(<font color="#06055f">$shapeName</font> + <font color="#666666">".writePoints("</font> + <font color="#06055f">$args</font> + <font color="#666666">")"</font>);
+    
+    <font color="#0000b3">else if</font>(<font color="#06055f">$geo</font> == 1) {
+        <font color="#06055f">$ribpath</font> = <font color="#4c78a6">python</font>(<font color="#06055f">$shapeName</font> + <font color="#666666">".writeCurves("</font> + <font color="#06055f">$args</font> + <font color="#666666">")"</font>);
+    
+    }<font color="#0000b3">else if</font>(<font color="#06055f">$geo</font> == 2) {
+        <font color="#06055f">$ribpath</font> = <font color="#4c78a6">python</font>(<font color="#06055f">$shapeName</font> + <font color="#666666">".createSkeleton("</font> + <font color="#06055f">$args</font> + <font color="#666666">")"</font>);
+    
+    }<font color="#0000b3">else if</font>(<font color="#06055f">$geo</font> == 3) {
+        <font color="#06055f">$args</font> += <font color="#666666">","</font> + <font color="#06055f">$scale</font> + <font color="#666666">",\""</font> + <font color="#06055f">$myRibModelPath</font> + <font color="#666666">"\""</font>;
+        <font color="#06055f">$ribpath</font> = <font color="#4c78a6">python</font>(<font color="#06055f">$shapeName</font> + <font color="#666666">".createJoker("</font> + <font color="#06055f">$args</font> + <font color="#666666">")"</font>);
+    
+    }<font color="#0000b3">else if</font>(<font color="#06055f">$geo</font> == 4) {
+        <font color="#0000b3">if</font>(<font color="#06055f">$currentTime</font> &gt;= <font color="#06055f">$startFrame</font> && <font color="#06055f">$currentTime</font> &lt; (<font color="#06055f">$startFrame</font> + <font color="#06055f">$frameRange</font>)){
+            <font color="#06055f">$args</font> += <font color="#666666">",isMixed=True"</font>;
+            <font color="#06055f">$args</font> += <font color="#666666">",volume=True"</font>;
+            <font color="#06055f">$ribpath</font> = <font color="#4c78a6">python</font>(<font color="#06055f">$shapeName</font> + <font color="#666666">".writeBlobby("</font> + <font color="#06055f">$args</font> + <font color="#666666">")"</font>);
+        } <font color="#0000b3">else if</font>(<font color="#06055f">$currentTime</font> &gt;= (<font color="#06055f">$startFrame</font> + <font color="#06055f">$frameRange</font>) && <font color="#06055f">$currentTime</font> &lt; (<font color="#06055f">$startFrame</font> + (<font color="#06055f">$frameRange</font> * 2))){
+            <font color="#06055f">$args</font> += <font color="#666666">",isMixed=True"</font>;
+            <font color="#06055f">$ribpath</font> = <font color="#4c78a6">python</font>(<font color="#06055f">$shapeName</font> + <font color="#666666">".createSkeleton("</font> + <font color="#06055f">$args</font> + <font color="#666666">")"</font>);
+        } <font color="#0000b3">else</font> {
+            <font color="#06055f">$args</font> += <font color="#666666">","</font> + <font color="#06055f">$scale</font> + <font color="#666666">",\""</font> + <font color="#06055f">$myRibModelPath</font> + <font color="#666666">"\""</font>;
+            <font color="#06055f">$args</font> += <font color="#666666">",isMixed=True"</font>;
+            <font color="#06055f">$ribpath</font> = <font color="#4c78a6">python</font>(<font color="#06055f">$shapeName</font> + <font color="#666666">".createJoker("</font> + <font color="#06055f">$args</font> + <font color="#666666">")"</font>);
+        }
+    
+    }<font color="#0000b3">else if</font>(<font color="#06055f">$geo</font> == 5)
+        <font color="#06055f">$ribpath</font> = <font color="#4c78a6">python</font>(<font color="#06055f">$shapeName</font> + <font color="#666666">".writeBlobby("</font> + <font color="#06055f">$args</font> + <font color="#666666">")"</font>);
+    
+    <font color="#0000b3">else</font> {
+        <font color="#06055f">$args</font> += <font color="#666666">",volume=True"</font>;
+        <font color="#06055f">$ribpath</font> = <font color="#4c78a6">python</font>(<font color="#06055f">$shapeName</font> + <font color="#666666">".writeBlobby("</font> + <font color="#06055f">$args</font> + <font color="#666666">")"</font>);
+        }
+    <font color="#4c78a6">print</font>(<font color="#666666">"Using archive \""</font> + <font color="#06055f">$ribpath</font> + <font color="#666666">"\"\n"</font>);
+    <font color="#4c78a6">print</font>(<font color="#666666">"Total frame count is "</font> + <font color="#4c78a6">python</font>(<font color="#06055f">$shapeName</font> + <font color="#666666">".numframes()"</font>) + <font color="#666666">"\n"</font>);
+    RiReadArchive(<font color="#06055f">$ribpath</font>);
+    <font color="#cc0000">// Ensure the proxy is not rendered</font>
+    RiAttribute <font color="#666666">"visibility" "int camera"</font> 0;
+    RiAttribute <font color="#666666">"visibility" "int transmission"</font> 0;
+    RiAttribute <font color="#666666">"visibility" "int indirect"</font> 0;
+    }
+}
+  
+  
+</pre>

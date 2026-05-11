@@ -1,0 +1,32 @@
+<pre><font color="#000000"></font><font color="#cc0000">//STEP 3: 
+//Get new number of vertex count after creating more vertex</font>
+<font color="#06055f">$newCountResult</font> = getEdgeVertexCount(<font color="#06055f">$obj</font>);
+<font color="#0000ff">int</font> <font color="#06055f">$vertexCount</font> = <font color="#06055f">$newCountResult</font>[1];
+  
+<font color="#cc0000">//Create and place random-sized sphere in all vertex location</font>
+<font color="#0000ff">string</font> <font color="#06055f">$edgeSpheres</font> = <font color="#06055f">$obj</font> + <font color="#666666">"_edgeSpheres"</font>;
+placeRandSpheres(<font color="#06055f">$obj</font>, <font color="#06055f">$vertexCount</font>, <font color="#06055f">$edgeSpheres</font>);
+  
+<font color="#cc0000">//PROC: Place random-sized sphere in each vertex location</font>
+<font color="#0000b3">global proc</font> placeRandSpheres(<font color="#0000ff">string</font> <font color="#06055f">$objName</font>, <font color="#0000ff">int</font> <font color="#06055f">$verCount</font>, <font color="#0000ff">string</font> <font color="#06055f">$edgeSpheres</font>){
+    <font color="#4c78a6">print</font> <font color="#06055f">$objName</font>;
+    <font color="#4c78a6">print</font> <font color="#06055f">$verCount</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$mash1</font>[];
+    <font color="#4c78a6">select</font> <font color="#06055f">$objName</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font>;
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=0; <font color="#06055f">$i</font>&lt;$verCount; <font color="#06055f">$i</font>++){
+      <font color="#0000ff">float</font> <font color="#06055f">$randNum</font> = <font color="#410341">`rand 0.05 0.2`</font>;
+      <font color="#0000ff">string</font> <font color="#06055f">$cmd</font> = <font color="#06055f">$objName</font> + <font color="#666666">".vtx["</font> + <font color="#06055f">$i</font> + <font color="#666666">"]"</font>;
+      <font color="#0000ff">vector</font> <font color="#06055f">$vector</font> = <font color="#410341">`pointPosition -w $cmd`</font>;
+      <font color="#0000ff">string</font> <font color="#06055f">$name</font>[] = <font color="#410341">`polySphere -r $randNum`</font>;
+      <font color="#4c78a6">move</font> (<font color="#06055f">$vector</font>.x) (<font color="#06055f">$vector</font>.y) (<font color="#06055f">$vector</font>.z);
+      <font color="#06055f">$mash1</font>[<font color="#06055f">$i</font>] = <font color="#06055f">$name</font>[0];
+    }
+    
+    <font color="#4c78a6">select</font> -r <font color="#06055f">$mash1</font>[0];
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=1; <font color="#06055f">$i</font>&lt;$verCount; <font color="#06055f">$i</font>++){
+        <font color="#4c78a6">select</font> -tgl <font color="#06055f">$mash1</font>[<font color="#06055f">$i</font>];    
+    }
+    <font color="#4c78a6">group</font> -n <font color="#06055f">$edgeSpheres</font>;
+}
+</pre>

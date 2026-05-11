@@ -1,0 +1,30 @@
+<pre><font color="#cc0000">//STEP 2:</font> 
+<font color="#06055f">$countResults</font> = getEdgeVertexCount(<font color="#06055f">$obj</font>);
+<font color="#0000ff">int</font> <font color="#06055f">$edgeCount</font> = <font color="#06055f">$countResults</font>[0];
+<font color="#0000ff">int</font> <font color="#06055f">$orgVertexCount</font> = <font color="#06055f">$countResults</font>[1];
+  
+addMoreVertex(<font color="#06055f">$obj</font>, <font color="#06055f">$edgeCount</font>);
+  
+<font color="#cc0000">//PROC: Get original number of vertex and edge count from the main object</font>
+<font color="#0000b3">global proc</font> <font color="#0000ff">int</font>[] getEdgeVertexCount(<font color="#0000ff">string</font> <font color="#06055f">$objName</font>){
+    <font color="#06055f">$array</font> = <font color="#410341">`polyEvaluate -e -v $objName`</font>;
+    <font color="#0000b3">return</font> <font color="#06055f">$array</font>;            
+}
+  
+<font color="#cc0000">//PROC: Add more vertex on each edge</font>
+<font color="#0000b3">global proc</font> addMoreVertex(<font color="#0000ff">string</font> <font color="#06055f">$objName</font>, <font color="#0000ff">int</font> <font color="#06055f">$edgCount</font>){
+    <font color="#4c78a6">select</font> <font color="#06055f">$objName</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font>;
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=0; <font color="#06055f">$i</font>&lt;$edgCount; <font color="#06055f">$i</font>++){
+        <font color="#4c78a6">polySplit</font> -ep <font color="#06055f">$i</font> 0.1 
+                  -ep <font color="#06055f">$i</font> 0.2 
+                  -ep <font color="#06055f">$i</font> 0.3 
+                  -ep <font color="#06055f">$i</font> 0.4 
+                  -ep <font color="#06055f">$i</font> 0.5
+                  -ep <font color="#06055f">$i</font> 0.6 
+                  -ep <font color="#06055f">$i</font> 0.7 
+                  -ep <font color="#06055f">$i</font> 0.8 
+                  -ep <font color="#06055f">$i</font> 0.9;
+    }
+}
+</pre>

@@ -1,0 +1,194 @@
+<pre>
+<font color="#cc0000"># mocap_db.py
+# Two convenience classes useful for reading and storing data read 
+# from a mocap data (.txt) sourced from,
+#        http://accad.osu.edu/research/mocap/mocap_data.htm
+
+# Malcolm Kesson
+# October 27 2012
+# Nov 5 2012 - additional error checking, swapping z/y coords.
+# Mar 1 2016 - additional bounding box methods added.
+  
+# Milim Lee
+# Mar 12 2017 - additional method added for generating markers' frame data as dictionary structure.
+
+#----------------------------------------------------------    
+# Stores a column of coordinates read from a mocap data (.txt) file.
+# Instances of this class are used by the MoCapDB class.</font>
+<font color="#0000b3">class</font> MoCapMarker:
+    SCALE = 1.0
+    MIN =  10000000.0
+    MAX = -10000000.0
+    ERROR = <font color="#666666">'-9999.99'</font>
+    <font color="#0000b3">def</font> __init__(<font color="#0000b3">self</font>, identifier):
+        <font color="#0000b3">self</font>.name = identifier
+        <font color="#0000b3">self</font>.data = [] <font color="#cc0000"># a list of lists of xyz values</font>
+    <font color="#0000b3">def</font> getname(<font color="#0000b3">self</font>):
+        <font color="#0000b3">return self</font>.name
+    <font color="#0000b3">def</font> append(<font color="#0000b3">self</font>, x,y,z):
+        <font color="#0000b3">if</font> (x == MoCapMarker.ERROR <font color="#0000b3">or</font>
+            y == MoCapMarker.ERROR <font color="#0000b3">or</font> 
+            z == MoCapMarker.ERROR):
+            <font color="#0000b3">self</font>.data.append([])
+        <font color="#0000b3">else</font>:
+            <font color="#cc0000"># Note we swap the y and z coordinates</font>
+            <font color="#0000b3">self</font>.data.append( [<font color="#0000b3">float</font>(x) * MoCapMarker.SCALE,
+                               <font color="#0000b3">float</font>(z) * MoCapMarker.SCALE,
+                               <font color="#0000b3">float</font>(y) * MoCapMarker.SCALE] )
+    <font color="#0000b3">def</font> getdata(<font color="#0000b3">self</font>, frame):
+        <font color="#0000b3">if</font> <font color="#0000b3">len</font>(<font color="#0000b3">self</font>.data) == 0:
+            <font color="#0000b3">return</font> []
+        <font color="#0000b3">else</font>:
+            <font color="#0000b3">return self</font>.data[frame]
+            
+    <font color="#0000b3">def</font> getBbox(<font color="#0000b3">self</font>):
+        minx = miny = minz = MoCapMarker.MIN
+        maxx = maxy = maxz = MoCapMarker.MAX
+        <font color="#0000b3">if</font> <font color="#0000b3">len</font>(<font color="#0000b3">self</font>.data) == 0:
+            <font color="#0000b3">return</font> []
+        <font color="#0000b3">for</font> coords <font color="#0000b3">in self</font>.data:
+            <font color="#0000b3">if</font> <font color="#0000b3">len</font>(coords) == 0:
+                <font color="#0000b3">return</font> []
+            minx = <font color="#0000b3">min</font>(minx, coords[0])
+            miny = <font color="#0000b3">min</font>(miny, coords[1])
+            minz = <font color="#0000b3">min</font>(minz, coords[2])
+            maxx = <font color="#0000b3">max</font>(maxx, coords[0])
+            maxy = <font color="#0000b3">max</font>(maxy, coords[1])
+            maxz = <font color="#0000b3">max</font>(maxz, coords[2])
+        <font color="#0000b3">return</font> [minx,miny,minz,maxx,maxy,maxz]
+                
+<font color="#cc0000">#----------------------------------------------------------</font>    
+<font color="#0000b3">class</font> MoCapDB:
+    <font color="#0000b3">def</font> __init__(<font color="#0000b3">self</font>, datafile, scaling):
+        MoCapMarker.SCALE = scaling
+        <font color="#cc0000"># Read the mocap date file</font>
+        f = <font color="#0000b3">open</font>(datafile, <font color="#666666">'r'</font>)
+        data_in = f.readlines()
+        f.close()
+  
+        <font color="#cc0000"># Get the names of the markers from the first line of text.</font>
+        text = data_in.pop(0)
+        items = text.split()[2:]    <font color="#cc0000"># 'slice' the first two items</font>
+        <font color="#0000b3">self</font>.names = []
+        <font color="#0000b3">for</font> n <font color="#0000b3">in</font> <font color="#0000b3">range</font>(0, <font color="#0000b3">len</font>(items), 3):
+            <font color="#0000b3">self</font>.names.append(items[n][0:-2]) <font color="#cc0000"># Ignore ':X',':Y',':Z'</font>
+        <font color="#0000b3">self</font>.frames = <font color="#0000b3">len</font>(data_in)  <font color="#cc0000"># Number of 'Fields'</font>
+        <font color="#0000b3">self</font>.markers = []           <font color="#cc0000"># Instances of MoCapMarker</font>
+        <font color="#0000b3">self</font>.markersByFrame = {}
+        <font color="#0000b3">self</font>.bbox_width = 0         <font color="#cc0000"># x axis</font>
+        <font color="#0000b3">self</font>.bbox_height = 0        <font color="#cc0000"># y axis</font>
+        <font color="#0000b3">self</font>.bbox_length = 0        <font color="#cc0000"># z axis</font>
+        <font color="#0000b3">self</font>.getdata(data_in)
+    
+    <font color="#cc0000"># The input is a list of rows of data. Each row consists 
+    # of list of coordinates - generally 120 values per line.</font>
+    <font color="#0000b3">def</font> getdata(<font color="#0000b3">self</font>, data_in):
+        <font color="#cc0000"># Get instances of our MoCapMarker.Marker class</font>
+        <font color="#0000b3">for</font> name <font color="#0000b3">in self</font>.names:
+            <font color="#0000b3">self</font>.markers.append(MoCapMarker(name))
+            
+        <font color="#cc0000"># Process each row of data and add the data to the markers.</font>
+        <font color="#0000b3">for</font> row <font color="#0000b3">in</font> data_in:
+            data = row.split()[2:] <font color="#cc0000"># Ignore the values of Field & Time</font>
+            index = 0
+            <font color="#0000b3">for</font> n <font color="#0000b3">in</font> <font color="#0000b3">range</font>(0, <font color="#0000b3">len</font>(data), 3):
+                <font color="#0000b3">self</font>.markers[index].append(data[n], data[n+1], data[n+2])
+                index += 1
+  
+    <font color="#cc0000"># Given a frame number, getFrameData() returns a list of 
+    # of lists of the coordinates of all the markers for a specific
+    # frame of the performance.</font>
+    <font color="#0000b3">def</font> getFrameData(<font color="#0000b3">self</font>, frame):
+        out = []
+        <font color="#0000b3">for</font> m <font color="#0000b3">in self</font>.markers:
+            data = m.getdata(frame)
+            <font color="#0000b3">if</font> <font color="#0000b3">len</font>(data) &gt; 0:
+                out.append(data)
+        <font color="#0000b3">return</font> out
+    
+    <font color="#cc0000">#Stores the dictionary for each marker's position
+    # e.g. {'RFHD':[0.25,0.1,0.3], 'LFHD':[1.3,5.4,1.0]}</font>
+    <font color="#0000b3">def</font> getMarkerFrameData(<font color="#0000b3">self</font>, frame):
+        out = {}
+        <font color="#0000b3">for</font> m <font color="#0000b3">in self</font>.markers:
+            name = m.getname()
+            data = m.getdata(frame)
+            out.update({name[14:]:[]})
+            <font color="#0000b3">if</font> <font color="#0000b3">len</font>(data) &gt; 0:
+                out[name[14:]].append(data[0])
+                out[name[14:]].append(data[1])
+                out[name[14:]].append(data[2])
+        <font color="#0000b3">return</font> out
+        
+    <font color="#cc0000"># Returns the bounding box of all the markers for a specific frame
+    # of the performance.</font>
+    <font color="#0000b3">def</font> getFrameBbox(<font color="#0000b3">self</font>, frame):
+        minx = miny = minz = MoCapMarker.MIN
+        maxx = maxy = maxz = MoCapMarker.MAX
+        coords = <font color="#0000b3">self</font>.getFrameData(frame)
+        <font color="#0000b3">for</font> coord <font color="#0000b3">in</font> coords:
+            <font color="#0000b3">if</font> <font color="#0000b3">len</font>(coord) == 0:
+                <font color="#0000b3">continue</font>
+            x,y,z = coord
+            minx = <font color="#0000b3">min</font>(minx, x)
+            miny = <font color="#0000b3">min</font>(miny, y)
+            minz = <font color="#0000b3">min</font>(minz, z)
+            maxx = <font color="#0000b3">max</font>(maxx, x)
+            maxy = <font color="#0000b3">max</font>(maxy, y)
+            maxz = <font color="#0000b3">max</font>(maxz, z)
+        <font color="#0000b3">return</font> [minx,miny,minz,maxx,maxy,maxz]
+        
+    <font color="#cc0000"># Returns a list containing the coordinates of the
+    # center of the bounding box followed by its width,
+    # height and depth.</font> 
+    <font color="#0000b3">def</font> getFrameDimensions(<font color="#0000b3">self</font>, frame):
+        minx,miny,minz,maxx,maxy,maxz = <font color="#0000b3">self</font>.getFrameBbox(frame)
+        cx = minx <font color="#cc0000"># float(maxx - minx)/2</font>
+        cy = miny <font color="#cc0000">#float(maxy - miny)/2</font>
+        cz = minz <font color="#cc0000">#float(maxz - minz)/2</font>
+        width =  <font color="#0000b3">abs</font>(maxx - minx)
+        height = <font color="#0000b3">abs</font>(maxy - miny)
+        depth = <font color="#0000b3">abs</font>(maxz - minz)
+        <font color="#0000b3">return</font> [cx, cy, cz, width, height, depth]
+        
+    <font color="#cc0000"># Given the index of a marker, getMarkerData() returns a list of
+    # coordinates for the specified frame range (begin to end).</font>
+    <font color="#0000b3">def</font> getMarkerData(<font color="#0000b3">self</font>, index, begin, end, step):
+        out = []
+        marker = <font color="#0000b3">self</font>.markers[index]
+        <font color="#0000b3">if</font> begin == end:
+            end = begin + step
+            step = 1
+        <font color="#0000b3">for</font> frame <font color="#0000b3">in</font> <font color="#0000b3">range</font>(begin, end, step):
+            data = marker.getdata(frame)
+            <font color="#0000b3">if</font> <font color="#0000b3">len</font>(data) &gt; 0:
+                out.extend(data)
+        <font color="#0000b3">return</font> out
+  
+    <font color="#cc0000"># Returns a list of the names of the markers.</font>
+    <font color="#0000b3">def</font> getnames(<font color="#0000b3">self</font>):
+        <font color="#0000b3">return self</font>.names
+    <font color="#cc0000"># Returns the number of markers.</font>
+    <font color="#0000b3">def</font> nummarkers(<font color="#0000b3">self</font>):
+        <font color="#0000b3">return</font> <font color="#0000b3">len</font>(<font color="#0000b3">self</font>.markers)
+    <font color="#cc0000"># Returns the number of frames (ie. Fields).</font>
+    <font color="#0000b3">def</font> numframes(<font color="#0000b3">self</font>):
+        <font color="#0000b3">return self</font>.frames
+    <font color="#cc0000"># Returns the bounding box of the entire mocap performance.</font>
+    <font color="#0000b3">def</font> getBbox(<font color="#0000b3">self</font>):
+        minx = miny = minz = MoCapMarker.MIN
+        maxx = maxy = maxz = MoCapMarker.MAX
+        <font color="#0000b3">for</font> m <font color="#0000b3">in self</font>.markers:
+            bbox = m.getBbox()
+            <font color="#0000b3">if</font> <font color="#0000b3">len</font>(bbox) &gt; 0:
+                minx = <font color="#0000b3">min</font>(minx, bbox[0])
+                miny = <font color="#0000b3">min</font>(miny, bbox[1])
+                minz = <font color="#0000b3">min</font>(minz, bbox[2])
+                maxx = <font color="#0000b3">max</font>(maxx, bbox[3])
+                maxy = <font color="#0000b3">max</font>(maxy, bbox[4])
+                maxz = <font color="#0000b3">max</font>(maxz, bbox[5])
+        <font color="#0000b3">self</font>.bbox_width =  <font color="#0000b3">abs</font>(maxx - minx)
+        <font color="#0000b3">self</font>.bbox_height = <font color="#0000b3">abs</font>(maxy - miny)
+        <font color="#0000b3">self</font>.bbox_length = <font color="#0000b3">abs</font>(maxz - minz)
+        <font color="#0000b3">return</font> [minx,miny,minz,maxx,maxy,maxz]
+</pre>

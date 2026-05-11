@@ -1,0 +1,22 @@
+#________________Tea Cup Final____________________
+AttributeBegin
+	AttributeBegin
+		ReadArchive "materials/teacup_material.rib"
+		AttributeBegin
+			Rotate 180 1 0 0
+			ReadArchive "geo/teacup_body.rib"
+		AttributeEnd
+		AttributeBegin
+			Translate 0 -0.41 0
+			ReadArchive "geo/teacup_body_top.rib"
+		AttributeEnd
+		AttributeBegin
+			ReadArchive "geo/teacup_body_bottom.rib"
+		AttributeEnd
+		AttributeBegin
+			Translate 0 0.1 0
+			Scale 1.13 0.8 1.13
+			ReadArchive "geo/teacup_body_inside.rib"
+		AttributeEnd
+	AttributeEnd
+AttributeEnd

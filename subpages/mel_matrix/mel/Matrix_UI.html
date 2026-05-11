@@ -1,0 +1,397 @@
+<pre><font color="#cc0000">//Here we declare a global variable</font>
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gWindow</font>;
+<font color="#cc0000">//For static UI</font>
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$objName</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gShapeOptions</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gIndideShapeRadio</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$chAnimationTrigger</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gCountSlider</font>;
+  
+<font color="#cc0000">//For dynamic UI</font>
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$objNameToBeEdited</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gEntireObjectResizeSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gTwistedCornResizeSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gRandSphereResizeSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gSubObjSphereResizeSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gSubObjEdgeResizeSlider</font>;
+<font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gSubObjFillerResizeSlider</font>;
+  
+<font color="#0000b3">global proc</font> staticUI(){
+    <font color="#cc0000">//using the already declared variable outside the proc</font>
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gWindow</font>;
+    
+    <font color="#0000ff">int</font> <font color="#06055f">$exists</font> = <font color="#410341">`window -exists $gWindow`</font>;
+    <font color="#0000b3">if</font>(<font color="#06055f">$exists</font> == 0) {
+        <font color="#06055f">$gWindow</font> = <font color="#410341">`window -width 400
+                       -height 500
+                       -retain
+                       -topLeftCorner 500 1000
+                       -title  "Micro Pollen UI"`</font>;
+        <font color="#cc0000">//Add any sliders, buttons and other UI elements</font>
+        addWidgets();    
+    }
+    <font color="#4c78a6">showWindow</font> <font color="#06055f">$gWindow</font>;
+}
+  
+<font color="#0000b3">global proc</font> addWidgets(){
+    <font color="#cc0000">//For static UI - To create (a) Micro Pollen object(s).</font>
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$objName</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gShapeOptions</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gIndideShapeRadio</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$chAnimationTrigger</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gCountSlider</font>;
+    
+    <font color="#4c78a6">columnLayout</font> -adjustableColumn <font color="#0000b3">true</font>;
+    <font color="#4c78a6">image</font> -<font color="#4c78a6">image</font> <font color="#666666">"/main.jpg"</font> -width 400 -height 250;
+  
+    <font color="#4c78a6">frameLayout</font> -label <font color="#666666">"CREAT MICRO POLLEN"</font> -collapsable <font color="#0000b3">true</font> -borderStyle <font color="#666666">"etchedIn"</font>;
+    <font color="#4c78a6">columnLayout</font> -columnAttach <font color="#666666">"both"</font> 5 -rowSpacing 5 -columnWidth 400;
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            
+            <font color="#06055f">$objName</font> = <font color="#410341">`textFieldGrp -columnWidth 1 65 
+                                     -columnAlign 1 "right"
+                                     -text "myMicroPollen" -label "Object name"`</font>;
+            
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gShapeOptions</font> = <font color="#410341">`optionMenuGrp -label "Shape of the object"
+                                           -columnWidth 1 97`</font>;
+                              <font color="#4c78a6">menuItem</font> -label <font color="#666666">"polyPlatonicSolid"</font>;
+                              <font color="#4c78a6">menuItem</font> -label <font color="#666666">"polyPrimitive"</font>;
+                              <font color="#4c78a6">menuItem</font> -label <font color="#666666">"polyCube"</font>;
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gIndideShapeRadio</font> = <font color="#410341">`radioButtonGrp -numberOfRadioButtons 2
+                                                -columnWidth 1 105
+                                                -cal 1 "right"
+                                                -label "Inside Filling Shape" 
+                                                -labelArray2 "Pyramid" "Sphere"
+                                                -select 1`</font>;
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$chAnimationTrigger</font> = <font color="#410341">`checkBoxGrp   -value1 true
+                                                -cal 1 "right"
+                                                -columnWidth 1 40
+                                                -cl2 "right" "right"
+                                                -numberOfCheckBoxes 1                           
+                                                -label1 "Want Animation?"`</font>;
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gCountSlider</font> = <font color="#410341">`intSliderGrp  -label "Number of Objects"
+                                          -columnWidth 1 95
+                                          -field true
+                                          -value 1
+                                          -min 1 -max 3`</font>;
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#4c78a6">button</font> -label <font color="#666666">"Generate Micro Pollen!"</font> -command <font color="#666666">"makeMicroPollen"</font>;
+            <font color="#4c78a6">button</font> -label <font color="#666666">"Delete Object(s)"</font> -command <font color="#666666">"deleteMicroPollen"</font>;
+            <font color="#4c78a6">separator</font> -style none -h 20;
+        <font color="#4c78a6">setParent</font> ..;
+    <font color="#4c78a6">setParent</font> ..;
+    
+    
+    <font color="#cc0000">//For dynamic UI - To adjust existing object's size</font>
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$objNameToBeEdited</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gEntireObjectResizeSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gTwistedCornResizeSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gRandSphereResizeSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gSubObjSphereResizeSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gSubObjEdgeResizeSlider</font>;
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gSubObjFillerResizeSlider</font>;
+  
+    <font color="#4c78a6">frameLayout</font> -label <font color="#666666">"ADJUST SIZES"</font> -collapsable <font color="#0000b3">true</font> -borderStyle <font color="#666666">"etchedIn"</font>;
+    <font color="#4c78a6">columnLayout</font> -columnAttach <font color="#666666">"both"</font> 5 -rowSpacing 5 -columnWidth 400;
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#4c78a6">scrollField</font> -wordWrap <font color="#0000b3">true</font>
+                        -height 38  
+                        -width 300 
+                        -editable <font color="#0000b3">false</font> 
+                        -<font color="#4c78a6">text</font> <font color="#666666">"Type object name or select the object before you start to resize."</font>;
+            <font color="#4c78a6">separator</font> -height 2 -style none;           
+            <font color="#06055f">$objNameToBeEdited</font> = <font color="#410341">`textFieldGrp -columnWidth 1 65 
+                                     -columnAlign 1 "right"
+                                     -text "myMicroPollen" -label "Object name"`</font>;
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gEntireObjectResizeSlider</font> = <font color="#410341">`floatSliderGrp -label "Entire Object Size " 
+                                          -field true 
+                                          -min 0.01 
+                                          -max 3.0 
+                                          -value 1 
+                                          -step 1 
+                                          -columnWidth 1 93 
+                                          -dc "changeEntireObjectSize" sizeMainObject`</font>;
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gTwistedCornResizeSlider</font> = <font color="#410341">`floatSliderGrp -label "Twisted Corns Size " 
+                                          -field true 
+                                          -min 0.01 
+                                          -max 3.0 
+                                          -value 1 
+                                          -step 1 
+                                          -columnWidth 1 100 
+                                          -dc "changeTwistedCornsSize" sizeMainCorns`</font>;
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gRandSphereResizeSlider</font> = <font color="#410341">`floatSliderGrp -label "Edge Spheres Size " 
+                                          -field true 
+                                          -min 0.01 
+                                          -max 3.0 
+                                          -value 1 
+                                          -step 1 
+                                          -columnWidth 1 100 
+                                          -dc "changeEdgeSpheresSize" sizeMainSpheres`</font>;
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gSubObjSphereResizeSlider</font> = <font color="#410341">`floatSliderGrp -label "Subobj Spheres Size " 
+                                          -field true 
+                                          -min 0.01 
+                                          -max 3.0 
+                                          -value 1 
+                                          -step 1 
+                                          -columnWidth 1 108 
+                                          -dc "changeSubObjSpheresSize" sizeSubSpheres`</font>;
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gSubObjEdgeResizeSlider</font> = <font color="#410341">`floatSliderGrp -label "Subobj Edge Size " 
+                                          -field true 
+                                          -min 0.01 
+                                          -max 3.0 
+                                          -value 1 
+                                          -step 1 
+                                          -columnWidth 1 93 
+                                          -dc "changeSubObjEdgesSize" sizeSubEdges`</font>;
+            <font color="#4c78a6">separator</font> -height 2 -style none;
+            <font color="#06055f">$gSubObjFillerResizeSlider</font> = <font color="#410341">`floatSliderGrp -label "Subobj Filler Size " 
+                                          -field true 
+                                          -min 0.01 
+                                          -max 3.0 
+                                          -value 1 
+                                          -step 1 
+                                          -columnWidth 1 93 
+                                          -dc "changeSubObjFillerSize" sizeSubFiller`</font>;  
+            <font color="#4c78a6">separator</font> -style none -h 5;
+        <font color="#4c78a6">setParent</font> ..;
+    <font color="#4c78a6">setParent</font> ..;
+}
+  
+<font color="#cc0000">//This is automatically called when the button is clicked .
+//PROC: Generate Micro Pollen.</font>
+<font color="#0000b3">global proc</font> makeMicroPollen() {
+    
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$objName</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$obj</font> = <font color="#410341">`textFieldGrp -q -text $objName`</font>;
+    
+    <font color="#cc0000">//Check whether the name already exists</font>
+    <font color="#0000ff">string</font> <font color="#06055f">$nameChecker</font> = <font color="#06055f">$obj</font> + <font color="#666666">"*"</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$objNames</font>[] = <font color="#410341">`ls -sl $nameChecker`</font>;
+    <font color="#0000b3">if</font>(<font color="#4c78a6">size</font>(<font color="#06055f">$objNames</font>)){
+        <font color="#4c78a6">error</font>(<font color="#666666">"That name is already in use. Please choose another name."</font>);
+    }
+    
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gShapeOptions</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$objShape</font> = <font color="#410341">`optionMenuGrp -q -value $gShapeOptions`</font>;
+    
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font>=0;
+    <font color="#0000ff">int</font> <font color="#06055f">$isMatch</font> = 1;
+    <font color="#0000ff">int</font> <font color="#06055f">$objShapeId</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$shapeName</font>[] = {<font color="#666666">"polyPlatonicSolid"</font>, <font color="#666666">"polyPrimitive"</font>, <font color="#666666">"polyCube"</font>};
+    <font color="#0000b3">while</font>(<font color="#06055f">$isMatch</font> != 0){
+       <font color="#06055f">$isMatch</font> = <font color="#410341">`strcmp $shapeName[$i] $objShape`</font>;
+       <font color="#06055f">$objShapeId</font> = <font color="#06055f">$i</font>;
+       <font color="#06055f">$i</font>++;
+    }
+  
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gIndideShapeRadio</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$isSphereInside</font> = <font color="#410341">`radioButtonGrp -q -select $gIndideShapeRadio`</font>;
+  
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$chAnimationTrigger</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$isTriggerAnimation</font> = <font color="#410341">`checkBoxGrp -q -v1 $chAnimationTrigger`</font>;    
+  
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$gCountSlider</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$objCount</font> = <font color="#410341">`intSliderGrp -q -value $gCountSlider`</font>;
+ 
+    <font color="#cc0000">//Go ahead and create the object(s)!</font>
+    generateMicroPollens(<font color="#06055f">$obj</font>, <font color="#06055f">$objShapeId</font>, <font color="#06055f">$isSphereInside</font>, <font color="#06055f">$isTriggerAnimation</font>, <font color="#06055f">$objCount</font>);   
+}
+  
+<font color="#cc0000">//PROC: Delete Micro Pollen</font>
+<font color="#0000b3">global proc</font> deleteMicroPollen(){
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$objName</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$obj</font> = <font color="#410341">`textFieldGrp -q -text $objName`</font>;
+    
+    <font color="#0000ff">string</font> <font color="#06055f">$namesToDelete</font> = <font color="#06055f">$obj</font> + <font color="#666666">"*"</font>;
+    <font color="#4c78a6">select</font> -r <font color="#06055f">$namesToDelete</font>;
+    <font color="#4c78a6">delete</font>;
+}
+  
+<font color="#cc0000">//PROC: Checks whether user either provides object name or select the object to adjust its size.</font>
+<font color="#0000b3">global proc</font> <font color="#0000ff">string</font> objectSelectionChecker(){
+    
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$objNameToBeEdited</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$objName</font> = <font color="#410341">`textFieldGrp -q -text $objNameToBeEdited`</font>;
+  
+    <font color="#0000ff">string</font> <font color="#06055f">$result</font>;
+    <font color="#0000b3">if</font>(<font color="#4c78a6">size</font>(<font color="#06055f">$objName</font>) &gt; 0){
+        <font color="#06055f">$result</font> = <font color="#06055f">$objName</font>;
+    }<font color="#0000b3">else</font>{
+        <font color="#0000ff">string</font> <font color="#06055f">$main</font>[] = <font color="#410341">`ls -selection`</font>;
+        <font color="#0000b3">if</font>(<font color="#4c78a6">size</font>(<font color="#06055f">$main</font>) != 1){
+            <font color="#4c78a6">error</font>(<font color="#666666">"Please select one object"</font>);
+        }<font color="#0000b3">else</font>{
+            <font color="#06055f">$result</font> = <font color="#06055f">$main</font>[0];
+        }         
+    }
+    <font color="#0000b3">return</font> <font color="#06055f">$result</font>;
+}
+  
+<font color="#cc0000">//PROC: Change the entire obejct size.</font>
+<font color="#0000b3">global proc</font> changeEntireObjectSize(){
+    
+    <font color="#0000ff">string</font> <font color="#06055f">$main</font> = objectSelectionChecker();  
+    <font color="#0000ff">float</font> <font color="#06055f">$newSize</font> = <font color="#410341">`floatSliderGrp -q -value "sizeMainObject"`</font>;
+        
+    <font color="#0000ff">string</font> <font color="#06055f">$cmdX</font> = <font color="#06055f">$main</font> + <font color="#666666">".scaleX"</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$cmdY</font> = <font color="#06055f">$main</font> + <font color="#666666">".scaleY"</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$cmdZ</font> = <font color="#06055f">$main</font> + <font color="#666666">".scaleZ"</font>;
+    
+    <font color="#0000b3">if</font> ( <font color="#4c78a6">catch</font> (<font color="#410341">`setAttr $cmdX $newSize`</font>)) {
+        <font color="#4c78a6">error</font> (<font color="#666666">"Please provide the right object name"</font>);
+    } <font color="#0000b3">else</font> {
+        <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdX $newSize</font>;
+        <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdY $newSize</font>;
+        <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdZ $newSize</font>; 
+    }  
+}
+  
+<font color="#cc0000">//PROC: Change twisted corns size.</font>
+<font color="#0000b3">global proc</font> changeTwistedCornsSize() {
+  
+    <font color="#0000ff">string</font> <font color="#06055f">$main</font> = objectSelectionChecker();  
+    <font color="#0000ff">float</font> <font color="#06055f">$newSize</font> = <font color="#410341">`floatSliderGrp -q -value "sizeMainCorns"`</font>;
+  
+    <font color="#0000ff">string</font> <font color="#06055f">$mainChildren</font>[] = <font color="#410341">`listRelatives -children $main`</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$mainGrandChildren</font>[] = <font color="#410341">`listRelatives -children $mainChildren[0]`</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$twistedCorns</font>[] = <font color="#410341">`listRelatives -children $mainGrandChildren[1]`</font>;
+    
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font>;
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=0; <font color="#06055f">$i</font>&lt;size($twistedCorns); <font color="#06055f">$i</font>++){
+        <font color="#0000ff">string</font> <font color="#06055f">$cmdX</font> = <font color="#06055f">$twistedCorns</font>[<font color="#06055f">$i</font>] + <font color="#666666">".scaleX"</font>;
+        <font color="#0000ff">string</font> <font color="#06055f">$cmdY</font> = <font color="#06055f">$twistedCorns</font>[<font color="#06055f">$i</font>] + <font color="#666666">".scaleY"</font>;
+        <font color="#0000ff">string</font> <font color="#06055f">$cmdZ</font> = <font color="#06055f">$twistedCorns</font>[<font color="#06055f">$i</font>] + <font color="#666666">".scaleZ"</font>;
+        
+        <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdX $newSize</font>;
+        <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdY $newSize</font>;
+        <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdZ $newSize</font>;                   
+    }
+}
+  
+<font color="#cc0000">//PROC: Change spheres on the edge of the main object's frame.</font>
+<font color="#0000b3">global proc</font> changeEdgeSpheresSize() {
+  
+    <font color="#0000ff">string</font> <font color="#06055f">$main</font> = objectSelectionChecker();  
+    <font color="#0000ff">float</font> <font color="#06055f">$newSize</font> = <font color="#410341">`floatSliderGrp -q -value "sizeMainSpheres"`</font>;
+  
+    <font color="#0000ff">string</font> <font color="#06055f">$mainChildren</font>[] = <font color="#410341">`listRelatives -children $main`</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$mainGrandChildren</font>[] = <font color="#410341">`listRelatives -children $mainChildren[0]`</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$edgeSpheres</font>[] = <font color="#410341">`listRelatives -children $mainGrandChildren[0]`</font>;
+    
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font>;
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=0; <font color="#06055f">$i</font>&lt;size($edgeSpheres); <font color="#06055f">$i</font>++){
+        <font color="#0000ff">string</font> <font color="#06055f">$cmdX</font> = <font color="#06055f">$edgeSpheres</font>[<font color="#06055f">$i</font>] + <font color="#666666">".scaleX"</font>;
+        <font color="#0000ff">string</font> <font color="#06055f">$cmdY</font> = <font color="#06055f">$edgeSpheres</font>[<font color="#06055f">$i</font>] + <font color="#666666">".scaleY"</font>;
+        <font color="#0000ff">string</font> <font color="#06055f">$cmdZ</font> = <font color="#06055f">$edgeSpheres</font>[<font color="#06055f">$i</font>] + <font color="#666666">".scaleZ"</font>;
+ 
+        <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdX $newSize</font>;
+        <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdY $newSize</font>;
+        <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdZ $newSize</font>;                   
+    }
+}
+  
+<font color="#cc0000">//PROC: Change spheres on the edge of the sub object's frame.</font>
+<font color="#0000b3">global proc</font> changeSubObjSpheresSize() {
+  
+    <font color="#0000ff">string</font> <font color="#06055f">$main</font> = objectSelectionChecker();     
+    <font color="#0000ff">float</font> <font color="#06055f">$newSize</font> = <font color="#410341">`floatSliderGrp -q -value "sizeSubSpheres"`</font>;
+    
+    <font color="#0000ff">string</font> <font color="#06055f">$mainChildren</font>[] = <font color="#410341">`listRelatives -children $main`</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$subObjList</font>[] = <font color="#410341">`listRelatives -children $mainChildren[1]`</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$subObjSphereGroupList</font>[];
+    
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font>;
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=0; <font color="#06055f">$i</font>&lt;size($subObjList); <font color="#06055f">$i</font>++){
+        <font color="#0000ff">string</font> <font color="#06055f">$temp</font>[] = <font color="#410341">`listRelatives -children $subObjList[$i]`</font>;
+        <font color="#06055f">$subObjSphereGroupList</font>[<font color="#06055f">$i</font>] = <font color="#06055f">$temp</font>[0];
+    }
+  
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=0; <font color="#06055f">$i</font>&lt;size($subObjSphereGroupList); <font color="#06055f">$i</font>++){
+        <font color="#0000ff">string</font> <font color="#06055f">$subObjSphereList</font>[] = <font color="#410341">`listRelatives -children $subObjSphereGroupList[$i]`</font>;
+        
+        <font color="#0000ff">int</font> <font color="#06055f">$j</font>;
+        <font color="#0000b3">for</font>(<font color="#06055f">$j</font>=0; <font color="#06055f">$j</font>&lt;size($subObjSphereList); <font color="#06055f">$j</font>++){
+            <font color="#0000ff">string</font> <font color="#06055f">$cmdX</font> = <font color="#06055f">$subObjSphereList</font>[<font color="#06055f">$j</font>] + <font color="#666666">".scaleX"</font>;
+            <font color="#0000ff">string</font> <font color="#06055f">$cmdY</font> = <font color="#06055f">$subObjSphereList</font>[<font color="#06055f">$j</font>] + <font color="#666666">".scaleY"</font>;
+            <font color="#0000ff">string</font> <font color="#06055f">$cmdZ</font> = <font color="#06055f">$subObjSphereList</font>[<font color="#06055f">$j</font>] + <font color="#666666">".scaleZ"</font>;
+            
+            <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdX $newSize</font>;
+            <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdY $newSize</font>;
+            <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdZ $newSize</font>;            
+        }
+    }   
+}
+  
+<font color="#cc0000">//PROC: Change edge cylindar's size in each sub object.</font>
+<font color="#0000b3">global proc</font> changeSubObjEdgesSize(){
+  
+    <font color="#0000ff">string</font> <font color="#06055f">$main</font> = objectSelectionChecker();     
+    <font color="#0000ff">float</font> <font color="#06055f">$newSize</font> = <font color="#410341">`floatSliderGrp -q -value "sizeSubEdges"`</font>;
+    
+    <font color="#0000ff">string</font> <font color="#06055f">$mainChildren</font>[] = <font color="#410341">`listRelatives -children $main`</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$subObjList</font>[] = <font color="#410341">`listRelatives -children $mainChildren[1]`</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$subObjEdgeGroupList</font>[];
+    
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font>;
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=0; <font color="#06055f">$i</font>&lt;size($subObjList); <font color="#06055f">$i</font>++){
+        <font color="#0000ff">string</font> <font color="#06055f">$temp</font>[] = <font color="#410341">`listRelatives -children $subObjList[$i]`</font>;
+        <font color="#06055f">$subObjEdgeGroupList</font>[<font color="#06055f">$i</font>] = <font color="#06055f">$temp</font>[1];
+    }
+  
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=0; <font color="#06055f">$i</font>&lt;size($subObjEdgeGroupList); <font color="#06055f">$i</font>++){
+        <font color="#0000ff">string</font> <font color="#06055f">$subObjEdgeList</font>[] = <font color="#410341">`listRelatives -children $subObjEdgeGroupList[$i]`</font>;
+        
+        <font color="#0000ff">int</font> <font color="#06055f">$j</font>;
+        <font color="#0000b3">for</font>(<font color="#06055f">$j</font>=0; <font color="#06055f">$j</font>&lt;size($subObjEdgeList); <font color="#06055f">$j</font>++){
+            <font color="#0000ff">string</font> <font color="#06055f">$cmdX</font> = <font color="#06055f">$subObjEdgeList</font>[<font color="#06055f">$j</font>] + <font color="#666666">".scaleX"</font>;
+            <font color="#0000ff">string</font> <font color="#06055f">$cmdY</font> = <font color="#06055f">$subObjEdgeList</font>[<font color="#06055f">$j</font>] + <font color="#666666">".scaleY"</font>;
+            <font color="#0000ff">string</font> <font color="#06055f">$cmdZ</font> = <font color="#06055f">$subObjEdgeList</font>[<font color="#06055f">$j</font>] + <font color="#666666">".scaleZ"</font>;
+  
+            <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdX $newSize</font>;
+            <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdY $newSize</font>;
+            <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdZ $newSize</font>;            
+        }
+    }   
+}
+  
+<font color="#cc0000">//PROC: Change filler's size in each sub object.</font>
+<font color="#0000b3">global proc</font> changeSubObjFillerSize(){
+  
+    <font color="#0000ff">string</font> <font color="#06055f">$main</font> = objectSelectionChecker();     
+    <font color="#0000ff">float</font> <font color="#06055f">$newSize</font> = <font color="#410341">`floatSliderGrp -q -value "sizeSubFiller"`</font>;
+    
+    <font color="#0000ff">string</font> <font color="#06055f">$mainChildren</font>[] = <font color="#410341">`listRelatives -children $main`</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$subObjList</font>[] = <font color="#410341">`listRelatives -children $mainChildren[1]`</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$subObjFillerGroupList</font>[];
+    
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font>;
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=0; <font color="#06055f">$i</font>&lt;size($subObjList); <font color="#06055f">$i</font>++){
+        <font color="#0000ff">string</font> <font color="#06055f">$temp</font>[] = <font color="#410341">`listRelatives -children $subObjList[$i]`</font>;
+        <font color="#06055f">$subObjFillerGroupList</font>[<font color="#06055f">$i</font>] = <font color="#06055f">$temp</font>[2];
+    }
+  
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=0; <font color="#06055f">$i</font>&lt;size($subObjFillerGroupList); <font color="#06055f">$i</font>++){
+        <font color="#0000ff">string</font> <font color="#06055f">$subObjFillerList</font>[] = <font color="#410341">`listRelatives -children $subObjFillerGroupList[$i]`</font>;
+        
+        <font color="#0000ff">int</font> <font color="#06055f">$j</font>;
+        <font color="#0000b3">for</font>(<font color="#06055f">$j</font>=0; <font color="#06055f">$j</font>&lt;size($subObjFillerList); <font color="#06055f">$j</font>++){
+            <font color="#0000ff">string</font> <font color="#06055f">$cmdX</font> = <font color="#06055f">$subObjFillerList</font>[<font color="#06055f">$j</font>] + <font color="#666666">".scaleX"</font>;
+            <font color="#0000ff">string</font> <font color="#06055f">$cmdY</font> = <font color="#06055f">$subObjFillerList</font>[<font color="#06055f">$j</font>] + <font color="#666666">".scaleY"</font>;
+            <font color="#0000ff">string</font> <font color="#06055f">$cmdZ</font> = <font color="#06055f">$subObjFillerList</font>[<font color="#06055f">$j</font>] + <font color="#666666">".scaleZ"</font>;
+  
+            <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdX $newSize</font>;
+            <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdY $newSize</font>;
+            <font color="#4c78a6">setAttr</font> <font color="#06055f">$cmdZ $newSize</font>;                        
+        }
+    }       
+}
+</pre>

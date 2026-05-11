@@ -1,0 +1,20 @@
+{
+    subGroupYOffset = ch("../subGroupYOffset");
+    result = 0;
+    
+    if($F >= 516 && $F <=876){
+        result = ch("../heightGap")*sin($CY*ch("../frequency") +($F-516)) + ch("../height");
+    
+    }else{
+        result = ch("../heightGap")*sin($CY*ch("../frequency") +0) + ch("../height");
+    }
+    
+    if($CY <20){
+        result = result - subGroupYOffset;
+    
+    }else if($CY >= 40 && $CY < 60){
+        result = result + subGroupYOffset;
+    }
+    
+    return result;
+}

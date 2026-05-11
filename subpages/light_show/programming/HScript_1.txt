@@ -1,0 +1,13 @@
+{
+    offset = ch("../groupXOffset");
+    
+    if($CY == 0) {
+        return 0;
+    
+    } else if($CY % 2 == 0){
+        return (-1 * offset * ($CY+1)/2);
+    
+    } else {
+        return (offset * ($CY+1)/2);  
+    }
+}

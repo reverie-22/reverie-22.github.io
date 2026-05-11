@@ -1,0 +1,495 @@
+//Giving example parameters for testing.
+generateMicroPollens("obj", 0, 2, true, 1);
+
+
+//--------------------------------BELOW IS THE LIST OF PROC--------------------------------------
+
+global proc string generateMicroPollens(string $objName, int $objShape, int $isSphereInside, int $isTriggerAnimation, int $objCount){
+    
+    if(size($objName) <= 0){
+        error("Please provide the object name");
+    }
+    
+    string $finalObjNm;
+    if($objCount > 1){
+        //Doing recursive call.
+        $objCount--;
+        $finalObjNm = generateMicroPollens($objName, $objShape, $isSphereInside, $isTriggerAnimation, $objCount);
+        
+        select $finalObjNm;
+        string $name = $finalObjNm + "" + $objCount;
+    	duplicate -renameChildren -n $name $finalObjNm;
+    	select $name;
+    	
+    	if($isTriggerAnimation){
+            createAnimation($name);
+        }
+    	
+    	float $randX = `rand -10 10`;
+    	float $randZ = `rand -10 10`;
+    	move -a ($randX) 0 ($randZ);
+        
+    }else if($objCount == 1){
+        $finalObjNm = mainCreationCall($objName, $objShape, $isSphereInside, $isTriggerAnimation, $objCount);
+    
+    }else{
+        error("Come on! You want to craete at least 1 object, right? Provide right number please...");
+    }
+    
+    return $finalObjNm;
+}
+
+global proc string mainCreationCall(string $objName, int $objShape, int $isSphereInside, int $isTriggerAnimation, int $objCount){
+    
+    //MAIN CODE    
+    //STEP 1: Create main object
+    string $obj = $objName;
+    
+    switch($objShape){
+        case 0:
+            polyPlatonicSolid -r 3 -l 0.7137 -ax 0 1 0 -st 0  -cuv 4 -ch 1 -n $obj;    
+            break;        
+        case 1:
+            polyPrimitive -r 3 -l 1.2108 -ax 0 1 0 -pt 0  -cuv 4 -ch 1 -n $obj;
+            break;
+        case 2:
+            polyCube -d 3 -h 3 -w 3 -n $obj;
+            break;
+        default:
+            error("Please select which shape of object you want to create");
+            break;
+    }
+    
+    select $obj;
+
+    //STEP 2: Get original number of vertex and edge count from the main object
+    $countResults = getEdgeVertexCount($obj);
+    int $edgeCount = $countResults[0];
+    int $orgVertexCount = $countResults[1];
+    
+    
+    //STEP3: Add more vertex on each edge
+    addMoreVertex($obj, $edgeCount);
+    
+    
+    //STEP4: Get new number of vertex count after creating more vertex
+    $newCountResult = getEdgeVertexCount($obj);
+    int $vertexCount = $newCountResult[1];
+    
+    
+    //STEP 5: Create and place random-sized sphere in all vertex location
+    string $edgeSpheres = $obj + "_edgeSpheres";
+    placeRandSpheres($obj, $vertexCount, $edgeSpheres);
+    
+    
+    //STEP 6: Create and place random-sized twisted corns in certain vertex location
+    string $twistedCorns = $obj + "_twistedCorns";
+    attachTwistedCornsToVtx($obj, $orgVertexCount, $twistedCorns);
+    
+    //STEP 7: Group all the shapes into one main figure
+    string $main = $obj + "_mainFigure";
+    select -r $edgeSpheres;
+    select -tgl $twistedCorns;
+    group -n $main;
+    
+    
+    //STEP 8: Create subsphere - bottom half sphere
+    string $sub_figure = $obj + "_sub_figure";
+    int $isSphere = $isSphereInside-1;
+    createSubFigure($obj, $sub_figure, $isSphere);
+    
+    
+    //STEP 9: Attach subSphere to each face of main object
+    string $sub = $obj + "_subSpheres";
+    attachSubFiguresToFaces($obj, $sub_figure, $sub);
+    
+    //STEP 10: Delete the main object shape and group them all together as one object.
+    select $obj;
+    delete `ls -sl`;
+    
+    select -r $main;
+    select -tgl $sub;
+    string $finalGroupName = $obj;
+    group -n $finalGroupName;
+    
+    //STEP 11: Remove circles and curves
+    removeCirclesAndCurves($orgVertexCount);
+    
+    //STEP 12: Create animation
+    if($isTriggerAnimation){
+        createAnimation($finalGroupName);
+    }
+    
+    return $finalGroupName;  
+}
+
+//PROC: Get original number of vertex and edge count from the main object
+global proc int[] getEdgeVertexCount(string $objName){
+    $array = `polyEvaluate -e -v $objName`;
+    return $array;            
+}
+
+//PROC: Add more vertex on each edge
+global proc addMoreVertex(string $objName, int $edgCount){
+    select $objName;
+    int $i;
+    for($i=0; $i<$edgCount; $i++){
+        polySplit -ep $i 0.1 
+                  -ep $i 0.2 
+                  -ep $i 0.3 
+                  -ep $i 0.4 
+                  -ep $i 0.5
+                  -ep $i 0.6 
+                  -ep $i 0.7 
+                  -ep $i 0.8 
+                  -ep $i 0.9;
+    }
+}
+
+//PROC: Place random-sized sphere in each vertex location
+global proc placeRandSpheres(string $objName, int $verCount, string $edgeSpheres){
+    print $objName;
+    print $verCount;
+    string $mash1[];
+    select $objName;
+    int $i;
+    for($i=0; $i<$verCount; $i++){
+      float $randNum = `rand 0.05 0.2`;
+      string $cmd = $objName + ".vtx[" + $i + "]";
+      vector $vector = `pointPosition -w $cmd`;
+      string $name[] = `polySphere -r $randNum`;
+      move ($vector.x) ($vector.y) ($vector.z);
+      $mash1[$i] = $name[0];
+    }
+    
+    select -r $mash1[0];
+    for($i=1; $i<$verCount; $i++){
+        select -tgl $mash1[$i];    
+    }
+    group -n $edgeSpheres;
+}
+
+//PROC: Get the avg normal 
+proc float[] aimY(vector $vec) {
+    float $out[2];
+    float $xAngle, $zAngle, $xyLength, $vecLength;
+      
+    $xyLength = sqrt(($vec.x) * ($vec.x) +
+                      ($vec.y) * ($vec.y));
+    $vecLength = sqrt(($vec.x) * ($vec.x) +
+                       ($vec.y) * ($vec.y) + 
+                       ($vec.z) * ($vec.z));
+      
+    // $xyLength will be zero when $vec is pointing
+    // along the +z or -z axis
+    if($xyLength == 0)
+        $zAngle = ($vec.x) > 0 ? deg_to_rad(90) : deg_to_rad(-90);
+    else
+        $zAngle = acos(($vec.y)/$xyLength);
+      
+    $xAngle = acos($xyLength/$vecLength);
+      
+    $xAngle = ($vec.z) > 0 ? $xAngle : -$xAngle;
+    $out[0] = rad_to_deg($xAngle);
+      
+    $zAngle = ($vec.x) > 0 ? -$zAngle : $zAngle;
+    $out[1] = rad_to_deg($zAngle);
+    return $out;
+}
+
+//PROC: Create and place random-sized twisted corns in certain vertex location
+global proc attachTwistedCornsToVtx(string $objName, int $orgVertexCount, string $twistedCorns){
+    
+    string $mash2[];
+    select $objName;
+    int $i;
+    for($i=0; $i<$orgVertexCount; $i++){
+        //Create random-sized twisted corn object
+        float $randNum = `rand 0.25 0.35`;
+        float $distY = 1.0;
+        string $path = `curve -d 3  -p 0 0 0 
+                        -p (sin(deg_to_rad(60))) ($distY) 0 
+                        -p (sin(deg_to_rad(60*2))) ($distY*2) 0 
+                        -p (sin(deg_to_rad(60*3))) ($distY*3) 0 
+                        -p (sin(deg_to_rad(60*4))) ($distY*4) 0 
+                        -p (sin(deg_to_rad(60*5))) ($distY*5) 0
+                        -p (sin(deg_to_rad(60*6))) ($distY*6) 0`;
+        string $c[] = `circle -nr 0 1 0 -r $randNum`;
+        string $newName = $objName + "_twistedCorn_" + $i;
+        string $ext[] = `extrude -name $newName -polygon 0 $c[0] $path`;
+        string $attributeName = "extrude" + ($i+1);
+        setAttr ($attributeName +".scale") 0;
+        scale -r 0.5 0.5 0.5;
+        
+        //Get the vertex and angle information to attach corn
+        select $newName;
+        string $cmd = $objName + ".vtx[" + $i + "]";
+        vector $vec = `pointPosition -w $cmd`;
+        float $a[] = aimY($vec);
+        
+        //Attach corn to the vertex
+        move ($vec.x) ($vec.y) ($vec.z);
+        rotate -r $a[0] 0  0;
+        rotate -r 0     0  $a[1];
+        
+        $mash2[$i] = $ext[0];
+    }
+    
+    select -r $mash2[0];
+    for($i=1; $i<$orgVertexCount; $i++){
+        select -tgl $mash2[$i];    
+    }
+    group -n $twistedCorns;    
+}
+
+//PROC: Remove used circle and curves
+global proc removeCirclesAndCurves(int $orgVertexCount){
+    int $i;
+    for($i=1; $i<$orgVertexCount+1; $i++){
+        string $curvName = "curve" + $i;
+        string $circleName = "nurbsCircle" + $i;
+        delete $curvName;
+        delete $circleName;
+    }
+}
+
+//PROC: Main method to create sub object.
+global proc createSubFigure(string $mainObj, string $sub_figure, int $isSphere){
+    string $object = $mainObj + "_sub_obj";
+	string $sub_obj1 = $mainObj + "_sub_obj1";
+	string $sub_obj2 = $mainObj + "_sub_obj2";
+	string $sub_obj3 = $mainObj + "_sub_obj3";    
+	string $cmdFirst = $object + ".f[112:223]";
+    string $cmdSecond = $object + ".f[240:255]";
+    
+    vector $temp = getFaceCenter($mainObj, 0);
+    float $dist = getDistCenterToEdge($mainObj, 0, $temp)-0.2;
+    polySphere -r $dist -sx 16 -sy 16 -ax 0 1 0 -tx 1 -ch 1 -n $object;
+    select -r $cmdFirst $cmdSecond;
+    delete;
+
+	ssph_coverVertex($object, $sub_obj1);
+	ssph_coverEdge($object, $sub_obj2);
+
+    string $cmdThird = $object + ".f[48:111]";
+    select -r $cmdThird;
+    delete;
+    
+	ssph_coverRestFaces($object, $sub_obj3, $isSphere);
+    
+    delete $object;
+    select -r $sub_obj1;
+    select -tgl $sub_obj2;
+    select -tgl $sub_obj3; 
+    group -n $sub_figure;    
+}
+
+//PROC: Return vector information of middle of each face
+global proc vector getFaceCenter(string $obj, int $faceId){
+    select $obj;
+    string $objName = $obj + ".f[" + $faceId +"]";
+    //Query vector information for one particular face
+    float $results[] = `xform -q -ws -t $objName`;
+    int $vertexCount = size($results)/3;
+    
+    int $i, $j, $h;
+    vector $vec[];
+    float $newVec[];
+    //Average all vector information to get center value.
+    for($i=0; $i<3; $i++){
+        float $tempNum;
+        for($h=0; $h<$vertexCount; $h++){
+            $tempNum += $results[$h*3+$i];
+        }
+        float $val = $tempNum/$vertexCount;
+        $newVec[$i] = $val;
+    }
+    //Return center of the face
+    vector $faceCenterPnt = <<$newVec[0], $newVec[1], $newVec[2]>>;
+    return $faceCenterPnt;
+}
+
+//PROC: Return radius value by calulating the distance between center face end vertex on the edge
+global proc float getRadius(string $obj, int $faceId, vector $center){
+    select $obj;
+    string $objName = $obj + ".f[" + $faceId +"]";
+    //Query vector information for one particular face
+    float $results[] = `xform -q -ws -t $objName`;
+    vector $temp = <<$results[0], $results[1], $results[2]>>;
+    vector $result = $center - $temp;
+    return mag($result);
+}
+
+//PROC: Cover the top part of vertex with spheres
+global proc ssph_coverVertex(string $obj, string $sub_obj1){
+    int $a;
+    string $mash1[];
+    for($a=64; $a<128; $a++){
+        string $cmd = $obj + ".vtx[" + $a + "]";
+        vector $vector = `pointPosition -w $cmd`;
+        float $radius = `rand 0.1 0.15`;
+        string $name[] = `polySphere -r $radius`; 
+        move ($vector.x) ($vector.y) ($vector.z); 
+        $mash1[$a] = $name[0];
+    }
+    
+    select -r $mash1[64];
+    for($a=65; $a<128; $a++){
+        select -tgl $mash1[$a];    
+    }
+	string $grpName = $sub_obj1;
+    group -n $grpName;
+}
+
+//PROC: Covering edges with cylinders
+global proc ssph_coverEdge(string $obj, string $sub_obj2){
+    string $mash2[];
+    string $circle[] = `circle -r 0.08`;
+    rename $circle[0] cir;
+    float $direction[3] = {0,1,0};
+
+    for($a=64; $a<240; $a++){
+        if($a<128 || $a>=176){
+            string $cmd1 = $obj + ".e[" + $a + "]";
+            select $cmd1;
+            string $edges[] = `polyToCurve -form 2 -degree 3`;
+            string $name2[] = `extrude -ch true -rn false -po 0 -et 2 -ucp 1 -fpt 1 -upn 1 -rotation 0 -scale 1 -rsp 1 "cir" $edges[0]`;
+            xform -cp;
+            delete $edges[0];
+            
+            float $n[3] = `pointOnSurface -normal $name2[0]`;
+            float $d = dotProduct($n, $direction, 0);
+            if($d < 0.0){
+                reverseSurface -d 0 -ch 1 -rpo 1 $name2[0];
+            }
+            $mash2[$a] = $name2[0];
+        }
+    }
+
+    delete cir;
+    select -r $mash2[64];
+    for($a=65; $a<240; $a++){
+        if($a<128 || $a>=176){
+            select -tgl $mash2[$a];    
+        }
+
+    }
+    group -n $sub_obj2;
+}
+
+//PROC: Cover rest faces with either half-spheres or pyramids.
+global proc ssph_coverRestFaces(string $obj, string $sub_obj3, int $isSphere){
+    string $mash3[];
+    $arrayFace = `polyEvaluate -f $obj`;
+    //Calling getFaceCenter method for each face
+    int $fId;
+    for($fId=0; $fId<$arrayFace[0]; $fId++){
+        vector $temp = getFaceCenter($obj, $fId);
+        float $radius = getRadius($obj, $fId, $temp);
+        
+        string $miniSphNm = $obj + "_mini_" + $fId;
+        string $name3[];
+        if($isSphere){ 
+            $name3 = `polySphere -r $radius -sx 16 -sy 16 -ax 0 1 0 -tx 1 -ch 1 -n $miniSphNm`;
+            string $cmd1 = $miniSphNm + ".f[0:111]";
+            string $cmd2 = $miniSphNm + ".f[224:239]";
+            select -r $cmd1 $cmd2;
+            delete;
+        }else{
+            $name3 = `polyPyramid -w ($radius*2) -ns 4 -sh 1 -sc 13 -ax 0 1 0 -cuv 3 -ch 1 -n $miniSphNm`;
+        }
+        
+        $mash3[$fId] = $name3[0];
+        
+        select $miniSphNm;
+        float $a[] = aimY($temp);
+        move ($temp.x) ($temp.y) ($temp.z);
+        rotate -r $a[0] 0 0;
+        rotate -r 0     0 $a[1];
+        
+        if($fId == ($arrayFace[0]-1)){
+            string $cmd0 = $obj + ".vtx[80]";
+            vector $vec = `pointPosition -w $cmd0`;
+            string $lastOne = $obj + "_mini_" + $fId + "_0";
+            string $name4[];
+            if($isSphere){ 
+                $name4 = `polySphere -r $radius -sx 16 -sy 16 -ax 0 1 0 -tx 1 -ch 1 -n $lastOne`;
+                string $cmd1 = $lastOne + ".f[0:111]";
+                string $cmd2 = $lastOne + ".f[224:239]";
+                select -r $cmd1 $cmd2;
+                delete;
+            }else{
+                $name4 = `polyPyramid -w ($radius*2) -ns 4 -sh 1 -sc 13 -ax 0 1 0 -cuv 3 -ch 1 -n $lastOne`;
+            }
+            $mash3[$fId+1] = $name4[0];
+            
+            select $lastOne;
+            rotate 180 0 0; 
+            move ($vec.x) ($vec.y) ($vec.z);
+        }
+    }
+    
+    select -r $mash3[0];
+    for($fId=1; $fId<=$arrayFace[0]; $fId++){
+        select -tgl $mash3[$fId];    
+    }
+    group -n $sub_obj3;
+
+	select $sub_obj3;
+    string $vec = $obj + ".vtx[50]";
+    vector $vector = `pointPosition -w $vec`;
+    xform -pivots 0  ($vector.y)  0  $sub_obj3;
+    rotate 180 0 0;    
+}
+
+//PROC: Return distance value between face center and middle of the edge
+global proc float getDistCenterToEdge(string $obj, int $faceId, vector $center){
+    select $obj;
+    string $objName = $obj + ".f[" + $faceId +"]";
+    //Query vector information for one particular face
+    float $results[] = `xform -q -ws -t $objName`;
+    vector $temp = <<(($results[0]+$results[3])/2), (($results[1]+$results[4])/2), (($results[2]+$results[5])/2)>>;
+    vector $result = $center - $temp;
+    float $returnValue = mag($result);
+    return $returnValue;
+}
+
+//PROC: Attach subSphere to each face of main object
+global proc attachSubFiguresToFaces(string $obj, string $sub_figure, string $subSpheres){
+	$arrayFace = `polyEvaluate -f $obj`;
+	int $fId;
+	string $mashGrp[];
+	for($fId=0; $fId<$arrayFace[0]; $fId++){
+    	vector $temp = getFaceCenter($obj, $fId);
+    	string $name = $obj + "_" + $sub_figure + ($fId+1);
+    	string $cmd[] = `duplicate -renameChildren -n $name $sub_figure`;
+    	$mashGrp[$fId] = $cmd[0];
+    	xform -pivots 0 0 0 $name;
+    	float $a[] = aimY($temp);
+
+    	select $name;
+    	move ($temp.x) ($temp.y) ($temp.z);
+    	rotate -r $a[0] 0 0;
+    	rotate -r 0     0 $a[1];
+	}
+
+	select -r $mashGrp[0];
+	for($fId=1; $fId<$arrayFace[0]; $fId++){
+    	select -tgl $mashGrp[$fId];
+	}
+	group -n $subSpheres;
+	delete $sub_figure;
+}
+
+//Create animation
+global proc createAnimation(string $finalGroupName){
+    setKeyframe -attribute "rotateZ" -t 0sec $finalGroupName;
+    setKeyframe -attribute "rotateY" -t 0sec $finalGroupName;
+    setKeyframe -attribute "rotateX" -t 0sec $finalGroupName;
+    
+    rotate -r -os -fo 0 55 0 ;
+    
+    setKeyframe -attribute "rotateZ" -t 10sec $finalGroupName;
+    setKeyframe -attribute "rotateY" -t 10sec $finalGroupName;
+    setKeyframe -attribute "rotateX" -t 10sec $finalGroupName;
+}

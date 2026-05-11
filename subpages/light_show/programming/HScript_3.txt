@@ -1,0 +1,13 @@
+{
+    copyNumForPointOrigin = stamp("../copy3", "copyNumForPointOrigin", 0);
+    
+    if(copyNumForPointOrigin < 20){
+        return ch("../firstPointx");
+    
+    }else if(copyNumForPointOrigin < 40){
+        return ch("../secondPointx");
+    
+    }else{
+        return ch("../thirdPointx");
+    }
+}

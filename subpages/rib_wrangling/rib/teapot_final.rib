@@ -1,0 +1,58 @@
+#________________Tea Pot Final____________________
+
+AttributeBegin
+	AttributeBegin
+		ReadArchive "materials/pumpkin_body_skin.rib"
+		ReadArchive "materials/pumpkin_body_skin_bump.rib"
+		Translate 0 1 0
+		ReadArchive "geo/teapot_body.rib"
+	AttributeEnd
+	AttributeBegin
+		ReadArchive "materials/pumpkin_color_dark.rib"
+		ReadArchive "materials/pumpkin_color_dark_bump.rib"
+		Translate 0 1 0
+		Translate 0 0.9 2.25
+		ReadArchive "geo/teapot_spout.rib"
+	AttributeEnd
+	AttributeBegin
+		AttributeBegin
+			Translate 0 0.07 0
+			AttributeBegin
+				ReadArchive "materials/pumpkin_lid_skin.rib"
+				ReadArchive "materials/pumpkin_lid_skin_bump.rib"
+				Translate 0 1.95 0
+				Rotate -30 0 1 0
+				Rotate 30  0 0 1
+				ReadArchive "geo/teapot_lid_bottom.rib"
+			AttributeEnd
+			AttributeBegin
+				ReadArchive "materials/pumpkin_lid_skin.rib"
+				Translate 0 1 0
+				ReadArchive "geo/teapot_lid_bottom_edge.rib"
+			AttributeEnd
+			AttributeBegin
+				ReadArchive "materials/mottled_green.rib"
+				ReadArchive "materials/mottled_green_bump.rib"
+				Translate 0 1 0
+				Rotate 40  0 1 0
+				ReadArchive "geo/teapot_lid_top.rib"
+			AttributeEnd
+		AttributeEnd
+	AttributeEnd
+	AttributeBegin
+		ReadArchive "materials/mottled_green.rib"
+		ReadArchive "materials/mottled_green_bump.rib"
+		#Translate 0.5 1 -1.5
+		Translate 0.5 1 -2.0 
+		Rotate -10  0 1 0
+		Scale 5 1 2
+		ReadArchive "geo/teapot_handle.rib"
+	AttributeEnd
+	AttributeBegin
+		ReadArchive "materials/mottled_green.rib"
+		ReadArchive "materials/mottled_green_bump.rib"
+		Translate 0 1 0
+		Rotate 40  0 1 0
+		ReadArchive "geo/teapot_handle_edges.rib"
+	AttributeEnd
+AttributeEnd

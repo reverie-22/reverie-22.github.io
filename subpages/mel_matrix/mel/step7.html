@@ -1,0 +1,10 @@
+<pre><font color="#cc0000">//STEP 7: 
+//Delete the main object shape and group them all together as one object.</font>
+<font color="#4c78a6">select</font> <font color="#06055f">$obj</font>;
+<font color="#4c78a6">delete</font> <font color="#410341">`ls -sl`</font>;
+    
+<font color="#4c78a6">select</font> -r <font color="#06055f">$main</font>;
+<font color="#4c78a6">select</font> -tgl <font color="#06055f">$sub</font>;
+<font color="#0000ff">string</font> <font color="#06055f">$finalGroupName</font> = <font color="#06055f">$obj</font>;
+<font color="#4c78a6">group</font> -n <font color="#06055f">$finalGroupName</font>;
+</pre>

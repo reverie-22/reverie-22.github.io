@@ -1,0 +1,41 @@
+<pre>
+<font color="#710371">rman</font> <font color="#666666">"-version 1"</font> {
+  
+<font color="#00007d">Declare param</font> {<font color="#0000ff">string</font> ra_srcDir} {
+    <font color="#00007d">label</font> <font color="#666666">"Archive Directory"</font>
+    <font color="#00007d">description</font> <font color="#666666">"No description."</font>
+    }
+<font color="#00007d">Declare param</font> {<font color="#0000ff">float</font> ra_scale} {
+    <font color="#00007d">label</font> <font color="#666666">"Scale"</font>
+    <font color="#00007d">subtype</font> <font color="#666666">slider</font>
+    <font color="#00007d">range</font> {0.01 10}
+    <font color="#00007d">description</font> <font color="#666666">"No description."</font>
+    }
+<font color="#00007d">Declare param</font> {<font color="#0000ff">int</font> ra_active} {
+    <font color="#00007d">label</font> <font color="#666666">"Replace"</font>
+    <font color="#00007d">description</font> <font color="#666666">"No description."</font>
+    <font color="#00007d">subtype</font> <font color="#666666">switch</font>
+    }
+  
+<font color="#00007d">Collection</font> ra_OptionalGeometricSettings {
+    <font color="#00007d">param</font> ra_srcDir {
+        <font color="#00007d">default</font> <font color="#666666">""</font>
+        <font color="#00007d">state</font> optional
+        }
+    <font color="#00007d">param</font> ra_scale {
+        <font color="#00007d">default</font> 0.01
+        <font color="#00007d">state</font> optional
+        }
+    <font color="#00007d">param</font> ra_active {
+        <font color="#00007d">default</font> 0
+        <font color="#00007d">state</font> optional
+        }
+    }
+  
+<font color="#00007d">NodeOptions</font> {kGeometric kParticle} {
+       <font color="#00007d">reference Collection</font> optionalGeometricSettings
+       <font color="#00007d">reference Collection</font> ra_OptionalGeometricSettings
+    }
+  
+}
+</pre>

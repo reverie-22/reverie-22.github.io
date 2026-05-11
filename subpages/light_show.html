@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2XF1NZ6P8C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-2XF1NZ6P8C');
+  </script>  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Procedural Motion — Light Show</title>
+
+  <style>
+    :root {
+      --bg: #f7f9fb;
+      --surface: #ffffff;
+      --surface-2: #f8fbfd;
+      --text: #111827;
+      --muted: #5b6472;
+      --line: #dbe3ea;
+      --accent: #569abd;
+      --accent-dark: #447f9d;
+      --accent-soft: #eaf4fa;
+      --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 10px 26px rgba(15, 23, 42, 0.07);
+      --radius-lg: 28px;
+      --radius-md: 22px;
+      --radius-sm: 16px;
+      --max: 1000px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img,
+    iframe,
+    video {
+      display: block;
+      max-width: 100%;
+    }
+
+    .wrap {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(12px);
+      background: rgba(247, 249, 251, 0.92);
+      border-bottom: 1px solid rgba(219, 227, 234, 0.8);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 74px;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      font-size: 1.05rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 0.94rem;
+      transition: 0.2s ease;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .page {
+      padding: 42px 0 60px;
+    }
+
+    .project-shell {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 34px;
+      text-align: center;
+    }
+
+    .top-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      margin-bottom: 18px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-size: 0.86rem;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.55rem, 3vw, 2.15rem);
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      margin: 0 0 12px;
+      font-size: 1.18rem;
+      letter-spacing: -0.01em;
+      text-align: center;
+    }
+
+    .lead {
+      max-width: 70ch;
+      margin: 0 auto 22px;
+      color: var(--muted);
+      font-size: 1.03rem;
+    }
+
+    .bullet-list {
+      display: inline-block;
+      margin: 0 auto 26px;
+      padding-left: 18px;
+      color: var(--muted);
+      text-align: left;
+    }
+
+    .bullet-list li {
+      margin-bottom: 8px;
+    }
+
+    .section {
+      margin-top: 30px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #eef6fa, #ffffff 45%, #f6f9fc);
+      text-align: left;
+    }
+
+    .section.centered {
+      text-align: center;
+    }
+
+    .section-intro {
+      max-width: 75ch;
+      margin: 0 auto 20px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .media-frame {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .media-frame iframe {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      border: 0;
+    }
+
+    .media-frame video {
+      width: 100%;
+      height: auto;
+    }
+
+    .caption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      text-align: center;
+    }
+
+    .carousel {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface-2);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .carousel-stage {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--radius-md);
+      background: #e8eef3;
+    }
+
+    .carousel-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: scale(1.015);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      pointer-events: none;
+    }
+
+    .carousel-slide.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .carousel-control {
+      position: absolute;
+      top: 50%;
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      border-radius: 999px;
+      background: rgba(17, 24, 39, 0.48);
+      color: #ffffff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transform: translateY(-50%);
+      backdrop-filter: blur(10px);
+    }
+
+    .carousel-control:hover {
+      background: rgba(17, 24, 39, 0.68);
+    }
+
+    .carousel-control.prev {
+      left: 16px;
+    }
+
+    .carousel-control.next {
+      right: 16px;
+    }
+
+    .carousel-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      display: flex;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(17, 24, 39, 0.38);
+      transform: translateX(-50%);
+      backdrop-filter: blur(10px);
+    }
+
+    .carousel-dot {
+      width: 9px;
+      height: 9px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.58);
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .carousel-dot.active {
+      width: 24px;
+      background: #ffffff;
+    }
+
+    .thumbnail-strip {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 12px;
+      background: #ffffff;
+    }
+
+    .thumbnail-strip button {
+      overflow: hidden;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 14px;
+      background: none;
+      cursor: pointer;
+      opacity: 0.72;
+      transition: 0.2s ease;
+    }
+
+    .thumbnail-strip button.active {
+      border-color: var(--accent);
+      box-shadow: 0 8px 18px rgba(86, 154, 189, 0.18);
+      opacity: 1;
+    }
+
+    .thumbnail-strip img {
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .gallery-card,
+    .image-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .gallery-card img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-card:hover img {
+      transform: scale(1.035);
+    }
+
+    .image-card {
+      display: block;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .image-card img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      background: #ffffff;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 22px;
+    }
+
+    .tool-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .tool-media {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .tool-media img {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #ffffff;
+    }
+
+    .tool-media .tool-object-preview img {
+      max-height: 400px;
+      padding: 8px;
+      object-fit: contain;
+    }
+
+    .code-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .hscript-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      max-width: none;
+      margin: 0 auto;
+    }
+
+    .hscript-grid .code-card img {
+      min-height: 260px;
+      max-height: 420px;
+    }
+
+    .code-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #131313;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .code-card img {
+      width: 100%;
+      height: auto;
+      min-height: 300px;
+      object-fit: contain;
+      background: #131313;
+    }
+
+    .vex-frame {
+      max-width: 920px;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #131313;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .vex-scroll {
+      max-height: 620px;
+      overflow: auto;
+      background: #131313;
+    }
+
+    .vex-scroll img {
+      width: 1100px;
+      max-width: none;
+      height: auto;
+      background: #131313;
+      object-fit: contain;
+    }
+
+    #upBtn {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 99;
+      display: none;
+      padding: 14px 16px;
+      border: none;
+      border-radius: 14px;
+      outline: none;
+      background-color: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 12px 24px rgba(86, 154, 189, 0.28);
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    #upBtn:hover {
+      background-color: var(--accent-dark);
+    }
+
+    footer {
+      padding: 24px 0 42px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 820px) {
+      .nav {
+        min-height: 68px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .project-shell {
+        padding: 22px;
+      }
+
+      .section {
+        padding: 18px;
+      }
+
+      .wrap {
+        width: min(var(--max), calc(100% - 20px));
+      }
+
+      .gallery-grid,
+      .tool-media,
+      .code-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .thumbnail-strip img {
+        height: 64px;
+      }
+
+      .carousel-control {
+        width: 36px;
+        height: 36px;
+      }
+
+      .code-card img {
+        min-height: 0;
+      }
+
+      .tool-media {
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .thumbnail-strip {
+        display: none;
+      }
+
+      .project-shell {
+        padding: 18px;
+      }
+
+      .carousel-stage {
+        aspect-ratio: 4 / 3;
+      }
+    }
+  
+
+    /* Mobile navigation override: keeps the top menu on one compact row. */
+    @media (max-width: 860px) {
+      html { scroll-padding-top: 72px; }
+      section { scroll-margin-top: 72px; }
+
+      header {
+        height: auto;
+      }
+
+      .nav {
+        min-height: 56px !important;
+        padding: 6px 0 !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 14px !important;
+      }
+
+      .brand {
+        font-size: 0.88rem !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+      }
+
+      .nav-links {
+        display: flex !important;
+        width: auto !important;
+        flex: 1 !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 12px !important;
+        font-size: 0.66rem !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        scrollbar-width: none !important;
+      }
+
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav-links a {
+        border: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+      }
+
+      .nav-links .button {
+        border: 1px solid var(--line) !important;
+        background: var(--surface) !important;
+        border-radius: 999px !important;
+        padding: 5px 9px !important;
+        font-size: 0.66rem !important;
+        line-height: 1 !important;
+        flex-shrink: 0 !important;
+      }
+
+      .page {
+        padding-top: 24px !important;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <button onclick="topFunction()" id="upBtn" title="Go to top">△ Top</button>
+
+  <header>
+    <div class="wrap nav">
+      <a href="../index.html"><div class="brand">MILIM LEE</div></a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="../index.html">Home</a>
+        <a href="../index.html#projects">Technical Foundations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="wrap">
+      <article class="project-shell">
+        <div class="top-links">
+          <a class="button" href="../index.html">← Back to Home</a>
+          <a class="button" href="../index.html#projects">Go to Technical Foundations</a>
+        </div>
+
+        <div class="eyebrow">Technical Foundations</div>
+        <h1>Procedural Motion — Light Show</h1>
+        <p class="lead">
+          A Houdini procedural motion project focused on generating a moving light show with sphere and line-group tools, animation controls, HScript, and VEX-driven behavior.
+        </p>
+
+        <ul class="bullet-list">
+          <li>Procedural animated light-show setup in Houdini</li>
+          <li>Custom sphere and line-group tool demonstrations</li>
+          <li>Animation logic using HScript and VEX examples</li>
+        </ul>
+
+        <section class="section centered" aria-label="Final slideshow">
+          <div class="carousel" data-carousel>
+            <div class="carousel-stage">
+              <a class="carousel-slide active" href="light_show/images/slide1.jpg">
+                <img src="light_show/images/slide1.jpg" alt="Light Show final render 1" />
+              </a>
+              <a class="carousel-slide" href="light_show/images/slide2.jpg">
+                <img src="light_show/images/slide2.jpg" alt="Light Show final render 2" />
+              </a>
+              <button class="carousel-control prev" type="button" aria-label="Previous slide">‹</button>
+              <button class="carousel-control next" type="button" aria-label="Next slide">›</button>
+              <div class="carousel-dots" aria-label="Slide navigation"></div>
+            </div>
+
+            <div class="thumbnail-strip" aria-label="Render thumbnails">
+              <button class="active" type="button">
+                <img src="light_show/images/slide1.jpg" alt="Thumbnail 1" />
+              </button>
+              <button type="button">
+                <img src="light_show/images/slide2.jpg" alt="Thumbnail 2" />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="section centered" aria-label="Final motion video">
+          <h2>Final Motion</h2>
+          <div class="media-frame">
+            <iframe src="https://player.vimeo.com/video/246653567" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Procedural Motion Light Show video"></iframe>
+          </div>
+        </section>
+
+        <section class="section centered" aria-label="Reference images">
+          <h2>Reference Images</h2>
+          <p class="section-intro">
+            Inspired by DEEP WEB — kinetic audiovisual installation and performance.
+          </p>
+          <div class="gallery-grid">
+            <a class="gallery-card" href="light_show/images/reference1.jpg">
+              <img src="light_show/images/reference1.jpg" alt="Light show reference 1" />
+            </a>
+            <a class="gallery-card" href="light_show/images/reference2.jpg">
+              <img src="light_show/images/reference2.jpg" alt="Light show reference 2" />
+            </a>
+          </div>
+        </section>
+
+        <section class="section centered" aria-label="Scene breakdown">
+          <h2>Scene Breakdown</h2>
+          <p class="section-intro">
+            Breakdown of the generated procedural light-show setup.
+          </p>
+          <div class="media-frame">
+            <video controls controlsList="nodownload" autoplay loop muted playsinline>
+              <source src="light_show/videos/sceneBreakdown.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </section>
+
+        <section class="section centered" aria-label="Node graph">
+          <h2>Node Graph</h2>
+          <p class="section-intro">
+            Overview of the Houdini network used to drive the procedural motion system.
+          </p>
+          <a class="image-card" href="light_show/images/sceneOverviewNode.png">
+            <img src="light_show/images/sceneOverviewNode.png" alt="Light show scene overview node graph" />
+          </a>
+        </section>
+
+        <section class="section centered" aria-label="UI description">
+          <h2>UI Description</h2>
+          <p class="section-intro">
+            Custom tools used to generate and control the moving light-show elements.
+          </p>
+
+          <div class="tool-grid">
+            <div class="tool-card">
+              <h3>1. Spheres Tool</h3>
+              <div class="media-frame" style="margin-bottom: 14px;">
+                <video autoplay controls controlsList="nodownload" loop muted playsinline>
+                  <source src="light_show/videos/SpehresTool.mp4" type="video/mp4" />
+                </video>
+              </div>
+              <div class="tool-media">
+                <a class="tool-object-preview" href="light_show/images/spheres.png">
+                  <img src="light_show/images/spheres.png" alt="Spheres result" />
+                </a>
+                <a href="light_show/images/spheresToolUI.png">
+                  <img src="light_show/images/spheresToolUI.png" alt="Spheres tool UI" />
+                </a>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <h3>2. Line Group Tool</h3>
+              <div class="media-frame" style="margin-bottom: 14px;">
+                <video autoplay controls controlsList="nodownload" loop muted playsinline>
+                  <source src="light_show/videos/LineGroupTool.mp4" type="video/mp4" />
+                </video>
+              </div>
+              <div class="tool-media">
+                <a class="tool-object-preview" href="light_show/images/lineGroup.png">
+                  <img src="light_show/images/lineGroup.png" alt="Line group result" />
+                </a>
+                <a href="light_show/images/LineGroupToolUI.png">
+                  <img src="light_show/images/LineGroupToolUI.png" alt="Line group tool UI" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section centered" aria-label="Animation breakdown">
+          <h2>Animation Breakdown</h2>
+          <p class="section-intro">
+            Animation graph and scripting examples used to control timing, motion, and procedural variation.
+          </p>
+          <a class="image-card" href="light_show/images/AnimationGraph.jpg">
+            <img src="light_show/images/AnimationGraph.jpg" alt="Animation graph" />
+          </a>
+        </section>
+
+        <section class="section centered" aria-label="HScript examples">
+          <h2>HScript Examples</h2>
+          <p class="section-intro">
+            Enlarged HScript image examples for better code readability.
+          </p>
+          <div class="code-grid hscript-grid">
+            <a class="code-card" href="light_show/images/Hscript1.png">
+              <img src="light_show/images/Hscript1.png" alt="HScript example 1" />
+            </a>
+            <a class="code-card" href="light_show/images/Hscript2.png">
+              <img src="light_show/images/Hscript2.png" alt="HScript example 2" />
+            </a>
+            <a class="code-card" href="light_show/images/Hscript3.png">
+              <img src="light_show/images/Hscript3.png" alt="HScript example 3" />
+            </a>
+          </div>
+        </section>
+
+        <section class="section centered" aria-label="VEX example">
+          <h2>VEX Example</h2>
+          <p class="section-intro">
+            Scrollable code image area. Drag inside this block to inspect the full VEX example at a readable size.
+          </p>
+          <div class="vex-frame">
+            <div class="vex-scroll">
+              <a href="light_show/images/VEX_Codes.jpg">
+                <img src="light_show/images/VEX_Codes.jpg" alt="VEX code example" />
+              </a>
+            </div>
+          </div>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Milim Lee. All rights reserved.
+  </footer>
+
+  <script>
+    const upBtn = document.getElementById("upBtn");
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    window.onscroll = function () {
+      scrollFunction();
+    };
+
+    function scrollFunction() {
+      if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        upBtn.style.display = "block";
+      } else {
+        upBtn.style.display = "none";
+      }
+    }
+
+    function topFunction() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
+
+    document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+      const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
+      const thumbs = Array.from(carousel.querySelectorAll(".thumbnail-strip button"));
+      const dotsWrap = carousel.querySelector(".carousel-dots");
+      let index = 0;
+      let timer;
+
+      slides.forEach((_, slideIndex) => {
+        const dot = document.createElement("button");
+        dot.className = "carousel-dot" + (slideIndex === 0 ? " active" : "");
+        dot.type = "button";
+        dot.setAttribute("aria-label", "Go to slide " + (slideIndex + 1));
+        dot.addEventListener("click", () => show(slideIndex, true));
+        dotsWrap.appendChild(dot);
+      });
+
+      const dots = Array.from(dotsWrap.querySelectorAll(".carousel-dot"));
+
+      function show(nextIndex, resetTimer) {
+        index = (nextIndex + slides.length) % slides.length;
+        slides.forEach((slide, slideIndex) => slide.classList.toggle("active", slideIndex === index));
+        thumbs.forEach((thumb, thumbIndex) => thumb.classList.toggle("active", thumbIndex === index));
+        dots.forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === index));
+
+        if (resetTimer) {
+          restart();
+        }
+      }
+
+      function restart() {
+        clearInterval(timer);
+        timer = setInterval(() => show(index + 1, false), 5000);
+      }
+
+      carousel.querySelector(".prev").addEventListener("click", () => show(index - 1, true));
+      carousel.querySelector(".next").addEventListener("click", () => show(index + 1, true));
+      thumbs.forEach((thumb, thumbIndex) => thumb.addEventListener("click", () => show(thumbIndex, true)));
+      restart();
+    });
+  </script>
+</body>
+</html>

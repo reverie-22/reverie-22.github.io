@@ -1,0 +1,194 @@
+<pre><font color="#cc0000">//PROC: Generate various shades of spheres and make gene shape</font>
+<font color="#0000b3">global proc</font> createGene(<font color="#0000ff">int</font> <font color="#06055f">$total</font>, <font color="#0000ff">int</font> <font color="#06055f">$aniAssembleStartPoint</font>, <font color="#0000ff">float</font> <font color="#06055f">$aniTotalAssembleTime</font>, <font color="#0000ff">int</font> <font color="#06055f">$mainSphereCnt</font>, <font color="#0000ff">float</font> <font color="#06055f">$mainSphereSize</font>, <font color="#0000ff">int</font> <font color="#06055f">$mainScatterCnt</font>, 
+    <font color="#0000ff">int</font> <font color="#06055f">$insideSphereCnt</font>, <font color="#0000ff">int</font> <font color="#06055f">$insideScatterCnt</font>, <font color="#0000ff">float</font> <font color="#06055f">$insideSphereSize</font>, <font color="#0000ff">float</font> <font color="#06055f">$MscatterRange</font>, <font color="#0000ff">float</font> <font color="#06055f">$IscatterRange</font>) {
+        <font color="#0000ff">string</font> <font color="#06055f">$curve_grp_name</font>;
+        
+        <font color="#cc0000">//Get the main gene body shape (two curves)</font>
+        <font color="#06055f">$curve_grp_name</font> = generateGene();
+        
+        <font color="#0000ff">string</font> <font color="#06055f">$curvesName</font>[] = <font color="#410341">`listRelatives -children $curve_grp_name`</font>;
+        <font color="#0000ff">string</font> <font color="#06055f">$wholeObjectNM</font> = <font color="#666666">"myGene"</font>;
+        <font color="#0000ff">string</font> <font color="#06055f">$curveSphereName</font>[];
+        <font color="#0000ff">string</font> <font color="#06055f">$curveSphereGrpNM</font> = <font color="#666666">"curveSpheres"</font>;
+        <font color="#0000ff">string</font> <font color="#06055f">$attr</font> = <font color="#06055f">$curvesName</font>[0] + <font color="#666666">".spans"</font>; 
+        <font color="#0000ff">int</font> <font color="#06055f">$spans</font> = <font color="#410341">`getAttr $attr`</font>;
+        <font color="#0000ff">int</font> <font color="#06055f">$j</font>;
+        <font color="#0000ff">int</font> <font color="#06055f">$indivCnt</font> = 0;
+        <font color="#0000ff">int</font> <font color="#06055f">$curveSphTotalCnt</font> = 0;
+        
+        <font color="#0000ff">float</font> <font color="#06055f">$randPosX</font>;
+        <font color="#0000ff">float</font> <font color="#06055f">$randPosY</font>;
+        <font color="#0000ff">float</font> <font color="#06055f">$randPosZ</font>;
+        <font color="#0000ff">int</font> <font color="#06055f">$mainSphereTotalCnt</font> = <font color="#06055f">$mainSphereCnt</font> * <font color="#06055f">$mainScatterCnt</font>;
+        <font color="#0000ff">float</font> <font color="#06055f">$mainAniFrameDegree</font> = <font color="#06055f">$aniTotalAssembleTime</font> / (<font color="#0000ff">float</font>)(<font color="#06055f">$mainSphereTotalCnt</font>);        
+        <font color="#0000ff">float</font> <font color="#06055f">$timeFrame</font> = <font color="#06055f">$aniAssembleStartPoint</font>;
+        
+        <font color="#cc0000">//Generate spheres along with the curves</font>
+        <font color="#0000b3">for</font>(<font color="#06055f">$curveNM</font> <font color="#0000b3">in</font> <font color="#06055f">$curvesName</font>){
+            <font color="#0000b3">for</font>(<font color="#06055f">$j</font>=0; <font color="#06055f">$j</font>&lt;$mainSphereCnt; <font color="#06055f">$j</font>++){
+                <font color="#0000ff">string</font> <font color="#06055f">$attr</font> = <font color="#06055f">$curveNM</font> + <font color="#666666">".spans"</font>; 
+                <font color="#0000ff">int</font> <font color="#06055f">$spans</font> = <font color="#410341">`getAttr $attr`</font>;
+                <font color="#0000ff">float</font> <font color="#06055f">$spanloc</font> = (<font color="#0000ff">float</font>)<font color="#06055f">$spans</font> * (<font color="#0000ff">float</font>)<font color="#06055f">$j</font> / (<font color="#0000ff">float</font>)<font color="#06055f">$mainSphereCnt</font>;
+                <font color="#0000ff">vector</font> <font color="#06055f">$pntPos</font> = <font color="#410341">`pointOnCurve -pr $spanloc -p $curveNM`</font>;
+                    
+                <font color="#0000ff">int</font> <font color="#06055f">$h</font>;
+                <font color="#0000ff">float</font> <font color="#06055f">$scatterX</font>;
+                <font color="#0000ff">float</font> <font color="#06055f">$scatterY</font>;
+                <font color="#0000ff">float</font> <font color="#06055f">$scatterZ</font>;
+                <font color="#0000b3">for</font>(<font color="#06055f">$h</font>=0; <font color="#06055f">$h</font>&lt;$mainScatterCnt; <font color="#06055f">$h</font>++){
+                    <font color="#0000ff">float</font> <font color="#06055f">$range</font> = <font color="#06055f">$MscatterRange</font> / 100;
+                    <font color="#06055f">$scatterX</font> = <font color="#4c78a6">rand</font>(-<font color="#06055f">$range</font>, <font color="#06055f">$range</font>);
+                    <font color="#06055f">$scatterY</font> = <font color="#4c78a6">rand</font>(-<font color="#06055f">$range</font>, <font color="#06055f">$range</font>);
+                    <font color="#06055f">$scatterZ</font> = <font color="#4c78a6">rand</font>(-<font color="#06055f">$range</font>, <font color="#06055f">$range</font>);
+                    
+                    <font color="#0000ff">string</font> <font color="#06055f">$sphereNM</font> = <font color="#06055f">$curveNM</font> + <font color="#666666">"_curveSph"</font> + <font color="#06055f">$indivCnt</font>;
+                    <font color="#4c78a6">polySphere</font> -n <font color="#06055f">$sphereNM</font> -r 1 -sx 20 -sy 20 -ax 0 1 0 -cuv 2 -ch 1;
+                    <font color="#06055f">$curveSphereName</font>[<font color="#06055f">$curveSphTotalCnt</font>] = <font color="#06055f">$sphereNM</font>;
+                    <font color="#0000ff">float</font> <font color="#06055f">$size</font> = <font color="#06055f">$mainSphereSize</font> / 100;
+                    <font color="#4c78a6">scale</font> -a <font color="#06055f">$size $size $size</font>;
+                    setAnimation(0.0, <font color="#06055f">$sphereNM</font>);
+                    
+                    <font color="#06055f">$randPosX</font> = <font color="#4c78a6">rand</font>(-10, 10);
+                    <font color="#06055f">$randPosZ</font> = <font color="#4c78a6">rand</font>(-10, 10);
+                    <font color="#4c78a6">move</font> -a <font color="#06055f">$randPosX</font> (<font color="#06055f">$pntPos</font>.y + <font color="#06055f">$scatterY</font>) <font color="#06055f">$randPosZ</font>;
+                    setAnimation(2.0, <font color="#06055f">$sphereNM</font>);
+  
+                    setAnimation(<font color="#06055f">$timeFrame</font>, <font color="#06055f">$sphereNM</font>);
+                                
+                    <font color="#4c78a6">move</font> -a (<font color="#06055f">$pntPos</font>.x + <font color="#06055f">$scatterX</font>) (<font color="#06055f">$pntPos</font>.y + <font color="#06055f">$scatterY</font>) (<font color="#06055f">$pntPos</font>.z + <font color="#06055f">$scatterZ</font>);        
+                    setAnimation((<font color="#06055f">$timeFrame</font> + (<font color="#06055f">$mainAniFrameDegree</font> * (<font color="#06055f">$indivCnt</font>+1))), <font color="#06055f">$sphereNM</font>);
+                    
+                    <font color="#06055f">$indivCnt</font>++;
+                    <font color="#06055f">$curveSphTotalCnt</font>++;
+                }
+            }
+            <font color="#06055f">$indivCnt</font> = 0;
+        }
+        
+        groupObjects(<font color="#06055f">$curveSphereName</font>, <font color="#06055f">$curveSphereGrpNM</font>);        
+        
+        <font color="#06055f">$indivCnt</font> = 0;
+        <font color="#06055f">$timeFrame</font> = <font color="#06055f">$aniAssembleStartPoint</font>;
+        <font color="#0000ff">int</font> <font color="#06055f">$insideSphereTotalCnt</font> = (<font color="#06055f">$total</font>+1) * <font color="#06055f">$insideSphereCnt</font> * <font color="#06055f">$insideScatterCnt</font>;
+        <font color="#0000ff">float</font> <font color="#06055f">$insideAniFrameDegree</font> = <font color="#06055f">$aniTotalAssembleTime</font> / (<font color="#0000ff">float</font>)(<font color="#06055f">$insideSphereTotalCnt</font>);
+        <font color="#0000ff">string</font> <font color="#06055f">$insideSphereName</font>[];
+        <font color="#0000ff">string</font> <font color="#06055f">$insideSphereGrpNM</font> = <font color="#666666">"insideSpheres"</font>;
+        
+        <font color="#cc0000">//Generate spheres between curves</font>
+        <font color="#0000b3">for</font>(<font color="#06055f">$j</font>=0; <font color="#06055f">$j</font>&lt;$total+1; <font color="#06055f">$j</font>++){
+            <font color="#0000ff">string</font> <font color="#06055f">$curveNM</font> = <font color="#666666">"curve"</font> + (<font color="#06055f">$j</font>+2);
+            <font color="#0000ff">vector</font> <font color="#06055f">$pnt1</font> = <font color="#410341">`pointOnCurve -pr ((float)$spans*(float)$j/(float)$total) -p $curvesName[0]`</font>;
+            <font color="#0000ff">vector</font> <font color="#06055f">$pnt2</font> = <font color="#410341">`pointOnCurve -pr ((float)$spans*(float)$j/(float)$total) -p $curvesName[1]`</font>;
+            <font color="#0000ff">float</font> <font color="#06055f">$angle</font> = (<font color="#06055f">$pnt2</font>.z - <font color="#06055f">$pnt1</font>.z) / (<font color="#06055f">$pnt2</font>.x - <font color="#06055f">$pnt1</font>.x);
+            <font color="#0000ff">float</font> <font color="#06055f">$pointZ</font> = <font color="#06055f">$pnt1</font>.z - (<font color="#06055f">$pnt1</font>.x * <font color="#06055f">$angle</font>);
+            
+            <font color="#0000ff">int</font> <font color="#06055f">$i</font>;
+            <font color="#0000ff">float</font> <font color="#06055f">$degree</font> = (<font color="#06055f">$pnt2</font>.x - <font color="#06055f">$pnt1</font>.x) / 10;
+            
+            <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=0; <font color="#06055f">$i</font> &lt; <font color="#06055f">$insideSphereCnt</font>; <font color="#06055f">$i</font>++){
+                <font color="#0000ff">float</font> <font color="#06055f">$tempX</font> = <font color="#06055f">$pnt1</font>.x + (<font color="#06055f">$i</font> * <font color="#06055f">$degree</font>);
+                <font color="#0000ff">float</font> <font color="#06055f">$tempZ</font> = (<font color="#06055f">$angle</font> * <font color="#06055f">$tempX</font>) + <font color="#06055f">$pointZ</font>;
+                
+                <font color="#0000ff">int</font> <font color="#06055f">$h</font>;
+                <font color="#0000ff">float</font> <font color="#06055f">$scatterX</font>;
+                <font color="#0000ff">float</font> <font color="#06055f">$scatterY</font>;
+                <font color="#0000ff">float</font> <font color="#06055f">$scatterZ</font>;
+                <font color="#0000b3">for</font>(<font color="#06055f">$h</font>=0; <font color="#06055f">$h</font>&lt;$insideScatterCnt; <font color="#06055f">$h</font>++){
+                    <font color="#0000ff">float</font> <font color="#06055f">$range</font> = <font color="#06055f">$IscatterRange</font> / 100;
+                    <font color="#06055f">$scatterX</font> = <font color="#4c78a6">rand</font>(-<font color="#06055f">$range</font>, <font color="#06055f">$range</font>);
+                    <font color="#06055f">$scatterZ</font> = <font color="#4c78a6">rand</font>(-<font color="#06055f">$range</font>, <font color="#06055f">$range</font>);
+  
+                    <font color="#0000ff">string</font> <font color="#06055f">$sphereNM</font> = <font color="#666666">"insideSph"</font> + <font color="#06055f">$indivCnt</font>;                    
+                    <font color="#4c78a6">polySphere</font> -n <font color="#06055f">$sphereNM</font> -r 1 -sx 20 -sy 20 -ax 0 1 0 -cuv 2 -ch 1;
+                    <font color="#06055f">$insideSphereName</font>[<font color="#06055f">$indivCnt</font>] = <font color="#06055f">$sphereNM</font>;                    
+                    <font color="#0000ff">float</font> <font color="#06055f">$size</font> = <font color="#06055f">$insideSphereSize</font> / 100;
+                    <font color="#4c78a6">scale</font> -a <font color="#06055f">$size $size $size</font>;
+                    setAnimation(0.0, <font color="#06055f">$sphereNM</font>);
+                    
+                    <font color="#06055f">$randPosX</font> = <font color="#4c78a6">rand</font>(-10, 10);
+                    <font color="#06055f">$randPosZ</font> = <font color="#4c78a6">rand</font>(-10, 10);
+                    <font color="#4c78a6">move</font> -a <font color="#06055f">$randPosX</font> (<font color="#06055f">$pnt1</font>.y + <font color="#06055f">$scatterY</font>) <font color="#06055f">$randPosZ</font>;
+                    setAnimation(2.0, <font color="#06055f">$sphereNM</font>);
+  
+                    setAnimation(<font color="#06055f">$timeFrame</font>, <font color="#06055f">$sphereNM</font>);
+                    
+                    <font color="#4c78a6">move</font> -a (<font color="#06055f">$tempX</font> + <font color="#06055f">$scatterX</font>) (<font color="#06055f">$pnt1</font>.y + <font color="#06055f">$scatterY</font>) (<font color="#06055f">$tempZ</font> + <font color="#06055f">$scatterZ</font>);                    
+            
+                    setAnimation((<font color="#06055f">$timeFrame</font> + (<font color="#06055f">$insideAniFrameDegree</font> * (<font color="#06055f">$indivCnt</font>+1))), <font color="#06055f">$sphereNM</font>);
+                        
+                    <font color="#06055f">$indivCnt</font>++;
+                }
+            }    
+        }
+        
+        groupObjects(<font color="#06055f">$insideSphereName</font>, <font color="#06055f">$insideSphereGrpNM</font>);            
+        <font color="#4c78a6">delete</font> <font color="#06055f">$curve_grp_name</font>;
+        groupAll(<font color="#06055f">$curveSphereGrpNM</font>, <font color="#06055f">$insideSphereGrpNM</font>, <font color="#06055f">$wholeObjectNM</font>);
+}
+  
+<font color="#cc0000">//PROC: Generate two curves for main gene body shape</font>
+<font color="#0000b3">global proc</font> <font color="#0000ff">string</font> generateGene(){
+    <font color="#0000b3">global</font> <font color="#0000ff">string</font> <font color="#06055f">$curves</font>[];
+    
+    <font color="#0000ff">string</font> <font color="#06055f">$gene</font> = <font color="#666666">"gene"</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$firstCurve</font> = <font color="#666666">"curve0"</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$secondCurve</font> = <font color="#666666">"curve1"</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$degree</font> = 60;
+    
+    <font color="#4c78a6">curve</font> -n <font color="#06055f">$firstCurve</font> -d 3
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*-6))) -6 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*-6)))
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*-5))) -5 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*-5)))
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*-4))) -4 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*-4)))
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*-3))) -3 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*-3)))
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*-2))) -2 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*-2)))
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*-1))) -1 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*-1)))
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*0))) 0 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*0)))
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*1))) 1 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*1)))
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*2))) 2 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*2)))
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*3))) 3 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*3)))
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*4))) 4 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*4)))
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*5))) 5 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*5)))
+    -p (<font color="#4c78a6">sin</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*6))) 6 (<font color="#4c78a6">cos</font>(<font color="#4c78a6">deg_to_rad</font>(<font color="#06055f">$degree</font>*6)));
+    
+    <font color="#4c78a6">duplicate</font> -n <font color="#06055f">$secondCurve $firstCurve</font>;
+    <font color="#4c78a6">select</font> <font color="#06055f">$secondCurve</font>;
+    <font color="#4c78a6">rotate</font> -r 0 90 0;
+    <font color="#06055f">$curves</font>[0] = <font color="#06055f">$firstCurve</font>;
+    <font color="#06055f">$curves</font>[1] = <font color="#06055f">$secondCurve</font>;
+    
+    groupObjects(<font color="#06055f">$curves</font>, <font color="#06055f">$gene</font>);
+    <font color="#4c78a6">clear</font> <font color="#06055f">$curves</font>;
+    <font color="#0000b3">return</font> <font color="#06055f">$gene</font>;
+}
+  
+<font color="#cc0000">//PROC: Group objects into one</font>
+<font color="#0000b3">global proc</font> groupObjects(<font color="#0000ff">string</font> <font color="#06055f">$objNames</font>[], <font color="#0000ff">string</font> <font color="#06055f">$groupName</font>){
+  
+    <font color="#4c78a6">select</font> -r <font color="#06055f">$objNames</font>[0];
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font>;
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=1; <font color="#06055f">$i</font>&lt;size($objNames); <font color="#06055f">$i</font>++){
+        <font color="#4c78a6">select</font> -tgl <font color="#06055f">$objNames</font>[<font color="#06055f">$i</font>];    
+    }
+    <font color="#4c78a6">group</font> -n <font color="#06055f">$groupName</font>;
+}
+  
+<font color="#cc0000">//PROC: Group two different groups into one</font>
+<font color="#0000b3">global proc</font> groupAll(<font color="#0000ff">string</font> <font color="#06055f">$objName1</font>, <font color="#0000ff">string</font> <font color="#06055f">$objName2</font>, <font color="#0000ff">string</font> <font color="#06055f">$groupName</font>){
+  
+    <font color="#4c78a6">select</font> -r <font color="#06055f">$objName1</font>;
+    <font color="#4c78a6">select</font> -tgl <font color="#06055f">$objName2</font>;
+    <font color="#4c78a6">group</font> -n <font color="#06055f">$groupName</font>;
+}
+  
+<font color="#cc0000">//Setting the animation for each sphere.</font>
+<font color="#0000b3">global proc</font> setAnimation(<font color="#0000ff">float</font> <font color="#06055f">$timeFrame</font>, <font color="#0000ff">string</font> <font color="#06055f">$sphereNM</font>){
+  
+    <font color="#0000ff">string</font> <font color="#06055f">$timeCmd</font> = <font color="#06055f">$timeFrame</font> + <font color="#666666">"sec"</font>;
+    <font color="#4c78a6">setKeyframe</font> -attribute <font color="#666666">"translateX"</font> -t <font color="#06055f">$timeCmd $sphereNM</font>;
+    <font color="#4c78a6">setKeyframe</font> -attribute <font color="#666666">"translateY"</font> -t <font color="#06055f">$timeCmd $sphereNM</font>;
+    <font color="#4c78a6">setKeyframe</font> -attribute <font color="#666666">"translateZ"</font> -t <font color="#06055f">$timeCmd $sphereNM</font>;
+    <font color="#4c78a6">setKeyframe</font> -attribute <font color="#666666">"rotateZ"</font> -t <font color="#06055f">$timeCmd $sphereNM</font>;
+    <font color="#4c78a6">setKeyframe</font> -attribute <font color="#666666">"rotateY"</font> -t <font color="#06055f">$timeCmd $sphereNM</font>;
+    <font color="#4c78a6">setKeyframe</font> -attribute <font color="#666666">"rotateX"</font> -t <font color="#06055f">$timeCmd $sphereNM</font>;
+}
+</pre>

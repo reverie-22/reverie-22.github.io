@@ -1,0 +1,64 @@
+<pre><font color="#cc0000"># maya_proj_utils.py
+# This class bundles together (encapsulates) a few useful
+# methods for querying the state of the current Maya project.
+# Malcolm Kesson.
+# maya/scripts</font>
+  
+<font color="#0000b3">import</font> <font color="#68086f">maya</font><font color="#000000">.cmds</font> <font color="#0000b3">as</font> <font color="#68086f">mc</font>
+<font color="#0000b3">import</font> <font color="#68086f">os</font>
+  
+<font color="#0000b3">class</font> <font color="#000000">MayaProjUtils():</font>
+    <font color="#cc0000">#-----------------------------------------</font>
+    <font color="#0000b3">def</font> <font color="#000000">getSceneName(</font><font color="#0000b3">self</font><font color="#000000">):
+        name =</font> <font color="#68086f">mc</font><font color="#000000">.</font><font color="#0000b3">file</font><font color="#000000">(q=</font><font color="#0000b3">True</font><font color="#000000">, sceneName=</font><font color="#0000b3">True</font><font color="#000000">, shortName=</font><font color="#0000b3">True</font><font color="#000000">)</font>
+        <font color="#0000b3">if</font> <font color="#0000b3">len</font><font color="#000000">(name) == 0:
+            name =</font> <font color="#666666">'untitled'</font>
+        <font color="#0000b3">else</font><font color="#000000">:
+            name = name[:</font><font color="#0000b3">len</font><font color="#000000">(name) - 3]</font>
+        <font color="#0000b3">return</font> <font color="#000000">name</font>
+    <font color="#cc0000">#-----------------------------------------</font>
+    <font color="#0000b3">def</font> <font color="#000000">getProjPath(</font><font color="#0000b3">self</font><font color="#000000">):
+        projpath =</font> <font color="#68086f">mc</font><font color="#000000">.workspace(q=</font><font color="#0000b3">True</font><font color="#000000">, rootDirectory=</font><font color="#0000b3">True</font><font color="#000000">)</font>
+        <font color="#0000b3">return</font> <font color="#000000">projpath</font>
+    <font color="#cc0000">#-----------------------------------------</font>
+    <font color="#0000b3">def</font> <font color="#000000">getRMSRoot(</font><font color="#0000b3">self</font><font color="#000000">):
+        path =</font> <font color="#68086f">os</font><font color="#000000">.getenv(</font><font color="#666666">'RMS_SCRIPT_PATHS'</font><font color="#000000">)</font>
+        <font color="#0000b3">return</font> <font color="#68086f">os</font><font color="#000000">.</font><font color="#68086f">path</font><font color="#000000">.dirname(path)</font>
+    <font color="#cc0000">#-----------------------------------------</font>
+    <font color="#0000b3">def</font> <font color="#000000">getRMS_python(</font><font color="#0000b3">self</font><font color="#000000">):
+        path =</font> <font color="#0000b3">self</font><font color="#000000">.getRMSRoot()</font>
+        <font color="#0000b3">return</font> <font color="#000000">path +</font> <font color="#666666">'/RMS_python'</font>
+    <font color="#cc0000">#-----------------------------------------</font>
+    <font color="#0000b3">def</font> <font color="#000000">getDataDirPath(</font><font color="#0000b3">self</font><font color="#000000">):
+        projpath =</font> <font color="#0000b3">self</font><font color="#000000">.getProjPath()</font>
+        <font color="#0000b3">return</font> <font color="#000000">projpath +</font> <font color="#666666">'data'</font>
+    <font color="#cc0000">#-----------------------------------------</font>
+    <font color="#0000b3">def</font> <font color="#000000">getRIB_ArchivePath(</font><font color="#0000b3">self</font><font color="#000000">):
+        projpath =</font> <font color="#0000b3">self</font><font color="#000000">.getProjPath()</font>
+        <font color="#0000b3">return</font> <font color="#000000">projpath +</font> <font color="#666666">'RIB_Archive'</font>
+    <font color="#cc0000">#-----------------------------------------</font>
+    <font color="#0000b3">def</font> <font color="#000000">getAnimationStart(</font><font color="#0000b3">self</font><font color="#000000">):</font>
+        <font color="#0000b3">try</font><font color="#000000">:</font>
+            <font color="#68086f">mc</font><font color="#000000">.getAttr(</font><font color="#666666">'defaultRenderGlobals.animation'</font><font color="#000000">)</font>
+            <font color="#0000b3">return</font> <font color="#0000b3">int</font><font color="#000000">(</font><font color="#68086f">mc</font><font color="#000000">.currentTime(q=</font><font color="#0000b3">True</font><font color="#000000">))</font>
+        <font color="#0000b3">except</font><font color="#000000">:</font>
+            <font color="#0000b3">return</font> <font color="#0000b3">int</font><font color="#000000">(</font><font color="#68086f">mc</font><font color="#000000">.getAttr(</font><font color="#666666">'defaultRenderGlobals.startFrame'</font><font color="#000000">))</font>
+    <font color="#cc0000">#-----------------------------------------</font>
+    <font color="#0000b3">def</font> <font color="#000000">getAnimationEnd(</font><font color="#0000b3">self</font><font color="#000000">):</font>
+        <font color="#0000b3">try</font><font color="#000000">:</font>
+            <font color="#68086f">mc</font><font color="#000000">.getAttr(</font><font color="#666666">'defaultRenderGlobals.animation'</font><font color="#000000">)</font>
+            <font color="#0000b3">return</font> <font color="#0000b3">int</font><font color="#000000">(</font><font color="#68086f">mc</font><font color="#000000">.currentTime(q=</font><font color="#0000b3">True</font><font color="#000000">))</font>
+        <font color="#0000b3">except</font><font color="#000000">:</font>
+            <font color="#0000b3">return</font> <font color="#0000b3">int</font><font color="#000000">(</font><font color="#68086f">mc</font><font color="#000000">.getAttr(</font><font color="#666666">'defaultRenderGlobals.endFrame'</font><font color="#000000">))</font>
+    <font color="#cc0000">#-----------------------------------------</font>
+    <font color="#0000b3">def</font> <font color="#000000">getCurrentTime(</font><font color="#0000b3">self</font><font color="#000000">):</font>
+        <font color="#0000b3">return</font> <font color="#0000b3">int</font><font color="#000000">(</font><font color="#68086f">mc</font><font color="#000000">.currentTime(q=</font><font color="#0000b3">True</font><font color="#000000">))</font>
+    <font color="#cc0000">#-----------------------------------------</font>
+    <font color="#0000b3">def</font> <font color="#000000">getPadding(</font><font color="#0000b3">self</font><font color="#000000">, frame):</font>
+        <font color="#666666">"""
+        Converts the input integer into a padded string
+        consisting of 4 numerals.
+        """</font>
+        <font color="#0000b3">return</font> <font color="#666666">"%0*d"</font> <font color="#000000">% (4, frame)</font>
+  
+</pre>

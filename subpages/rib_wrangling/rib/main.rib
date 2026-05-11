@@ -1,0 +1,88 @@
+#________________Main File____________________
+
+Option "ribparse" "string varsubst" ["$"]
+IfBegin "!defined(RMSTREE)"
+	Option "user" "string RMSTREE" ["/opt/pixar/RenderManForMaya-21.0-maya2016.5"]
+IfEnd
+Option "searchpath" "shader"    ["../../maya/projects/RfM_osl:@"]
+Option "searchpath" "rixplugin" ["${RMSTREE}/lib/shaders:/home/mkesson/mount/fachome/maya/projects/RfM_ris:@"]
+Option "searchpath" "texture"   ["../textures:@"]
+Option "searchpath" "archive"   ["../archives:Cutter_Help/templates/Rib:custom_templates/Rib"]
+#Option "statistics" "endofframe" [1]
+
+Hider "raytrace" "int incremental" [1] "int minsamples" [0] "int maxsamples" [512] "float darkfalloff" [0.025]
+Integrator "PxrPathTracer" "PxrPathTracer" "int maxPathLength" [10] "int allowCaustics" [0]
+
+PixelVariance 0.01
+Format 1280 720 1
+#Format 640 360 1
+#ReadArchive "./DenoiseOptions.rib"
+Display "untitled" "it" "rgba"
+Projection "perspective" "fov" [20] #==== film of view 20 <- size of the lense
+#====================================CAMERA======================================== starting 2nd part (camera position information, if have depth of field, it will go below here.)
+#==Light====
+Translate -3 -1 18 # pan left/right, up/down, dolly
+Rotate -15 1 0 0 # switch turn on(1) and off(0) in x y z order  # rotate up/down
+Rotate 80 0 1 0  # rotate left/right
+Scale 1 1 -1 #
+
+#DisplayFilter "PxrBackgroundDisplayFilter" "background" "color backgroundColor" [1 1 1]
+WorldBegin
+	#================================================================================ starting 3rd part
+	Bxdf "PxrSurface" "default"  #pixar suface material defines here
+			"color diffuseColor" [0.6 0.6 0.6] # same as maya's diffuse -> color -> RGB 0 to 1.0 setting
+			"float diffuseGain" [1.0] # same as maya's gain parameter.
+			"float presence" [1.0]
+
+	TransformBegin
+		Scale 5.5 5.5 5.5 #save
+		#ReadArchive "cutrAxes.rib" #restore
+	TransformEnd
+	#Introduce the three point light rig
+	ReadArchive "lights/3light.rib"
+	AttributeBegin
+		Translate 2 0 3
+		AttributeBegin
+			Translate -1 0 1.2
+			Rotate -20  0 1 0
+			Scale 1.55 1.55 1.55
+			ReadArchive "geo/teapot_final.rib"
+		AttributeEnd
+		AttributeBegin
+			Translate 3.5 0.7 2
+			Scale 1 1.4 1
+			ReadArchive "geo/teacup_final.rib"
+		AttributeEnd
+		AttributeBegin
+			Translate 4 0.7 4.5
+			Scale 1 1.4 1
+			ReadArchive "geo/teacup_final.rib"
+		AttributeEnd
+		AttributeBegin
+			Translate 0 0 0
+			Scale 1 1 1
+			ReadArchive "geo/plates.rib"
+		AttributeEnd
+		AttributeBegin
+			Translate 0 0 0
+			Scale 1 1 1
+			ReadArchive "geo/plate_stands.rib"
+		AttributeEnd
+		AttributeBegin
+			Translate 0 0 0
+			Scale 0.7 0.7 0.7
+			ReadArchive "geo/candles.rib"
+		AttributeEnd
+	AttributeEnd
+	AttributeBegin
+		Translate 2.5 0 1.5
+		Scale 2 2 2
+		ReadArchive "geo/table.rib"
+	AttributeEnd
+	AttributeBegin
+		Translate -12 -4 -6.5
+		ReadArchive "geo/wall.rib"
+	AttributeEnd
+WorldEnd
+
+#ReadArchive "./Denoise.rib"

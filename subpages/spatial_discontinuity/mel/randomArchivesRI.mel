@@ -1,0 +1,59 @@
+// Script by Prof.Malcolm Kesson (all rights reserved).
+// 
+// Pre Shape Mel Script
+//
+global proc randomArchivesRI() {
+// Get the name of the shape node
+string $shapeNode = `rman ctxGetObject`;
+string $parents[] = `listRelatives -parent $shapeNode`;
+string $tformNode = $parents[0];
+
+// The node may hava a number in its name that we can use 
+// to set the random number generator
+int	$nodeNumber = `match "[0-9]+" $shapeNode`;	
+if($nodeNumber != "") {
+	seed(int($nodeNumber));
+	}
+// Bounding box...
+float $bb_width =  `getAttr ($shapeNode + ".boundingBoxSizeX")`;
+float $bb_height = `getAttr ($shapeNode + ".boundingBoxSizeY")`;
+float $bb_depth =  `getAttr ($shapeNode + ".boundingBoxSizeZ")`;
+
+string $attr;
+$attr = `rmanGetAttrName "ra_srcDir"`;
+$attr = `rmanGetFullSharedGeometricAttrName $shapeNode $attr`;
+string $ra_srcDir = `getAttr $attr`;
+
+$attr = `rmanGetAttrName "ra_scale"`;
+$attr = `rmanGetFullSharedGeometricAttrName $shapeNode $attr`;
+float $ra_scale = `getAttr $attr`;
+
+$attr = `rmanGetAttrName "ra_active"`;
+$attr = `rmanGetFullSharedGeometricAttrName $shapeNode $attr`;
+int $ra_active = `getAttr $attr`;
+
+if($ra_active != 1)
+	return;
+	
+// Get a list of the archives from the source directory.
+string $projpath = `workspace -q -rootDirectory`;
+string $ribpath = $projpath + $ra_srcDir + "/";
+string $ribnames[] = `getFileList -folder $ribpath -filespec "*.rib"`;
+
+// Pick an archive
+int     $index = rand(0.0, size($ribnames));
+string  $archiveName = $ribnames[$index];
+string  $archivePath =  $projpath + $ra_srcDir + "/" + $archiveName;
+
+// Use of Pixar's custom RenderMan Studio procedures begins here.
+RiTransformBegin();
+	RiScale($ra_scale, $ra_scale, $ra_scale);
+	RiReadArchive($archivePath);
+RiTransformEnd();
+
+// Make the original object inactive
+RiAttribute "visibility" "int camera" 0;
+RiAttribute "visibility" "int indirect" 0;
+RiAttribute "visibility" "int transmission" 0;
+}
+

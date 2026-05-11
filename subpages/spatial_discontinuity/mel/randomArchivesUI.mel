@@ -1,0 +1,32 @@
+// Script by Malcolm Kesson (all rights reserved).
+//
+// Pre Shape User Interface (UI) Mel Script
+//
+global proc randomArchivesUI() 
+{
+string $selected[] = `ls -sl`;
+
+for($i = 0; $i < size($selected); $i++ ) {
+
+	string $shp[] = `listRelatives -shapes $selected[$i]`;
+
+	if(`nodeType $selected[$i]` == "RenderMan")
+		$shp[0] = $selected[$i];
+	
+	string $shapeName = $shp[0];
+	string $attr = `rmanGetAttrName "preShapeScript"`;
+
+	// "Connect" to the mel script that calls 
+	// Pixar's custom Ri mel procedures.
+	rmanAddAttr $shapeName $attr "randomArchivesRI";
+		
+	$attr = `rmanGetAttrName "ra_srcDir"`;
+	rmanAddAttr $shapeName $attr "RIB_Archive";
+
+	$attr = `rmanGetAttrName "ra_scale"`;
+	rmanAddAttr $shapeName $attr "1.0";
+
+	$attr = `rmanGetAttrName "ra_active"`;
+	rmanAddAttr $shapeName $attr "1";
+	}
+}

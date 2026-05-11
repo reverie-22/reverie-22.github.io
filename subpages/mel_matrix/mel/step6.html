@@ -1,0 +1,56 @@
+<pre><font color="#000000"></font><font color="#cc0000">//STEP 6:</font>
+<font color="#0000ff">string</font> <font color="#06055f">$sub</font> = <font color="#06055f">$obj</font> + <font color="#666666">"_subSpheres"</font>;
+attachSubFiguresToFaces(<font color="#06055f">$obj</font>, <font color="#06055f">$sub_figure</font>, <font color="#06055f">$sub</font>);
+  
+<font color="#cc0000">//PROC: Attach subSphere to each face of main object</font>
+<font color="#0000b3">global proc</font> attachSubFiguresToFaces(<font color="#0000ff">string</font> <font color="#06055f">$obj</font>, <font color="#0000ff">string</font> <font color="#06055f">$sub_figure</font>, <font color="#0000ff">string</font> <font color="#06055f">$subSpheres</font>){
+    <font color="#06055f">$arrayFace</font> = <font color="#410341">`polyEvaluate -f $obj`</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$fId</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$mashGrp</font>[];
+    <font color="#0000b3">for</font>(<font color="#06055f">$fId</font>=0; <font color="#06055f">$fId</font>&lt;$arrayFace[0]; <font color="#06055f">$fId</font>++){
+        <font color="#0000ff">vector</font> <font color="#06055f">$temp</font> = getFaceCenter(<font color="#06055f">$obj</font>, <font color="#06055f">$fId</font>);
+        <font color="#0000ff">string</font> <font color="#06055f">$name</font> = <font color="#06055f">$obj</font> + <font color="#666666">"_"</font> + <font color="#06055f">$sub_figure</font> + (<font color="#06055f">$fId</font>+1);
+        <font color="#0000ff">string</font> <font color="#06055f">$cmd</font>[] = <font color="#410341">`duplicate -n $name $sub_figure`</font>;
+        <font color="#06055f">$mashGrp</font>[<font color="#06055f">$fId</font>] = <font color="#06055f">$cmd</font>[0];
+        <font color="#4c78a6">xform</font> -pivots 0 0 0 <font color="#06055f">$name</font>;
+        <font color="#0000ff">float</font> <font color="#06055f">$a</font>[] = aimY(<font color="#06055f">$temp</font>);
+  
+        <font color="#4c78a6">select</font> <font color="#06055f">$name</font>;
+        <font color="#4c78a6">move</font> (<font color="#06055f">$temp</font>.x) (<font color="#06055f">$temp</font>.y) (<font color="#06055f">$temp</font>.z);
+        <font color="#4c78a6">rotate</font> -r <font color="#06055f">$a</font>[0] 0 0;
+        <font color="#4c78a6">rotate</font> -r 0     0 <font color="#06055f">$a</font>[1];
+    }
+  
+    <font color="#4c78a6">select</font> -r <font color="#06055f">$mashGrp</font>[0];
+    <font color="#0000b3">for</font>(<font color="#06055f">$fId</font>=1; <font color="#06055f">$fId</font>&lt;$arrayFace[0]; <font color="#06055f">$fId</font>++){
+        <font color="#4c78a6">select</font> -tgl <font color="#06055f">$mashGrp</font>[<font color="#06055f">$fId</font>];
+    }
+    <font color="#4c78a6">group</font> -n <font color="#06055f">$subSpheres</font>;
+    <font color="#4c78a6">delete</font> <font color="#06055f">$sub_figure</font>;
+}
+  
+<font color="#cc0000">//PROC: Return vector information of middle of each face</font>
+<font color="#0000b3">global proc</font> <font color="#0000ff">vector</font> getFaceCenter(<font color="#0000ff">string</font> <font color="#06055f">$obj</font>, <font color="#0000ff">int</font> <font color="#06055f">$faceId</font>){
+    <font color="#4c78a6">select</font> <font color="#06055f">$obj</font>;
+    <font color="#0000ff">string</font> <font color="#06055f">$objName</font> = <font color="#06055f">$obj</font> + <font color="#666666">".f["</font> + <font color="#06055f">$faceId</font> +<font color="#666666">"]"</font>;
+    <font color="#cc0000">//Query vector information for one particular face</font>
+    <font color="#0000ff">float</font> <font color="#06055f">$results</font>[] = <font color="#410341">`xform -q -ws -t $objName`</font>;
+    <font color="#0000ff">int</font> <font color="#06055f">$vertexCount</font> = <font color="#4c78a6">size</font>(<font color="#06055f">$results</font>)/3;
+    
+    <font color="#0000ff">int</font> <font color="#06055f">$i</font>, <font color="#06055f">$j</font>, <font color="#06055f">$h</font>;
+    <font color="#0000ff">vector</font> <font color="#06055f">$vec</font>[];
+    <font color="#0000ff">float</font> <font color="#06055f">$newVec</font>[];
+    <font color="#cc0000">//Average all vector information to get center value.</font>
+    <font color="#0000b3">for</font>(<font color="#06055f">$i</font>=0; <font color="#06055f">$i</font>&lt;3; <font color="#06055f">$i</font>++){
+        <font color="#0000ff">float</font> <font color="#06055f">$tempNum</font>;
+        <font color="#0000b3">for</font>(<font color="#06055f">$h</font>=0; <font color="#06055f">$h</font>&lt;$vertexCount; <font color="#06055f">$h</font>++){
+            <font color="#06055f">$tempNum</font> += <font color="#06055f">$results</font>[<font color="#06055f">$h</font>*3+<font color="#06055f">$i</font>];
+        }
+        <font color="#0000ff">float</font> <font color="#06055f">$val</font> = <font color="#06055f">$tempNum</font>/<font color="#06055f">$vertexCount</font>;
+        <font color="#06055f">$newVec</font>[<font color="#06055f">$i</font>] = <font color="#06055f">$val</font>;
+    }
+    <font color="#cc0000">//Return center of the face</font>
+    <font color="#0000ff">vector</font> <font color="#06055f">$faceCenterPnt</font> = &lt;&lt;$newVec[0], <font color="#06055f">$newVec</font>[1], <font color="#06055f">$newVec</font>[2]&gt;&gt;;
+    <font color="#0000b3">return</font> <font color="#06055f">$faceCenterPnt</font>;
+}
+</pre>

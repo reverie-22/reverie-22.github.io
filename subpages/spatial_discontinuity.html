@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2XF1NZ6P8C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-2XF1NZ6P8C');
+  </script>  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spatial Discontinuity</title>
+  <style>
+    :root {
+      --bg: #f7f9fb;
+      --surface: #ffffff;
+      --surface-2: #f8fbfd;
+      --text: #111827;
+      --muted: #5b6472;
+      --line: #dbe3ea;
+      --accent: #569abd;
+      --accent-dark: #447f9d;
+      --accent-soft: #eaf4fa;
+      --code-bg: #101820;
+      --code-header: #172331;
+      --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 10px 26px rgba(15, 23, 42, 0.07);
+      --max: 1000px;
+      --radius-lg: 28px;
+      --radius-md: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img, iframe { display: block; max-width: 100%; }
+    .wrap { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(12px);
+      background: rgba(247,249,251,0.92);
+      border-bottom: 1px solid rgba(219, 227, 234, 0.8);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 74px;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      font-size: 1.05rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 0.94rem;
+      transition: 0.2s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .page { padding: 42px 0 60px; }
+
+    .project-shell {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 34px;
+      text-align: center;
+    }
+
+    .top-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      width: fit-content;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.4rem, 2.4vw, 2rem);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 1.12rem;
+      letter-spacing: -0.01em;
+    }
+
+    .lead {
+      margin: 0 auto 22px auto;
+      color: var(--muted);
+      font-size: 1.03rem;
+      max-width: 72ch;
+    }
+
+    .bullet-list {
+      display: inline-block;
+      text-align: left;
+      margin: 0 auto 28px auto;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .bullet-list li { margin-bottom: 8px; }
+
+    .section {
+      margin-top: 30px;
+      background: linear-gradient(135deg, #eef6fa, #ffffff 45%, #f6f9fc);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      text-align: left;
+    }
+
+    .section.centered { text-align: center; }
+
+    .section > h2,
+    .section > h3 {
+      text-align: center;
+    }
+
+    .section-intro {
+      color: var(--muted);
+      max-width: 75ch;
+      margin: 0 auto 20px;
+      text-align: center;
+    }
+
+    .media-block,
+    .panel {
+      background: linear-gradient(135deg, #e7f1f7, #f8fbfd 48%, #e5ebf4);
+      border-radius: 22px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .media-frame {
+      border-radius: 18px;
+      overflow: hidden;
+      background: #e8eef4;
+      border: 1px solid rgba(219, 227, 234, 0.85);
+    }
+
+    .media-frame img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .video-wrapper {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #111827;
+      aspect-ratio: 16 / 9;
+    }
+
+    .video-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .caption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      text-align: center;
+    }
+
+    .hero-slider {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: 0 14px 35px rgba(15, 23, 42, 0.10);
+      background: #eef4f8;
+    }
+
+    .hero-slide { display: none; }
+    .hero-slide.active { display: block; animation: softFade 0.35s ease; }
+    .hero-slide img {
+      width: 100%;
+      max-height: 640px;
+      object-fit: contain;
+      background: #eef4f8;
+    }
+
+    @keyframes softFade {
+      from { opacity: 0.45; transform: scale(0.995); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .slider-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 1px solid rgba(255,255,255,0.65);
+      background: rgba(17, 24, 39, 0.45);
+      color: #fff;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 22px;
+      display: grid;
+      place-items: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .slider-arrow:hover { background: rgba(17, 24, 39, 0.68); }
+    .slider-arrow.prev { left: 16px; }
+    .slider-arrow.next { right: 16px; }
+
+    .dots {
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(17,24,39,0.36);
+      backdrop-filter: blur(8px);
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      border: 0;
+      background: rgba(255,255,255,0.55);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .dot.active { background: #fff; width: 22px; }
+
+    .grid-4,
+    .grid-3,
+    .grid-2 {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+    .thumb {
+      border-radius: 18px;
+      overflow: hidden;
+      background: #eef4f8;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.25s ease;
+    }
+
+    .thumb:hover img { transform: scale(1.03); }
+
+    .single-image {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .single-image img {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+    }
+
+    .compare {
+      --pos: 50%;
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #eef4f8;
+      min-height: 260px;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+    }
+
+    .compare img {
+      width: 100%;
+      height: 100%;
+      min-height: 260px;
+      max-height: 520px;
+      object-fit: cover;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .compare .after {
+      position: absolute;
+      inset: 0;
+      clip-path: inset(0 0 0 var(--pos));
+    }
+
+    .compare input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: ew-resize;
+      z-index: 5;
+    }
+
+    .compare .handle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: var(--pos);
+      width: 3px;
+      background: #fff;
+      transform: translateX(-50%);
+      z-index: 4;
+      box-shadow: 0 0 18px rgba(0,0,0,0.28);
+    }
+
+    .compare .handle::after {
+      content: "↔";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--accent);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.18);
+    }
+
+    .compare-label {
+      position: absolute;
+      top: 14px;
+      z-index: 3;
+      color: white;
+      background: rgba(17,24,39,0.55);
+      backdrop-filter: blur(8px);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .compare-label.before { left: 14px; }
+    .compare-label.after-label { right: 14px; }
+
+    .code-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .code-card {
+      background: #111827;
+      color: #e5e7eb;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(219, 227, 234, 0.25);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.07);
+      color: #f8fafc;
+      font-weight: 700;
+      font-size: 0.92rem;
+      text-align: left;
+    }
+
+    .code-header span:last-child {
+      color: #93c5fd;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .code-card iframe {
+      width: 100%;
+      height: 420px;
+      border: 0;
+      background: #fff;
+    }
+
+
+    .code-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .code-tab {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-weight: 600;
+    }
+
+    .code-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(86,154,189,0.24);
+    }
+
+    .code-viewer {
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: var(--code-bg);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .code-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--code-header);
+      color: #e5eef6;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9rem;
+    }
+
+    .code-pill {
+      color: #94a3b8;
+      font-size: 0.78rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 999px;
+      padding: 4px 9px;
+    }
+
+    .code-panel { display: none; }
+    .code-panel.active { display: block; }
+
+    .code-panel iframe {
+      width: 100%;
+      height: 520px;
+      border: 0;
+      background: #fff;
+    }
+
+    .code-preview {
+      margin: 0;
+      padding: 22px;
+      height: 520px;
+      overflow: auto;
+      background: #f8fafc;
+      color: #111827;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      white-space: pre;
+      text-align: left;
+      border: 0;
+    }
+
+    .code-footer {
+      padding: 14px 18px;
+      border-top: 1px solid var(--line);
+      background: #fff;
+      text-align: right;
+    }
+
+    .code-footer a {
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    #upBtn {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 99;
+      border: none;
+      outline: none;
+      background-color: var(--accent);
+      color: white;
+      cursor: pointer;
+      padding: 14px 16px;
+      border-radius: 14px;
+      box-shadow: 0 12px 24px rgba(86,154,189,0.28);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    #upBtn:hover { background-color: var(--accent-dark); }
+
+    footer {
+      padding: 24px 0 42px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 860px) {
+      body { line-height: 1.55; }
+      .grid-4, .grid-3, .grid-2, .code-grid { grid-template-columns: 1fr; }
+      .thumb img { height: auto; }
+      .page { padding: 24px 0 44px; }
+      .project-shell { padding: 22px; border-radius: 22px; }
+      .section { padding: 18px; margin-top: 22px; border-radius: 18px; }
+      .nav { min-height: 64px; }
+      .nav-links { display: none; }
+      .wrap { width: min(var(--max), calc(100% - 20px)); }
+      .slider-arrow { width: 36px; height: 36px; }
+      .media-block { padding: 12px; }
+      .video-wrapper { width: 100%; aspect-ratio: 16 / 9; }
+      .code-preview { height: 420px; font-size: 0.82rem; padding: 18px; }
+    }
+
+    @media (max-width: 520px) {
+      .wrap { width: min(var(--max), calc(100% - 14px)); }
+      .project-shell { padding: 14px; border-radius: 18px; }
+      .section { padding: 14px; }
+      .top-links { flex-direction: column; align-items: stretch; }
+      .top-links .button { justify-content: center; }
+      .lead br, .section-intro br { display: none; }
+      .bullet-list { display: block; padding-left: 18px; }
+      .media-block { padding: 8px; margin-left: -4px; margin-right: -4px; }
+      .video-wrapper { aspect-ratio: 16 / 9; border-radius: 14px; }
+      .hero-slide img { max-height: none; }
+      .compare { min-height: 220px; }
+      .compare img { min-height: 220px; }
+      .slider-arrow { display: none; }
+      .dots { bottom: 10px; }
+      .code-tabs { gap: 8px; }
+      .code-tab { font-size: 0.82rem; padding: 8px 10px; }
+      .code-bar { font-size: 0.82rem; padding: 10px 12px; }
+      .code-preview { height: 320px; font-size: 0.74rem; padding: 12px; }
+      .code-footer { text-align: center; }
+      #upBtn { bottom: 16px; right: 16px; padding: 11px 13px; }
+    }
+  
+
+    /* Mobile navigation override: keeps the top menu on one compact row. */
+    @media (max-width: 860px) {
+      html { scroll-padding-top: 72px; }
+      section { scroll-margin-top: 72px; }
+
+      header {
+        height: auto;
+      }
+
+      .nav {
+        min-height: 56px !important;
+        padding: 6px 0 !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 14px !important;
+      }
+
+      .brand {
+        font-size: 0.88rem !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+      }
+
+      .nav-links {
+        display: flex !important;
+        width: auto !important;
+        flex: 1 !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 12px !important;
+        font-size: 0.66rem !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        scrollbar-width: none !important;
+      }
+
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav-links a {
+        border: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+      }
+
+      .nav-links .button {
+        border: 1px solid var(--line) !important;
+        background: var(--surface) !important;
+        border-radius: 999px !important;
+        padding: 5px 9px !important;
+        font-size: 0.66rem !important;
+        line-height: 1 !important;
+        flex-shrink: 0 !important;
+      }
+
+      .page {
+        padding-top: 24px !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <button onclick="topFunction()" id="upBtn" title="Go to top">△ Top</button>
+
+  <header>
+    <div class="wrap nav">
+      <a href="../index.html"><div class="brand">MILIM LEE</div></a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="../index.html">Home</a>
+        <a href="../index.html#projects">Technical Foundations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="wrap">
+      <div class="project-shell">
+        <div class="top-links">
+          <a class="button" href="../index.html">← Back to Home</a>
+          <a class="button" href="../index.html#projects">Go to Technical Foundations</a>
+        </div>
+
+        <div class="eyebrow">Technical Foundations</div>
+        <h1>Spatial Discontinuity</h1>
+        <p class="lead">
+          A RenderMan-focused technical project exploring discontinuous spatial forms,<br>archive replacement, shading/rendering setup,<br>and presentation of procedural scene variations.
+        </p>
+
+        <ul class="bullet-list">
+          <li>RenderMan rendering and RIB/archive workflow</li>
+          <li>Maya-based preliminary modeling and layout iteration</li>
+          <li>MEL UI tooling for randomized RenderMan archive placement</li>
+        </ul>
+
+        <section class="section centered" aria-label="Final image slideshow">
+          <div class="hero-slider" id="heroSlider">
+            <div class="hero-slide active">
+              <a href="spatial_discontinuity/slide1.jpg"><img src="spatial_discontinuity/slide1.jpg" alt="Spatial Discontinuity final render 1"></a>
+            </div>
+            <div class="hero-slide">
+              <a href="spatial_discontinuity/submission2_orig.jpg"><img src="spatial_discontinuity/submission2_orig.jpg" alt="Spatial Discontinuity final render 2"></a>
+            </div>
+            <div class="hero-slide">
+              <a href="spatial_discontinuity/submission3_orig.jpg"><img src="spatial_discontinuity/submission3_orig.jpg" alt="Spatial Discontinuity final render 3"></a>
+            </div>
+            <button class="slider-arrow prev" type="button" aria-label="Previous image">‹</button>
+            <button class="slider-arrow next" type="button" aria-label="Next image">›</button>
+            <div class="dots" aria-label="Slideshow navigation"></div>
+          </div>
+        </section>
+
+        <section class="section centered">
+          <div class="media-block">
+            <div class="video-wrapper">
+              <iframe src="https://player.vimeo.com/video/187673307" title="Spatial Discontinuity video" allow="autoplay" allowfullscreen></iframe>
+            </div>
+          </div>
+        </section>
+
+        <section class="section centered">
+          <h2>Reference Images</h2>
+          <p class="section-intro">Visual references used to define the mood, spatial language, and material direction.</p>
+          <div class="grid-4">
+            <a class="thumb" href="spatial_discontinuity/reference1.jpg"><img src="spatial_discontinuity/reference1.jpg" alt="Reference image 1"></a>
+            <a class="thumb" href="spatial_discontinuity/reference2.jpg"><img src="spatial_discontinuity/reference2.jpg" alt="Reference image 2"></a>
+            <a class="thumb" href="spatial_discontinuity/reference3.jpg"><img src="spatial_discontinuity/reference3.jpg" alt="Reference image 3"></a>
+            <a class="thumb" href="spatial_discontinuity/reference4.jpg"><img src="spatial_discontinuity/reference4.jpg" alt="Reference image 4"></a>
+          </div>
+        </section>
+
+        <section class="section centered">
+          <h2>Preliminary Models</h2>
+          <p class="section-intro">Early Maya studies used to explore object placement, form language,<br>and composition before final RenderMan rendering.</p>
+          <div class="grid-3">
+            <a class="thumb" href="spatial_discontinuity/preliminaryModel1.jpg"><img src="spatial_discontinuity/preliminaryModel1.jpg" alt="Preliminary Maya model 1"></a>
+            <a class="thumb" href="spatial_discontinuity/preliminaryModel2.jpg"><img src="spatial_discontinuity/preliminaryModel2.jpg" alt="Preliminary Maya model 2"></a>
+            <a class="thumb" href="spatial_discontinuity/preliminaryModel3.jpg"><img src="spatial_discontinuity/preliminaryModel3.jpg" alt="Preliminary Maya model 3"></a>
+          </div>
+        </section>
+
+        <section class="section centered">
+          <h2>RenderMan Rendering Techniques</h2>
+          <p class="section-intro">Subdivision and RenderMan archive workflows were used to manage repeated objects<br>and final rendering setup.</p>
+          <div class="single-image">
+            <a href="spatial_discontinuity/subdivScheme.jpg"><img src="spatial_discontinuity/subdivScheme.jpg" alt="Subdivision scheme"></a>
+          </div>
+
+        </br>
+          <h3>Before / After — Render Setup to Final Output</h3>
+          <p class="section-intro">A self-contained before/after slider replaces the older external Widgetic embed. <br>Drag the handle to compare the workflow/setup image against the final render.</p>
+          <div class="compare" data-compare>
+            <img class="before-img" src="spatial_discontinuity/before1.jpg" alt="Before subdivision setup">
+            <img class="after" src="spatial_discontinuity/after1.jpg" alt="After final render">
+            <span class="compare-label before">Before</span>
+            <span class="compare-label after-label">After</span>
+            <span class="handle"></span>
+            <input type="range" min="0" max="100" value="50" aria-label="Before and after image comparison">
+          </div>
+        </section>
+
+        <section class="section centered">
+          <h2>RenderMan Archives UI Class</h2>
+          <p class="section-intro">MEL scripts for replacing original objects with RenderMan archive instances <br>and controlling randomized archive placement.</p>
+
+          <div class="media-block" style="margin-bottom: 18px;">
+            <div class="single-image">
+              <a href="spatial_discontinuity/ribs.jpg"><img src="spatial_discontinuity/ribs.jpg" alt="RIB objects replacing original objects"></a>
+            </div>
+            <div class="caption">RIB objects replacing original objects.</div>
+          </div>
+
+          <div class="code-tabs" role="tablist" aria-label="MEL file tabs">
+            <button class="code-tab active" type="button" data-code-tab="randomRI">randomArchivesRI.mel</button>
+            <button class="code-tab" type="button" data-code-tab="randomUI">randomArchivesUI.mel</button>
+          </div>
+
+          <div class="code-viewer">
+            <div class="code-bar">
+              <span id="codeFileName">randomArchivesRI.mel</span>
+              <span class="code-pill">MEL</span>
+            </div>
+
+            <pre id="codePreview" class="code-preview">Loading randomArchivesRI.mel...</pre>
+
+            <div class="code-footer">
+              <a id="sourceLink" href="spatial_discontinuity/mel/randomArchivesRI.mel" target="_blank" rel="noopener">
+                Open source file ↗
+              </a>
+            </div>
+          </div>
+          </br>
+          <h2>Tool Screenshots</h2>
+          <div class="grid-2">
+            <a class="thumb" href="spatial_discontinuity/rmanSettings.png"><img src="spatial_discontinuity/rmanSettings.png" alt="RenderMan settings screenshot"></a>
+            <a class="thumb" href="spatial_discontinuity/scriptEditor.png"><img src="spatial_discontinuity/scriptEditor.png" alt="Maya script editor screenshot"></a>
+          </div>
+          </br>
+        </section>        
+
+        <section class="section centered">
+          <h3>Before / After — Tool Settings to Archive Result</h3>
+          <p class="section-intro">The second native slider keeps the before/after section on the page without relying on the external Widgetic widget.</p>
+          <div class="compare" data-compare>
+            <img class="before-img" src="spatial_discontinuity/before2.jpg" alt="RenderMan settings before">
+            <img class="after" src="spatial_discontinuity/after2.jpg" alt="Archive replacement result after">
+            <span class="compare-label before">Before</span>
+            <span class="compare-label after-label">After</span>
+            <span class="handle"></span>
+            <input type="range" min="0" max="100" value="50" aria-label="Before and after image comparison">
+          </div>
+        </section>
+
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Milim Lee. All rights reserved.
+  </footer>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".hero-slide"));
+    const dotsWrap = document.querySelector(".dots");
+    let currentSlide = 0;
+    let slideTimer;
+
+    function renderDots() {
+      slides.forEach((_, index) => {
+        const dot = document.createElement("button");
+        dot.className = "dot" + (index === 0 ? " active" : "");
+        dot.type = "button";
+        dot.setAttribute("aria-label", `Go to slide ${index + 1}`);
+        dot.addEventListener("click", () => showSlide(index, true));
+        dotsWrap.appendChild(dot);
+      });
+    }
+
+    function showSlide(index, userAction = false) {
+      currentSlide = (index + slides.length) % slides.length;
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === currentSlide));
+      Array.from(dotsWrap.children).forEach((dot, i) => dot.classList.toggle("active", i === currentSlide));
+
+      if (userAction) {
+        window.clearInterval(slideTimer);
+        slideTimer = window.setInterval(() => showSlide(currentSlide + 1), 5000);
+      }
+    }
+
+    document.querySelector(".slider-arrow.prev").addEventListener("click", () => showSlide(currentSlide - 1, true));
+    document.querySelector(".slider-arrow.next").addEventListener("click", () => showSlide(currentSlide + 1, true));
+    renderDots();
+    slideTimer = window.setInterval(() => showSlide(currentSlide + 1), 5000);
+
+    document.querySelectorAll("[data-compare]").forEach((compare) => {
+      const input = compare.querySelector("input");
+      const update = () => compare.style.setProperty("--pos", `${input.value}%`);
+      input.addEventListener("input", update);
+      update();
+    });
+
+
+    // Mobile-safe MEL code preview.
+    // This avoids iframe-loading .mel files, which can trigger download prompts on some mobile browsers.
+    const codeFiles = {
+      randomRI: "spatial_discontinuity/mel/randomArchivesRI.mel",
+      randomUI: "spatial_discontinuity/mel/randomArchivesUI.mel"
+    };
+
+    const codeNames = {
+      randomRI: "randomArchivesRI.mel",
+      randomUI: "randomArchivesUI.mel"
+    };
+
+    const codePreview = document.getElementById("codePreview");
+    const codeFileName = document.getElementById("codeFileName");
+    const sourceLink = document.getElementById("sourceLink");
+
+    async function loadCode(key) {
+      if (!codePreview || !codeFileName || !sourceLink) return;
+
+      codePreview.textContent = `Loading ${codeNames[key]}...`;
+      codeFileName.textContent = codeNames[key];
+      sourceLink.href = codeFiles[key];
+
+      try {
+        const response = await fetch(codeFiles[key], { cache: "no-store" });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const text = await response.text();
+        codePreview.textContent = text;
+      } catch (err) {
+        codePreview.textContent =
+          "Unable to load source preview.\n\n" +
+          "If you are testing locally, open this page through a local server instead of directly as a file.\n" +
+          "Example: python -m http.server\n\n" +
+          "You can still open the source file using the link below.";
+      }
+    }
+
+    document.querySelectorAll("[data-code-tab]").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const target = tab.getAttribute("data-code-tab");
+        document.querySelectorAll("[data-code-tab]").forEach((item) => {
+          item.classList.toggle("active", item === tab);
+        });
+        loadCode(target);
+      });
+    });
+
+    loadCode("randomRI");
+
+    window.onscroll = function() { scrollFunction(); };
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function scrollFunction() {
+      const upBtn = document.getElementById("upBtn");
+      if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        upBtn.style.display = "block";
+      } else {
+        upBtn.style.display = "none";
+      }
+    }
+
+    function topFunction() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
+  </script>
+</body>
+</html>

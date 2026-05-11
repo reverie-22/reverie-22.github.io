@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2XF1NZ6P8C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-2XF1NZ6P8C');
+  </script>  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dynamic Secondary Geometry RiMel</title>
+  <style>
+    :root {
+      --bg: #f7f9fb;
+      --surface: #ffffff;
+      --surface-2: #f8fbfd;
+      --text: #111827;
+      --muted: #5b6472;
+      --line: #dbe3ea;
+      --accent: #569abd;
+      --accent-dark: #447f9d;
+      --accent-soft: #eaf4fa;
+      --code-bg: #101820;
+      --code-header: #172331;
+      --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 10px 26px rgba(15, 23, 42, 0.07);
+      --radius-lg: 28px;
+      --radius-md: 22px;
+      --radius-sm: 16px;
+      --max: 1000px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img, iframe, video { display: block; max-width: 100%; }
+    .wrap { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(12px);
+      background: rgba(247,249,251,0.92);
+      border-bottom: 1px solid rgba(219, 227, 234, 0.8);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 74px;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      font-size: 1.05rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 0.94rem;
+      transition: 0.2s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .page { padding: 42px 0 60px; }
+
+    .project-shell {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 34px;
+      text-align: center;
+    }
+
+    .top-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      width: fit-content;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.55rem, 3vw, 2.15rem);
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 1.18rem;
+      letter-spacing: -0.01em;
+      text-align: center;
+    }
+
+    .lead {
+      margin: 0 auto 22px auto;
+      color: var(--muted);
+      font-size: 1.03rem;
+      max-width: 72ch;
+    }
+
+    .bullet-list {
+      display: inline-block;
+      text-align: left;
+      margin: 0 auto 26px auto;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .bullet-list li { margin-bottom: 8px; }
+
+    .section {
+      margin-top: 30px;
+      background: linear-gradient(135deg, #eef6fa, #ffffff 45%, #f6f9fc);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      text-align: center;
+    }
+
+    .section-intro {
+      color: var(--muted);
+      max-width: 75ch;
+      margin: 0 auto 20px;
+      text-align: center;
+    }
+
+    .media-frame {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #fff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .media-frame iframe,
+    .media-frame video {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      border: 0;
+    }
+
+    .caption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      text-align: center;
+    }
+
+    .carousel {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .carousel-stage {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      background: #e8eef3;
+    }
+
+    .carousel-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: scale(1.015);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      pointer-events: none;
+    }
+
+    .carousel-slide.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .carousel-control {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 999px;
+      background: rgba(17, 24, 39, 0.48);
+      color: white;
+      font-size: 1.5rem;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: 0.2s ease;
+    }
+
+    .carousel-control:hover { background: rgba(17, 24, 39, 0.68); }
+    .carousel-control.prev { left: 16px; }
+    .carousel-control.next { right: 16px; }
+
+    .carousel-dots {
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(17, 24, 39, 0.38);
+      backdrop-filter: blur(10px);
+    }
+
+    .carousel-dot {
+      width: 9px;
+      height: 9px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.58);
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .carousel-dot.active {
+      width: 24px;
+      background: white;
+    }
+
+    .thumbnail-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .thumbnail-strip button {
+      border: 2px solid transparent;
+      border-radius: 14px;
+      padding: 0;
+      overflow: hidden;
+      cursor: pointer;
+      background: none;
+      opacity: 0.72;
+      transition: 0.2s ease;
+    }
+
+    .thumbnail-strip button.active {
+      opacity: 1;
+      border-color: var(--accent);
+      box-shadow: 0 8px 18px rgba(86,154,189,0.18);
+    }
+
+    .thumbnail-strip img {
+      width: 100%;
+      height: 74px;
+      object-fit: cover;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .gallery-card {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #fff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .gallery-card img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-card.contain img {
+      object-fit: contain;
+      background: #fff;
+      max-height: 420px;   /* ⭐ controls tall images */
+      width: 100%;
+      height: auto;
+    }
+
+    .gallery-card:hover img { transform: scale(1.035); }
+
+    .image-stack {
+      display: grid;
+      gap: 18px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .code-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .code-tab {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-weight: 600;
+    }
+
+    .code-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(86,154,189,0.24);
+    }
+
+    .code-viewer {
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: var(--code-bg);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .code-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--code-header);
+      color: #e5eef6;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9rem;
+    }
+
+    .code-pill {
+      color: #94a3b8;
+      font-size: 0.78rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 999px;
+      padding: 4px 9px;
+    }
+
+    .code-panel { display: none; }
+    .code-panel.active { display: block; }
+
+    .code-panel iframe {
+      width: 100%;
+      height: 520px;
+      border: 0;
+      background: #fff;
+    }
+
+    .download-card {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      padding: 16px 18px;
+      box-shadow: var(--shadow-soft);
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .download-card span {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    #upBtn {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 99;
+      border: none;
+      outline: none;
+      background-color: var(--accent);
+      color: white;
+      cursor: pointer;
+      padding: 14px 16px;
+      border-radius: 14px;
+      box-shadow: 0 12px 24px rgba(86,154,189,0.28);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    #upBtn:hover { background-color: var(--accent-dark); }
+
+    footer {
+      padding: 24px 0 42px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 820px) {
+      .nav { min-height: 68px; }
+      .nav-links { display: none; }
+      .project-shell { padding: 22px; }
+      .section { padding: 18px; }
+      .wrap { width: min(var(--max), calc(100% - 20px)); }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .thumbnail-strip img { height: 52px; }
+      .carousel-control { width: 36px; height: 36px; }
+      .code-panel iframe { height: 440px; }
+    }
+
+    @media (max-width: 520px) {
+      .thumbnail-strip { display: none; }
+      .project-shell { padding: 18px; }
+      .carousel-stage { aspect-ratio: 4 / 3; }
+    }
+
+    .ui-desc-one img {
+      max-height: 520px;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .ui-desc-two img {
+      max-height: 300px; /* ⭐ tighter */
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }    
+  
+
+    /* Mobile navigation override: keeps the top menu on one compact row. */
+    @media (max-width: 860px) {
+      html { scroll-padding-top: 72px; }
+      section { scroll-margin-top: 72px; }
+
+      header {
+        height: auto;
+      }
+
+      .nav {
+        min-height: 56px !important;
+        padding: 6px 0 !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 14px !important;
+      }
+
+      .brand {
+        font-size: 0.88rem !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+      }
+
+      .nav-links {
+        display: flex !important;
+        width: auto !important;
+        flex: 1 !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 12px !important;
+        font-size: 0.66rem !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        scrollbar-width: none !important;
+      }
+
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav-links a {
+        border: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+      }
+
+      .nav-links .button {
+        border: 1px solid var(--line) !important;
+        background: var(--surface) !important;
+        border-radius: 999px !important;
+        padding: 5px 9px !important;
+        font-size: 0.66rem !important;
+        line-height: 1 !important;
+        flex-shrink: 0 !important;
+      }
+
+      .page {
+        padding-top: 24px !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <button onclick="topFunction()" id="upBtn" title="Go to top">△ Top</button>
+
+  <header>
+    <div class="wrap nav">
+      <a href="../index.html"><div class="brand">MILIM LEE</div></a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="../index.html">Home</a>
+        <a href="../index.html#projects">Technical Foundations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="wrap">
+      <article class="project-shell">
+        <div class="top-links">
+          <a class="button" href="../index.html">← Back to Home</a>
+          <a class="button" href="../index.html#projects">Go to Technical Foundations</a>
+        </div>
+
+        <div class="eyebrow">Technical Foundations</div>
+        <h1>Dynamic Secondary Geometry RiMel</h1>
+        <p class="lead">
+          A RenderMan and MEL scripting project focused on generating visual complexity through a custom user interface for procedural object placement around geometric forms.
+        </p>
+
+        <ul class="bullet-list">
+          <li>Procedural secondary geometry generation using MEL</li>
+          <li>Custom UI controls for object placement and variation</li>
+          <li>RenderMan archive workflow and RiMel setup</li>
+        </ul>
+
+        <section class="section" aria-label="Final render slideshow">
+          <div class="carousel" data-carousel>
+            <div class="carousel-stage">
+              <a class="carousel-slide active" href="dynamic_geo_rimel/1.jpg"><img src="dynamic_geo_rimel/1.jpg" alt="Dynamic Geometry RiMel render 1"></a>
+              <a class="carousel-slide" href="dynamic_geo_rimel/10.jpg"><img src="dynamic_geo_rimel/10.jpg" alt="Dynamic Geometry RiMel render 2"></a>
+              <a class="carousel-slide" href="dynamic_geo_rimel/13.jpg"><img src="dynamic_geo_rimel/13.jpg" alt="Dynamic Geometry RiMel render 3"></a>
+              <a class="carousel-slide" href="dynamic_geo_rimel/11.jpg"><img src="dynamic_geo_rimel/11.jpg" alt="Dynamic Geometry RiMel render 4"></a>
+              <button class="carousel-control prev" type="button" aria-label="Previous slide">‹</button>
+              <button class="carousel-control next" type="button" aria-label="Next slide">›</button>
+              <div class="carousel-dots" aria-label="Slide navigation"></div>
+            </div>
+            <div class="thumbnail-strip" aria-label="Render thumbnails">
+              <button class="active" type="button"><img src="dynamic_geo_rimel/1.jpg" alt="Thumbnail 1"></button>
+              <button type="button"><img src="dynamic_geo_rimel/10.jpg" alt="Thumbnail 2"></button>
+              <button type="button"><img src="dynamic_geo_rimel/13.jpg" alt="Thumbnail 3"></button>
+              <button type="button"><img src="dynamic_geo_rimel/11.jpg" alt="Thumbnail 4"></button>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-label="Project video">
+          <h2>Final Video</h2>
+          <div class="media-frame">
+            <iframe src="https://player.vimeo.com/video/204225095" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Dynamic Secondary Geometry RiMel project video"></iframe>
+          </div>
+        </section>
+
+        <section class="section" aria-label="Reference images">
+          <h2>Reference Images</h2>
+          <p class="section-intro">Organic micro-form references used to guide the procedural secondary geometry direction.</p>
+          <div class="gallery-grid">
+            <a class="gallery-card" href="dynamic_geo_rimel/reference1.jpg"><img src="dynamic_geo_rimel/reference1.jpg" alt="Reference image 1"></a>
+            <a class="gallery-card" href="dynamic_geo_rimel/reference2.jpg"><img src="dynamic_geo_rimel/reference2.jpg" alt="Reference image 2"></a>
+          </div>
+        </section>
+
+        <section class="section" aria-label="UI demonstration">
+          <h2>UI Demonstration</h2>
+          <p class="section-intro">A walkthrough of the custom interface used to procedurally place secondary geometry.</p>
+          <div class="media-frame">
+            <iframe src="https://player.vimeo.com/video/204127623" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Dynamic Secondary Geometry RiMel UI demonstration"></iframe>
+          </div>
+        </section>
+
+        <section class="section" aria-label="UI description">
+          <h2>UI Description</h2>
+          <p class="section-intro">
+            Interface notes and parameter descriptions for the RiMel tool.
+          </p>
+
+          <div class="image-stack ui-description-stack">
+            <a class="gallery-card contain ui-desc-one" href="dynamic_geo_rimel/UI_desc1.jpg">
+              <img src="dynamic_geo_rimel/UI_desc1.jpg" alt="UI description image 1">
+            </a>
+            <a class="gallery-card contain ui-desc-two" href="dynamic_geo_rimel/UI_desc2.jpg">
+              <img src="dynamic_geo_rimel/UI_desc2.jpg" alt="UI description image 2">
+            </a>
+          </div>
+        </section>
+
+        <section class="section" aria-label="How RiMel works">
+          <h2>How RiMel Works</h2>
+          <p class="section-intro">Diagram describing the relationship between MEL controls, generated geometry, and RenderMan archive behavior.</p>
+          <a class="gallery-card contain" href="dynamic_geo_rimel/diagram.jpg" style="display:block; max-width:680px; margin:0 auto;">
+            <img src="dynamic_geo_rimel/diagram.jpg" alt="RiMel workflow diagram">
+          </a>
+        </section>
+
+        <section class="section" aria-label="Code viewer">
+          <h2>Code</h2>
+          <p class="section-intro">Source code references are kept in a compact tabbed viewer so the page stays organized while preserving the original files.</p>
+
+          <div class="code-tabs" role="tablist" aria-label="Code file tabs">
+            <button class="code-tab active" type="button" data-code-tab="ui">generateGeneUI.mel</button>
+            <button class="code-tab" type="button" data-code-tab="gene">createGene.mel</button>
+            <button class="code-tab" type="button" data-code-tab="rman">randomArchives.rman</button>
+            <button class="code-tab" type="button" data-code-tab="archive-ui">RandomArchivesUI.mel</button>
+            <button class="code-tab" type="button" data-code-tab="archive-ri">RandomArchivesRI.mel</button>
+          </div>
+
+          <div class="code-viewer">
+            <div class="code-bar">
+              <span id="codeFileName">generateGeneUI.mel</span>
+              <span class="code-pill">MEL / RenderMan</span>
+            </div>
+            <div class="code-panel active" data-code-panel="ui">
+              <iframe src="dynamic_geo_rimel/code/mel/generateGeneUI.html" title="generateGeneUI.mel"></iframe>
+            </div>
+            <div class="code-panel" data-code-panel="gene">
+              <iframe src="dynamic_geo_rimel/code/mel/createGene.html" title="createGene.mel"></iframe>
+            </div>
+            <div class="code-panel" data-code-panel="rman">
+              <iframe src="dynamic_geo_rimel/code/rman/randomArchivesRman.html" title="randomArchives.rman"></iframe>
+            </div>
+            <div class="code-panel" data-code-panel="archive-ui">
+              <iframe src="dynamic_geo_rimel/code/mel/randomArchivesUi.html" title="RandomArchivesUI.mel"></iframe>
+            </div>
+            <div class="code-panel" data-code-panel="archive-ri">
+              <iframe src="dynamic_geo_rimel/code/mel/randomArchivesRi.html" title="RandomArchivesRI.mel"></iframe>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-label="Download source code">
+          <h2>Download the Source Code</h2>
+          <a class="download-card" href="dynamic_geo_rimel/code/SourceCodes.zip">
+            SourceCodes.zip <span>Download File</span>
+          </a>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Milim Lee. All rights reserved.
+  </footer>
+
+  <script>
+    const upBtn = document.getElementById("upBtn");
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    window.onscroll = function() { scrollFunction(); };
+
+    function scrollFunction() {
+      if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        upBtn.style.display = "block";
+      } else {
+        upBtn.style.display = "none";
+      }
+    }
+
+    function topFunction() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
+
+    document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+      const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
+      const thumbs = Array.from(carousel.querySelectorAll(".thumbnail-strip button"));
+      const dotsWrap = carousel.querySelector(".carousel-dots");
+      let index = 0;
+      let timer;
+
+      slides.forEach((_, i) => {
+        const dot = document.createElement("button");
+        dot.className = "carousel-dot" + (i === 0 ? " active" : "");
+        dot.type = "button";
+        dot.setAttribute("aria-label", "Go to slide " + (i + 1));
+        dot.addEventListener("click", () => show(i, true));
+        dotsWrap.appendChild(dot);
+      });
+
+      const dots = Array.from(dotsWrap.querySelectorAll(".carousel-dot"));
+
+      function show(nextIndex, resetTimer) {
+        index = (nextIndex + slides.length) % slides.length;
+        slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+        thumbs.forEach((thumb, i) => thumb.classList.toggle("active", i === index));
+        dots.forEach((dot, i) => dot.classList.toggle("active", i === index));
+        if (resetTimer) restart();
+      }
+
+      function restart() {
+        clearInterval(timer);
+        timer = setInterval(() => show(index + 1, false), 5000);
+      }
+
+      carousel.querySelector(".prev").addEventListener("click", () => show(index - 1, true));
+      carousel.querySelector(".next").addEventListener("click", () => show(index + 1, true));
+      thumbs.forEach((thumb, i) => thumb.addEventListener("click", () => show(i, true)));
+      restart();
+    });
+
+    const codeNames = {
+      ui: "generateGeneUI.mel",
+      gene: "createGene.mel",
+      rman: "randomArchives.rman",
+      "archive-ui": "RandomArchivesUI.mel",
+      "archive-ri": "RandomArchivesRI.mel"
+    };
+
+    document.querySelectorAll("[data-code-tab]").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const target = tab.getAttribute("data-code-tab");
+        document.querySelectorAll("[data-code-tab]").forEach((item) => item.classList.toggle("active", item === tab));
+        document.querySelectorAll("[data-code-panel]").forEach((panel) => {
+          panel.classList.toggle("active", panel.getAttribute("data-code-panel") === target);
+        });
+        document.getElementById("codeFileName").textContent = codeNames[target];
+      });
+    });
+  </script>
+</body>
+</html>

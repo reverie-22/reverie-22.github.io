@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2XF1NZ6P8C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-2XF1NZ6P8C');
+  </script>  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phyllotactic Pattern</title>
+  <style>
+    :root {
+      --bg: #f7f9fb;
+      --surface: #ffffff;
+      --surface-2: #f8fbfd;
+      --text: #111827;
+      --muted: #5b6472;
+      --line: #dbe3ea;
+      --accent: #569abd;
+      --accent-dark: #447f9d;
+      --accent-soft: #eaf4fa;
+      --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+      --shadow-soft: 0 10px 26px rgba(15, 23, 42, 0.07);
+      --radius-lg: 28px;
+      --radius-md: 22px;
+      --radius-sm: 16px;
+      --max: 1000px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img, video, iframe { display: block; max-width: 100%; }
+    .wrap { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(12px);
+      background: rgba(247,249,251,0.92);
+      border-bottom: 1px solid rgba(219, 227, 234, 0.8);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 74px;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      font-size: 1.05rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 0.94rem;
+      transition: 0.2s ease;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .page { padding: 42px 0 60px; }
+
+    .project-shell {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 34px;
+      text-align: center;
+    }
+
+    .top-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      width: fit-content;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.55rem, 3vw, 2.15rem);
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 1.18rem;
+      letter-spacing: -0.01em;
+    }
+
+    .lead {
+      margin: 0 auto 22px auto;
+      color: var(--muted);
+      font-size: 1.03rem;
+      max-width: 70ch;
+    }
+
+    .bullet-list {
+      display: inline-block;
+      text-align: left;
+      margin: 0 auto 26px auto;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .bullet-list li { margin-bottom: 8px; }
+
+    .section {
+      margin-top: 30px;
+      background: linear-gradient(135deg, #eef6fa, #ffffff 45%, #f6f9fc);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      text-align: center;
+    }
+
+    .section-intro {
+      color: var(--muted);
+      max-width: 75ch;
+      margin: 0 auto 20px;
+      text-align: center;
+    }
+
+    .media-frame {
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #000;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .media-frame iframe {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      border: 0;
+    }
+
+    .media-frame video {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 520px;
+      border: 0;
+      object-fit: contain;
+      background: #000;
+    }
+
+    .video-compact {
+      max-width: 720px;
+    }
+
+    .image-card {
+      display: block;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .image-card img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+
+    .image-card:hover img { transform: scale(1.02); }
+
+    .hero-image {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .formula-card {
+      max-width: 680px;
+      margin: 18px auto 22px;
+      padding: 18px;
+      background: rgba(255,255,255,0.76);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow-soft);
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      text-align: left;
+    }
+
+    .formula-card div { margin: 6px 0; }
+
+    .tool-grid {
+      display: grid;
+      gap: 22px;
+    }
+
+    .tool-card {
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: var(--shadow-soft);
+      text-align: center;
+    }
+
+    .tool-layout {
+      display: grid;
+      grid-template-columns: minmax(150px, 0.42fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .tool-object,
+    .tool-ui {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .tool-object img,
+    .tool-ui img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .caption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      text-align: center;
+    }
+
+    #upBtn {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 99;
+      border: none;
+      outline: none;
+      background-color: var(--accent);
+      color: white;
+      cursor: pointer;
+      padding: 14px 16px;
+      border-radius: 14px;
+      box-shadow: 0 12px 24px rgba(86,154,189,0.28);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    #upBtn:hover { background-color: var(--accent-dark); }
+
+    footer {
+      padding: 24px 0 42px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 820px) {
+      .nav { min-height: 68px; }
+      .nav-links { display: none; }
+      .project-shell { padding: 22px; }
+      .section { padding: 18px; }
+      .wrap { width: min(var(--max), calc(100% - 20px)); }
+      .tool-layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .project-shell { padding: 18px; }
+      .media-frame iframe,
+      .media-frame video { aspect-ratio: 4 / 3; }
+    }
+  
+
+    /* Mobile navigation override: keeps the top menu on one compact row. */
+    @media (max-width: 860px) {
+      html { scroll-padding-top: 72px; }
+      section { scroll-margin-top: 72px; }
+
+      header {
+        height: auto;
+      }
+
+      .nav {
+        min-height: 56px !important;
+        padding: 6px 0 !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 14px !important;
+      }
+
+      .brand {
+        font-size: 0.88rem !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+      }
+
+      .nav-links {
+        display: flex !important;
+        width: auto !important;
+        flex: 1 !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 12px !important;
+        font-size: 0.66rem !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        scrollbar-width: none !important;
+      }
+
+      .nav-links::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav-links a {
+        border: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+      }
+
+      .nav-links .button {
+        border: 1px solid var(--line) !important;
+        background: var(--surface) !important;
+        border-radius: 999px !important;
+        padding: 5px 9px !important;
+        font-size: 0.66rem !important;
+        line-height: 1 !important;
+        flex-shrink: 0 !important;
+      }
+
+      .page {
+        padding-top: 24px !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <button onclick="topFunction()" id="upBtn" title="Go to top">△ Top</button>
+
+  <header>
+    <div class="wrap nav">
+      <a href="../index.html"><div class="brand">MILIM LEE</div></a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="../index.html">Home</a>
+        <a href="../index.html#projects">Technical Foundations</a>
+        <a href="../index.html#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="wrap">
+      <article class="project-shell">
+        <div class="top-links">
+          <a class="button" href="../index.html">← Back to Home</a>
+          <a class="button" href="../index.html#projects">Go to Technical Foundations</a>
+        </div>
+
+        <div class="eyebrow">Technical Foundations</div>
+        <h1>Phyllotactic Pattern</h1>
+        <p class="lead">
+          A Houdini procedural modeling project using phyllotactic pattern logic to generate a flower-inspired scene and related procedural tools.
+        </p>
+
+        <ul class="bullet-list">
+          <li>Phyllotactic spiral pattern generation</li>
+          <li>Houdini procedural tool setup for flower components</li>
+          <li>Scene breakdown and parameterized UI demonstrations</li>
+        </ul>
+
+        <section class="section" aria-label="Final render preview">
+          <a class="image-card hero-image" href="phyllotactic_pattern/images/Slide1.png">
+            <img src="phyllotactic_pattern/images/Slide1.png" alt="Phyllotactic Pattern final render">
+          </a>
+        </section>
+
+        <section class="section" aria-label="Final animation video">
+          <h2>Final Animation</h2>
+          <p class="section-intro">A rendered look at the generated phyllotactic scene.</p>
+          <div class="media-frame">
+            <iframe src="https://player.vimeo.com/video/235714702" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Phyllotactic Pattern final animation"></iframe>
+          </div>
+        </section>
+
+        <section class="section" aria-label="Phyllotactic pattern explanation">
+          <h2>What is a Phyllotactic Pattern?</h2>
+          <p class="section-intro">
+            Phyllotaxis describes the arrangement of leaves on a plant stem and creates a distinctive class of patterns found in nature.
+          </p>
+          <div class="formula-card">
+            <div>x = r * cos(θ)</div>
+            <div>y = r * sin(θ)</div>
+            <div>r = c * sqrt(n)</div>
+            <div>θ = n * 137.508</div>
+          </div>
+          <h3>My Phyllotactic Test</h3>
+          <p class="section-intro">I applied the same formula to the flower and stamen in my scene.</p>
+          <div class="media-frame video-compact">
+            <video controls controlsList="nodownload" autoplay muted loop playsinline>
+              <source src="phyllotactic_pattern/videos/phylloTest.mp4" type="video/mp4">
+            </video>
+          </div>
+        </section>
+
+        <section class="section" aria-label="Scene breakdown">
+          <h2>Scene Breakdown</h2>
+          <p class="section-intro">A breakdown of the procedural elements used to build the final flower scene.</p>
+          <div class="media-frame video-compact">
+            <video controls controlsList="nodownload" autoplay muted loop playsinline>
+              <source src="phyllotactic_pattern/videos/SceneBreakdown.mp4" type="video/mp4">
+            </video>
+          </div>
+        </section>
+
+        <section class="section" aria-label="UI tool descriptions">
+          <h2>UI Description</h2>
+          <p class="section-intro">Procedural controls for generating and adjusting each major component of the flower.</p>
+          <div class="tool-grid">
+            <article class="tool-card">
+              <h3>1. Flower Tool</h3>
+              <div class="media-frame video-compact">
+                <video controls controlsList="nodownload" autoplay muted loop playsinline>
+                  <source src="phyllotactic_pattern/videos/FlowerTool.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="tool-layout">
+                <a class="tool-object" href="phyllotactic_pattern/images/Flower.png"><img src="phyllotactic_pattern/images/Flower.png" alt="Flower generated object"></a>
+                <a class="tool-ui" href="phyllotactic_pattern/images/FlowerToolDesc.png"><img src="phyllotactic_pattern/images/FlowerToolDesc.png" alt="Flower tool UI description"></a>
+              </div>
+            </article>
+
+            <article class="tool-card">
+              <h3>2. Sepal Tool</h3>
+              <div class="media-frame video-compact">
+                <video controls controlsList="nodownload" autoplay muted loop playsinline>
+                  <source src="phyllotactic_pattern/videos/SepalTool.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="tool-layout">
+                <a class="tool-object" href="phyllotactic_pattern/images/Sepal.png"><img src="phyllotactic_pattern/images/Sepal.png" alt="Sepal generated object"></a>
+                <a class="tool-ui" href="phyllotactic_pattern/images/SepalToolDesc.png"><img src="phyllotactic_pattern/images/SepalToolDesc.png" alt="Sepal tool UI description"></a>
+              </div>
+            </article>
+
+            <article class="tool-card">
+              <h3>3. Leaves Tool</h3>
+              <div class="media-frame video-compact">
+                <video controls controlsList="nodownload" autoplay muted loop playsinline>
+                  <source src="phyllotactic_pattern/videos/LeavesTool.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="tool-layout">
+                <a class="tool-object" href="phyllotactic_pattern/images/Leaves.png"><img src="phyllotactic_pattern/images/Leaves.png" alt="Leaves generated object"></a>
+                <a class="tool-ui" href="phyllotactic_pattern/images/LeavesToolDesc.png"><img src="phyllotactic_pattern/images/LeavesToolDesc.png" alt="Leaves tool UI description"></a>
+              </div>
+            </article>
+
+            <article class="tool-card">
+              <h3>4. Stamen Tool</h3>
+              <div class="media-frame video-compact">
+                <video controls controlsList="nodownload" autoplay muted loop playsinline>
+                  <source src="phyllotactic_pattern/videos/StamenTool.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="tool-layout">
+                <a class="tool-object" href="phyllotactic_pattern/images/Stamen.png"><img src="phyllotactic_pattern/images/Stamen.png" alt="Stamen generated object"></a>
+                <a class="tool-ui" href="phyllotactic_pattern/images/StamenToolDesc.png"><img src="phyllotactic_pattern/images/StamenToolDesc.png" alt="Stamen tool UI description"></a>
+              </div>
+            </article>
+          </div>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Milim Lee. All rights reserved.
+  </footer>
+
+  <script>
+    const upBtn = document.getElementById("upBtn");
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    window.onscroll = function() { scrollFunction(); };
+
+    function scrollFunction() {
+      if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        upBtn.style.display = "block";
+      } else {
+        upBtn.style.display = "none";
+      }
+    }
+
+    function topFunction() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
+  </script>
+</body>
+</html>
