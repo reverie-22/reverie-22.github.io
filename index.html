@@ -144,6 +144,30 @@
       letter-spacing: -0.03em;
     }
 
+    .status-badge {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+
+      background:#ecfdf3;
+      border:1px solid #c8ead6;
+      color:#237a45;
+
+      padding:7px 12px;
+      border-radius:999px;
+      margin-bottom:18px;
+      width: fit-content;
+      font-size:0.86rem;
+      font-weight:600;
+    }
+
+    .status-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#22c55e;
+    }
+
     .hero-copy p {
       margin: 0;
       font-size: 1.04rem;
@@ -509,6 +533,30 @@
 
     #upBtn:hover { background-color: #447f9d; }
 
+    .status-badge {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+
+      background:#ecfdf3;
+      border:1px solid #c8ead6;
+      color:#237a45;
+
+      padding:7px 12px;
+      border-radius:999px;
+      margin-bottom:18px;
+
+      font-size:0.86rem;
+      font-weight:600;
+    }
+
+    .status-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#22c55e;
+    }
+
     footer {
       padding: 24px 0 42px;
       color: var(--muted);
@@ -699,6 +747,11 @@
       <div class="wrap hero-grid">
         <div class="hero-copy">
           <div class="eyebrow">Technical Artist · 3D Data · ML Pipelines</div>
+          <div class="status-badge">
+            <span class="status-dot"></span>
+            Open to Full-Time Opportunities
+          </div>
+
           <h1>Building scalable 3D data pipelines for ML & AI</h1>
           <p>
             Specializing in preprocessing, decomposition, and dataset quality for large-scale 3D assets. Background in VFX, real-time graphics, and production tooling.
